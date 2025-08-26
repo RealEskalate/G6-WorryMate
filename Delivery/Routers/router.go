@@ -6,13 +6,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetupRouter(UserCtrl *controllers.UserController, ChtCtrl *controllers.ChatController) {
+func SetupRouter(ChtCtrl *controllers.ChatController) {
 	app := fiber.New()
 
 	// Chat routes 
 	chatRoutes := app.Group("/chat") 
-	{
-		
+	{	
+		chatRoutes.Get("/compose", func(c *fiber.Ctx) error {
+			return ChtCtrl.ComposeCardController(c);
+		})
 	}
 	
 	// Run the app

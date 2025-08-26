@@ -12,9 +12,9 @@ func main(){
 	db := repository.InitializeDB()
 
 	// User Dependencies
-	us_repo := repository.NewUserRepo(db)
-	us_usecase := usecase.NewUserUsecase(us_repo)
-	us_controller := controllers.NewUserController(us_usecase)
+	// us_repo := repository.NewUserRepo(db)
+	// us_usecase := usecase.NewUserUsecase(us_repo)
+	// us_controller := controllers.NewUserController(us_usecase)
 
 	// Chat dependencies
 	chat_repo := repository.NewChatRepo(db)
@@ -22,5 +22,5 @@ func main(){
 	chat_controller := controllers.NewChatController(chat_usecase)
 
 	// Router
-	routers.SetupRouter(us_controller, chat_controller)
+	routers.SetupRouter(chat_controller)
 }
