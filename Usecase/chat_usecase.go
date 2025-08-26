@@ -11,3 +11,8 @@ func NewChatUsecase(chtrp domain.ChatRepositoryI) (*ChatUsecase) {
 		ChatRepo: chtrp,
 	}
 }
+
+
+func (cu *ChatUsecase) ComposeCardUsecase() {
+	
+}
