@@ -1,4 +1,4 @@
-package delivery
+package main
 
 import (
 	controllers "sema/Delivery/Controllers"
@@ -7,7 +7,7 @@ import (
 	usecase "sema/Usecase"
 )
 
-func main(){
+func main() {
 	// Intialize dependencies
 	db := repository.InitializeDB()
 
