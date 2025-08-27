@@ -3,20 +3,18 @@ package routers
 import (
 	controllers "sema/Delivery/Controllers"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter(ChtCtrl *controllers.ChatController) {
-	app := fiber.New()
+	router := gin.Default()
 
 	// Chat routes 
-	chatRoutes := app.Group("/chat") 
+	chatRoutes := router.Group("/chat") 
 	{	
-		chatRoutes.Get("/compose", func(c *fiber.Ctx) error {
-			return ChtCtrl.ComposeCardController(c);
-		})
+		chatRoutes.POST("/compose")
 	}
 	
 	// Run the app
-	app.Listen(":8080");
+	router.Run();
 }

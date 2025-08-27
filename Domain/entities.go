@@ -14,3 +14,23 @@ type Chat struct {
 	SenderIsAI     bool
 	TimeOfCreation time.Time
 }
+
+type ToolLink struct {
+	Title string 
+	URL   string 
+}
+
+type Block struct {
+	EmpathyOpeners []string   
+	MicroSteps     []string   
+	Scripts        []string   
+	ToolLinks      []ToolLink 
+	IfWorse        []string   
+	Disclaimer     string     
+}
+
+type ActionBlock struct {
+	TopicKey string 
+	Block    Block  
+	Language  string 
+}

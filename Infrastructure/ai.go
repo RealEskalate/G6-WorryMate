@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	domain "sema/Domain"
 
 	"google.golang.org/genai"
 )
@@ -48,18 +49,18 @@ func InitAIClient() *AI {
 	}
 }
 
-func (ai *AI) GenerateActionCard(topic string, language string, steps []string, miniTools []string) (*string, error) {
+func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, error) {
 	ctx := context.Background()
 
 	// Convert slices to a formatted string for the prompt
 	stepsList := ""
-	for _, s := range steps {
+	for _, s := range actionBlock.Block.MicroSteps {
 		stepsList += fmt.Sprintf("- %s\n", s)
 	}
 
 	toolsList := ""
-	for _, t := range miniTools {
-		toolsList += fmt.Sprintf("- %s\n", t)
+	for _, t := range actionBlock.Block.ToolLinks {
+		toolsList += fmt.Sprintf("- title : %s, url: %s\n", t.Title, t.URL)
 	}
 
 	userPrompt := genai.Text(fmt.Sprintf(`
@@ -88,7 +89,7 @@ func (ai *AI) GenerateActionCard(topic string, language string, steps []string, 
 			"disclaimer": "This is general wellbeing information, not medical or mental health advice."
 		}
 	}
-	`, topic, language, stepsList, toolsList, topic))
+	`, actionBlock.TopicKey,  actionBlock.Language, stepsList, toolsList, actionBlock.TopicKey))
 
 	result, err := ai.Ai_client.Models.GenerateContent(
 		ctx,
@@ -104,4 +105,3 @@ func (ai *AI) GenerateActionCard(topic string, language string, steps []string, 
 	resultMessage := result.Text()
 	return &resultMessage, nil
 }
-
