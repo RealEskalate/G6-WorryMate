@@ -1,0 +1,22 @@
+{
+  "region": "ET",
+  "resources": [
+    {
+      "type": "hotline",
+      "name": "Ethiopian Lifeline",
+      "phone": "+251-800-123-456",
+      "availability": "24/7"
+    },
+    {
+      "type": "ngo",
+      "name": "Mental Health Support Ethiopia",
+      "website": "https://mhs-et.org",
+      "contact": "info@mhs-et.org"
+    }
+  ],
+  "safety_plan_template": {
+    "step1": "Identify a safe place.",
+    "step2": "List 3 trusted contacts.",
+    "step3": "Keep emergency numbers nearby."
+  }
+}
