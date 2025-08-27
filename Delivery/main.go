@@ -19,7 +19,7 @@ func main() {
 	// Chat dependencies
 	chat_repo := repository.NewChatRepo(db)
 	chat_usecase := usecase.NewChatUsecase(chat_repo)
-	chat_controller := controllers.NewChatController(chat_usecase)
+	chat_controller := controllers.NewChatController(chat_usecase) // chat_usecase must implement domain.ChatUsecaseI
 
 	// Router
 	routers.SetupRouter(chat_controller)
