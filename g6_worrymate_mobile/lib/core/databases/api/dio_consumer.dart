@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
+
+import '../../errors/expentions.dart';
 import 'api_consumer.dart';
 import 'end_points.dart';
-import '../../errors/expentions.dart';
 
 class DioConsumer extends ApiConsumer {
   final Dio dio;
