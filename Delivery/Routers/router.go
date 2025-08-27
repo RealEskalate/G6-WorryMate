@@ -15,6 +15,14 @@ func SetupRouter(ChtCtrl *controllers.ChatController) {
 		chatRoutes.Get("/compose", func(c *fiber.Ctx) error {
 			return ChtCtrl.ComposeCardController(c);
 		})
+
+		chatRoutes.Post("/risk_check", func(c *fiber.Ctx) error {
+			return ChtCtrl.RiskCheckController(c)
+		})
+
+		chatRoutes.Post("/intent_mapping", func(c *fiber.Ctx) error {
+			return ChtCtrl.IntentMappingController(c)
+		})
 	}
 	
 	// Run the app

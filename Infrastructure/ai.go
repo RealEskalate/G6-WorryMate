@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"google.golang.org/genai"
 )
@@ -105,3 +106,89 @@ func (ai *AI) GenerateActionCard(topic string, language string, steps []string, 
 	return &resultMessage, nil
 }
 
+func (ai *AI) GenerateTopicKey(content string) (string, error) {
+	ctx := context.Background()
+
+	userPrompt := genai.Text(fmt.Sprintf(`
+	Extract one topic key from the following content that is close to %s:
+	1. Study Stress
+	2. Money Stress
+	3. Family conflict
+	4. Workload 
+	5. sleep
+	6. Motivation
+	7. Loneliness
+	8. Procrastination
+	9. Time management
+	10. Exam Panic
+	11. New City anxiety
+	12. Self confidence
+	`, content))
+
+	result, err := ai.Ai_client.Models.GenerateContent(
+		ctx,
+		ai.model_name,
+		userPrompt,
+		ai.config,
+	)
+
+	if err != nil {
+		return "", err
+	}
+
+	return result.Text(), nil
+}
+
+func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
+	ctx := context.Background()
+
+	userPrompt := genai.Text(fmt.Sprintf(`
+	Analyze the following content for risk factors:
+	Please assess the risk level of the following situation. 
+    There are three risk levels:
+    1 - Low risk (e.g., minor inconvenience, unlikely to cause harm)
+    2 - Medium risk (e.g., possible negative outcome, moderate concern)
+    3 - High risk (e.g., serious consequences, urgent attention needed)
+    Based on this context, what is the risk level for the user's input?
+	and generate a list of relevant tags.
+	Give me your response in the format: Risk Level: <number>\nTags: tag1, tag2, tag3
+	%s
+	`, content))
+
+	result, err := ai.Ai_client.Models.GenerateContent(
+		ctx,
+		ai.model_name,
+		userPrompt,
+		ai.config,
+	)
+
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var risk int
+	var tags []string
+
+	// Parse the result to extract risk and tags
+	response := result.Text()
+	// Example response: "Risk Level: 2\nTags: stress, anxiety, workload"
+	lines := strings.Split(response, "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "Risk Level:") {
+			fmt.Sscanf(line, "Risk Level: %d", &risk)
+		}
+		if strings.HasPrefix(line, "Tags:") {
+			tagsStr := strings.TrimPrefix(line, "Tags:")
+			tagsStr = strings.TrimSpace(tagsStr)
+			if tagsStr != "" {
+				tags = strings.Split(tagsStr, ",")
+				for i := range tags {
+					tags[i] = strings.TrimSpace(tags[i])
+				}
+			}
+		}
+	}
+
+	return risk, tags, nil
+}
