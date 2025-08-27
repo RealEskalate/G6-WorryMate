@@ -96,7 +96,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 			"disclaimer": "This is general wellbeing information, not medical or mental health advice."
 		}
 	}
-	`, actionBlock.TopicKey,  actionBlock.Language, stepsList, toolsList, actionBlock.TopicKey))
+	`, actionBlock.TopicKey, actionBlock.Language, stepsList, toolsList, actionBlock.TopicKey))
 
 	result, err := ai.Ai_client.Models.GenerateContent(
 		ctx,
@@ -153,12 +153,53 @@ func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
 	Analyze the following content for risk factors:
 	Please assess the risk level of the following situation. 
     There are three risk levels:
-    1 - Low risk (e.g., minor inconvenience, unlikely to cause harm)
-    2 - Medium risk (e.g., possible negative outcome, moderate concern)
-    3 - High risk (e.g., serious consequences, urgent attention needed)
+
+	1. Low Risk
+	Definition: A situation that causes minor inconvenience or frustration but is unlikely to result in significant harm, emotional distress, or long-term negative consequences. These are typically everyday annoyances or distractions that can be resolved easily.
+
+	Examples:
+
+	Getting a low grade on a single homework assignment due to a lack of focus.
+
+	Feeling unproductive after spending too much time on social media.
+
+	Minor disagreements with a friend about a movie to watch.
+
+	Losing an item of low value, such as a pen or a hair tie.
+
+	Feeling annoyed by a slow internet connection.
+
+	2. Medium Risk
+	Definition: A situation with a possible negative outcome or moderate concern. While not immediately life-threatening, these issues can lead to emotional distress, damage relationships, or have negative impacts on well-being if not addressed.
+
+	Examples:
+
+	Persistent conflict with a family member or friend that is causing emotional strain.
+
+	Feeling overwhelmed with anxiety about a future exam or presentation.
+
+	A significant drop in grades across multiple subjects due to a lack of motivation.
+
+	Experiencing a conflict at work that is affecting your professional performance.
+
+	A difficult argument with a romantic partner.
+
+	3. High Risk
+	Definition: A situation that involves serious consequences, requires immediate and urgent attention, and could result in significant harm to oneself or others. This category includes severe threats to physical safety, mental health, or legal well-being.
+
+	Examples:
+
+	Experiencing suicidal ideation or thoughts of self-harm.
+
+	Engaging in or planning to engage in illegal or criminal activities.
+
+	Providing or seeking instructions for harmful or dangerous acts.
+
+	Severe and persistent depression or anxiety that is debilitating.
+
     Based on this context, what is the risk level for the user's input?
-	and generate a list of relevant tags.
-	Give me your response in the format: Risk Level: <number>\nTags: tag1, tag2, tag3
+	and generate a list of relevant tags. Those tags can not be empty.
+	Give me your response in the format: Risk Level: <1 or 2 or 3>\nTags: tag1, tag2, tag3
 	%s
 	`, content))
 
@@ -178,12 +219,15 @@ func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
 
 	// Parse the result to extract risk and tags
 	response := result.Text()
-	// Example response: "Risk Level: 2\nTags: stress, anxiety, workload"
 	lines := strings.Split(response, "\n")
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if strings.HasPrefix(line, "Risk Level:") {
-			fmt.Sscanf(line, "Risk Level: %d", &risk)
+			var parsed int
+			_, scanErr := fmt.Sscanf(line, "Risk Level: %d", &parsed)
+			if scanErr == nil && parsed >= 1 && parsed <= 3 {
+				risk = parsed
+			}
 		}
 		if strings.HasPrefix(line, "Tags:") {
 			tagsStr := strings.TrimPrefix(line, "Tags:")
@@ -195,6 +239,15 @@ func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
 				}
 			}
 		}
+	}
+
+	// Ensure risk is between 1 and 3, default to 1 if not parsed
+	if risk < 1 || risk > 3 {
+		risk = 1
+	}
+	// Ensure tags is not nil
+	if tags == nil {
+		tags = []string{}
 	}
 
 	return risk, tags, nil
