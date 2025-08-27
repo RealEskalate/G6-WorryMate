@@ -93,16 +93,22 @@ func (cc *ChatController) ResourceController(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"resources: ": jsonData})
 }
 
-func (cc *ChatController) OfflinePackController(c *gin.Context) {
-	lang := c.Query("lang")
-	if lang == "" {
-		lang = "en"
+func (cc *ChatController) ActionBlockController(c *gin.Context) {
+	topic_key := c.Param("topic_key")
+	lang := c.Param("lang")
+	actBlk, err := cc.ChatUc.GetActionBlockUsecase(topic_key, lang)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error" : err.Error()})
+		return 
 	}
-	lang = strings.ToLower(lang)
-	path := filepath.Join("assets", "offline-pack", "offline-pack."+lang+".json")
+	c.JSON(http.StatusOK, gin.H{"action-block" : actBlk})
+}
+
+func (cc *ChatController) OfflinePackController(c *gin.Context) {
+	path := filepath.Join("assets", "offline-pack", "offline_pack.json")
 	data, err := os.ReadFile(path)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error: ": "offline-pack not found for language " + lang})
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": "can not find offline pack in assets."})
 		return
 	}
 
