@@ -11,7 +11,8 @@ func SetupRouter(ChtCtrl *controllers.ChatController) {
 	router := gin.Default()
 
 	// Chat routes 
-	chatRoutes := router.Group("/chat", infrastructure.OfflinePackMiddleware("assets"), infrastructure.ResourcesMiddleware("assets")) 
+	chatRoutes := router.Group("/chat")
+	chatRoutes.Use(infrastructure.OfflinePackMiddleware("assets"), infrastructure.ResourcesMiddleware("assets")) 
 	{	
 		chatRoutes.POST("/compose")
     chatRoutes.POST("/risk_check")

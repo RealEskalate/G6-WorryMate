@@ -35,32 +35,35 @@ func (cc *ChatController) ComposeCardController(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message" : "action card generated successfully", "card" : result})
 }
 
-func (cc *ChatController) RiskCheckController(c *fiber.Ctx) error {
+func (cc *ChatController) RiskCheckController(c *gin.Context) {
 	var req struct {
 		Content string `json:"content"`
 	}
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
 	}
 
 	risk, tags, err := cc.ChatUc.RiskCheckUsecase(req.Content)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
+		return
 	}
-	return c.JSON(fiber.Map{"risk": risk, "tags": tags})
+	c.JSON(http.StatusOK, gin.H{"message" : "Risk Calculated successfully!", "risk" : risk, "tags" : tags})
 }
 
-func (cc *ChatController) IntentMappingController(c *fiber.Ctx) error {
+func (cc *ChatController) IntentMappingController(c *gin.Context) {
 	var req struct {
 		Content string `json:"content"`
 	}
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return 
 	}
 	key , err := cc.ChatUc.IntentMappingUsecase(req.Content)
 	if err != nil{
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
+		return
 	}
-	return c.JSON(fiber.Map{"key":key})
-
+	c.JSON(http.StatusOK, gin.H{"topic_key" : key})
 }
