@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	domain "sema/Domain"
 )
 
@@ -27,4 +28,12 @@ func (cu *ChatUsecase) RiskCheckUsecase(content string) (int, []string, error) {
 
 func (cu *ChatUsecase) IntentMappingUsecase(content string) (string, error) {
 	return cu.aiServ.GenerateTopicKey(content)
+}
+
+func (cu *ChatUsecase) GetActionBlockUsecase(topic_key, lang string) (*domain.ActionBlock, error) {
+	res, ok := cu.ChatRepo.GetActionBlock(topic_key, lang)
+	if !ok {
+		return &domain.ActionBlock{}, errors.New("can not find action block with this topic item")
+	}
+	return res, nil
 }
