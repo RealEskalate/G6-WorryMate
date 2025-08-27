@@ -12,6 +12,7 @@
   "dependencies": {
     "next": "15.5.0",
     "next-intl": "^4.3.5",
+    "lucide-react": "^0.541.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
