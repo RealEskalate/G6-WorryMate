@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
 
+import 'features/crisis_card/presentation/pages/crisis_card.dart';
+import 'features/setting/settings.dart';
+
 import 'features/action_card/presentation/screens/action_card_screen.dart';
 import 'features/action_card/presentation/screens/chat_screen.dart';
 import 'features/action_card/presentation/screens/offline_toolkit_screen.dart';
 import 'home_page/home_page.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +31,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => ChatScreen(),
         '/offline-tool': (context) => const OfflineToolkitScreen(),
         '/home' :(context) => HomePage(),
+        '/settings' :(context) =>  SettingsPage(),
       },
     );
   }
