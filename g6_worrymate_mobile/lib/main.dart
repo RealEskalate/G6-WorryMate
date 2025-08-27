@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
+
 import 'features/crisis_card/presentation/pages/crisis_card.dart';
 import 'features/setting/settings.dart';
-// Make sure this import path is correct
+
+import 'features/action_card/presentation/screens/action_card_screen.dart';
+import 'features/action_card/presentation/screens/chat_screen.dart';
+import 'features/action_card/presentation/screens/offline_toolkit_screen.dart';
+import 'home_page/home_page.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -15,11 +21,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'WorryMate - Crisis Card Demo',
+      title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: SettingsPage(), // This is our new demo screen
+      initialRoute: '/',
+      routes: {
+        '/action_card': (context) => const ActionCardScreen(),
+        '/': (context) => ChatScreen(),
+        '/offline-tool': (context) => const OfflineToolkitScreen(),
+        '/home' :(context) => HomePage(),
+        '/settings' :(context) =>  SettingsPage(),
+      },
     );
-  }}
+  }
+}
+
