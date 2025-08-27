@@ -18,21 +18,20 @@ func NewChatController(uc domain.ChatUsecaseI) *ChatController {
 }
 
 func (cc *ChatController) ComposeCardController(c *gin.Context) {
-	var actBlk ActionBlockDTO 
+	var actBlk ActionBlockDTO
 	err := c.ShouldBindJSON(&actBlk)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error" : "invalid JSON format. unable to bind!"})
-		return 
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON format. unable to bind!"})
+		return
 	}
 
-
-	result, err := cc.ChatUc.ComposeCardUsecase(ChangeToDomain(actBlk));
+	result, err := cc.ChatUc.ComposeCardUsecase(ChangeToDomain(actBlk))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
-		return 
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message" : "action card generated successfully", "card" : result})
+	c.JSON(http.StatusOK, gin.H{"message": "action card generated successfully", "card": result})
 }
 
 func (cc *ChatController) RiskCheckController(c *gin.Context) {
@@ -46,10 +45,10 @@ func (cc *ChatController) RiskCheckController(c *gin.Context) {
 
 	risk, tags, err := cc.ChatUc.RiskCheckUsecase(req.Content)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message" : "Risk Calculated successfully!", "risk" : risk, "tags" : tags})
+	c.JSON(http.StatusOK, gin.H{"message": "Risk Calculated successfully!", "risk": risk, "tags": tags})
 }
 
 func (cc *ChatController) IntentMappingController(c *gin.Context) {
@@ -58,12 +57,22 @@ func (cc *ChatController) IntentMappingController(c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-		return 
-	}
-	key , err := cc.ChatUc.IntentMappingUsecase(req.Content)
-	if err != nil{
-		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"topic_key" : key})
+	key, err := cc.ChatUc.IntentMappingUsecase(req.Content)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"topic_key": key})
+}
+
+func (cc *ChatController) ResourceController(c *gin.Context) {
+	res, _ := c.Get("resources")
+	c.JSON(http.StatusOK, gin.H{"resources: ": res})
+}
+
+func (cc *ChatController) OfflinePackController(c *gin.Context) {
+	value, _ := c.Get("action-block")
+	c.JSON(http.StatusOK, gin.H{"action-block: ": value})
 }

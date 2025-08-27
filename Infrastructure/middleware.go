@@ -19,18 +19,18 @@ func OfflinePackMiddleware(basepath string) gin.HandlerFunc {
 		path := filepath.Join(basepath, "offline-pack", "offline-pack."+lang+".json")
 		data, err := os.ReadFile(path)
 		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: ": "offline-pack not found for language " + lang}) 
+			c.JSON(http.StatusNotFound, gin.H{"error: ": "offline-pack not found for language " + lang})
 			c.Abort()
-			return  
+			return
 		}
 
 		var jsonData interface{}
 		if err := json.Unmarshal(data, &jsonData); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error: ": "Invalid JSON format"})
 			c.Abort()
-			return 
+			return
 		}
-		c.JSON(http.StatusOK, gin.H{"data" : jsonData})
+		c.JSON(http.StatusOK, gin.H{"action-block": jsonData})
 		c.Next()
 	}
 }
@@ -48,16 +48,16 @@ func ResourcesMiddleware(basepath string) gin.HandlerFunc {
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error: ": "resources for region " + region + " not found"})
 			c.Abort()
-			return 
+			return
 		}
 
 		var jsonData interface{}
 		if err := json.Unmarshal(data, &jsonData); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error: ": "Invalid JSON format"})
 			c.Abort()
-			return 
+			return
 		}
-		c.JSON(http.StatusOK, gin.H{"data" : jsonData})
+		c.JSON(http.StatusOK, gin.H{"resources": jsonData})
 		c.Next()
 	}
 }
