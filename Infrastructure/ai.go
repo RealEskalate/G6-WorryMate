@@ -7,6 +7,7 @@ import (
 	"os"
 	domain "sema/Domain"
 	"strings"
+
 	"google.golang.org/genai"
 )
 
@@ -18,7 +19,13 @@ type AI struct {
 
 func InitAIClient() *AI {
 	ctx := context.Background()
-	client, err := genai.NewClient(ctx, nil)
+	apiKey := os.Getenv("GEMINI_API_KEY")
+	if apiKey == "" {
+		log.Fatal("API key not found!")
+	}
+	client, err := genai.NewClient(ctx, &genai.ClientConfig{
+		APIKey: apiKey,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

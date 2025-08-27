@@ -2,7 +2,6 @@ package routers
 
 import (
 	controllers "sema/Delivery/Controllers"
-	infrastructure "sema/Infrastructure"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,13 +11,12 @@ func SetupRouter(ChtCtrl *controllers.ChatController) {
 
 	// Chat routes
 	chatRoutes := router.Group("/chat")
-	chatRoutes.Use(infrastructure.OfflinePackMiddleware("assets"), infrastructure.ResourcesMiddleware("assets"))
 	{
-		chatRoutes.POST("/compose")
-		chatRoutes.POST("/risk_check")
-		chatRoutes.POST("/intent_mapping")
-		chatRoutes.GET("/offline-pack", ChtCtrl.OfflinePackController)
+		chatRoutes.POST("/compose", ChtCtrl.ComposeCardController)
+		chatRoutes.POST("/risk_check", ChtCtrl.RiskCheckController)
+		chatRoutes.POST("/intent_mapping", ChtCtrl.IntentMappingController)
 		chatRoutes.GET("/resources", ChtCtrl.ResourceController)
+		chatRoutes.GET("/offline-pack", ChtCtrl.OfflinePackController)
 	}
 
 	// Run the app

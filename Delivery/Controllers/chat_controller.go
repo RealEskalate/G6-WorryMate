@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
+	"os"
+	"path/filepath"
 	domain "sema/Domain"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -68,11 +72,44 @@ func (cc *ChatController) IntentMappingController(c *gin.Context) {
 }
 
 func (cc *ChatController) ResourceController(c *gin.Context) {
-	res, _ := c.Get("resources")
-	c.JSON(http.StatusOK, gin.H{"resources: ": res})
+	region := c.Query("region")
+	if region == "" {
+		region = "ET"
+	}
+
+	region = strings.ToUpper(region)
+	path := filepath.Join("assets", "resources/region", region+".json")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error: ": "resources for region " + region + " not found"})
+		return
+	}
+
+	var jsonData interface{}
+	if err := json.Unmarshal(data, &jsonData); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": "Invalid JSON format"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"resources: ": jsonData})
 }
 
 func (cc *ChatController) OfflinePackController(c *gin.Context) {
-	value, _ := c.Get("action-block")
-	c.JSON(http.StatusOK, gin.H{"action-block: ": value})
+	lang := c.Query("lang")
+	if lang == "" {
+		lang = "en"
+	}
+	lang = strings.ToLower(lang)
+	path := filepath.Join("assets", "offline-pack", "offline-pack."+lang+".json")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error: ": "offline-pack not found for language " + lang})
+		return
+	}
+
+	var jsonData interface{}
+	if err := json.Unmarshal(data, &jsonData); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": "Invalid JSON format"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"action-block: ": jsonData})
 }
