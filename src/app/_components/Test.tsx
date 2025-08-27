@@ -20,7 +20,7 @@ export default function JournalEditor() {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: false, // we add custom heading levels below
+        heading: false, 
       }),
       Bold,
       Italic,
@@ -78,7 +78,6 @@ export default function JournalEditor() {
     <div className="p-6 max-w-3xl mx-auto space-y-6 bg-white rounded-xl shadow-md">
       <h2 className="text-2xl font-bold text-[#132A4F]">My Journal</h2>
 
-      {/* Entry title */}
       <input
         type="text"
         placeholder="Entry Title"
@@ -87,7 +86,6 @@ export default function JournalEditor() {
         className="w-full border rounded px-3 py-2 text-black shadow-sm focus:ring focus:ring-indigo-300 focus:outline-none"
       />
 
-      {/* Toolbar */}
       <div className="flex flex-wrap gap-2 border-b p-2 bg-gray-50 rounded">
         {[
           { action: () => editor.chain().focus().toggleBold().run(), label: "B", active: editor.isActive("bold") },
@@ -128,12 +126,10 @@ export default function JournalEditor() {
         </button>
       </div>
 
-      {/* Editor */}
       <div className="border rounded p-3 min-h-[300px] text-black">
         <EditorContent editor={editor} />
       </div>
 
-      {/* Save Button */}
       <button
         type="button"
         onClick={saveEntry}
@@ -141,8 +137,6 @@ export default function JournalEditor() {
       >
         Save Entry
       </button>
-
-      {/* Entries List */}
       <div className="space-y-3 mt-6">
         {entries.map((e) => (
           <div key={e.id} className="border rounded p-3 bg-gray-50 shadow-sm">
