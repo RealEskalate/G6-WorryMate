@@ -14,7 +14,6 @@ type Chat struct {
 	SenderIsAI     bool
 	TimeOfCreation time.Time
 }
-
 type ToolLink struct {
 	Title string 
 	URL   string 
