@@ -30,7 +30,8 @@ func OfflinePackMiddleware(basepath string) gin.HandlerFunc {
 			c.Abort()
 			return 
 		}
-		c.JSON(http.StatusOK, gin.H{"data" : jsonData})
+		// c.JSON(http.StatusOK, gin.H{"data" : jsonData})
+		c.Set("data", jsonData)
 		c.Next()
 	}
 }
@@ -57,7 +58,8 @@ func ResourcesMiddleware(basepath string) gin.HandlerFunc {
 			c.Abort()
 			return 
 		}
-		c.JSON(http.StatusOK, gin.H{"data" : jsonData})
+		// c.JSON(http.StatusOK, gin.H{"data" : jsonData})
+		c.Set("data", jsonData)
 		c.Next()
 	}
 }

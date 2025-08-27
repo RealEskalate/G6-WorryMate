@@ -14,9 +14,9 @@ func SetupRouter(ChtCtrl *controllers.ChatController) {
 	chatRoutes := router.Group("/chat")
 	chatRoutes.Use(infrastructure.OfflinePackMiddleware("assets"), infrastructure.ResourcesMiddleware("assets")) 
 	{	
-		chatRoutes.POST("/compose")
-    chatRoutes.POST("/risk_check")
-    chatRoutes.POST("/intent_mapping")
+		chatRoutes.POST("/compose", ChtCtrl.ComposeCardController)
+		chatRoutes.POST("/risk_check", ChtCtrl.RiskCheckController)
+		chatRoutes.POST("/intent_mapping", ChtCtrl.IntentMappingController)
 	}
 
 	// Run the app
