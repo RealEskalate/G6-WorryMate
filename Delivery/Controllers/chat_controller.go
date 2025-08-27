@@ -1,9 +1,10 @@
 package controllers
 
 import (
+	"net/http"
 	domain "sema/Domain"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 type ChatController struct {
@@ -16,9 +17,22 @@ func NewChatController(uc domain.ChatUsecaseI) *ChatController {
 	}
 }
 
-func (cc *ChatController) ComposeCardController(c *fiber.Ctx) error {
-	cc.ChatUc.ComposeCardUsecase()
-	return nil
+func (cc *ChatController) ComposeCardController(c *gin.Context) {
+	var actBlk ActionBlockDTO 
+	err := c.ShouldBindJSON(&actBlk)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error" : "invalid JSON format. unable to bind!"})
+		return 
+	}
+
+
+	result, err := cc.ChatUc.ComposeCardUsecase(ChangeToDomain(actBlk));
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
+		return 
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message" : "action card generated successfully", "card" : result})
 }
 
 func (cc *ChatController) RiskCheckController(c *fiber.Ctx) error {
