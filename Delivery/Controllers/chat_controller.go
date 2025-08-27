@@ -76,21 +76,14 @@ func (cc *ChatController) ResourceController(c *gin.Context) {
 	if region == "" {
 		region = "ET"
 	}
-
 	region = strings.ToUpper(region)
-	path := filepath.Join("assets", "resources/region", region+".json")
-	data, err := os.ReadFile(path)
+	path := "assets/resources/region.json"
+	data, err := cc.ChatUc.ReadResourcesUseCase(path, region)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error: ": "resources for region " + region + " not found"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}
-
-	var jsonData interface{}
-	if err := json.Unmarshal(data, &jsonData); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error: ": "Invalid JSON format"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"resources: ": jsonData})
+	c.JSON(http.StatusOK, gin.H{"resources: ": data})
 }
 
 func (cc *ChatController) OfflinePackController(c *gin.Context) {

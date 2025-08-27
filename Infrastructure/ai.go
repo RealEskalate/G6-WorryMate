@@ -96,7 +96,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 			"disclaimer": "This is general wellbeing information, not medical or mental health advice."
 		}
 	}
-	`, actionBlock.TopicKey,  actionBlock.Language, stepsList, toolsList, actionBlock.TopicKey))
+	`, actionBlock.TopicKey, actionBlock.Language, stepsList, toolsList, actionBlock.TopicKey))
 
 	result, err := ai.Ai_client.Models.GenerateContent(
 		ctx,
@@ -198,4 +198,87 @@ func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
 	}
 
 	return risk, tags, nil
+}
+
+func (ai *AI) GenerateCrisisCard(content *domain.Crisis, lang string, tags []string) (*string, error) {
+	ctx := context.Background()
+
+	resources := ""
+	for _, s := range content.Resources {
+		contacts := fmt.Sprintf("- phone: %s, website: %s, Email: %s, availability: %s\n", s.Contacts.Phone, s.Contacts.Website, s.Contacts.Email, s.Contacts.Availability)
+		resources += fmt.Sprintf("- name: %s, type: %s, contact: %s\n", s.Name, s.Type, contacts)
+	}
+
+	plans := ""
+	for _, t := range content.SafteyPlans {
+		plans += fmt.Sprintf("- step : %d, instruction: %s\n", t.Step, t.Instruction)
+	}
+
+	userFeelings := fmt.Sprintf("Tags: %v\n", tags)
+
+	userPrompt := genai.Text(fmt.Sprintf(`
+	Generate a JSON crisis card for the region "%s".
+	- Language: %s
+	- Tags (user feelings): %s
+	- Use the tags to decide which resources and safety plan steps are most relevant.
+	- Use ONLY the provided resources and safety plan steps below.
+	- Return JSON ONLY. No explanations.
+
+	Rules:
+	- "resources" must be tailored to both the region and the tags.
+	- "safety_plan" must give practical steps based on the tags.
+	- If multiple tags apply, combine the relevant steps and resources.
+
+	Resources:
+	%s
+
+	Safety Plan:
+	%s
+
+	JSON Structure Example:
+	{
+	"region": ET
+	"resources": [
+		{
+		"type": "hotline",
+		"name": "Ethiopian Lifeline",
+		"contact": {
+			"phone": "+251-800-123-456",
+			"availability": "24/7",
+			"website": null,
+			"email": null
+		}
+		},
+		{
+		"type": "ngo",
+		"name": "Mental Health Support Ethiopia",
+		"contact": {
+			"phone": null,
+			"availability": null,
+			"website": "https://mhs-et.org",
+			"email": "info@mhs-et.org"
+		}
+		}
+	],
+	"safety_plan": [
+		{ "step": 1, "instruction": "Identify a safe place." },
+		{ "step": 2, "instruction": "List 3 trusted contacts." },
+		{ "step": 3, "instruction": "Keep emergency numbers nearby." }
+	],
+	}
+`, content.Region, lang, userFeelings, resources, plans))
+
+	result, err := ai.Ai_client.Models.GenerateContent(
+		ctx,
+		ai.model_name,
+		userPrompt,
+		ai.config,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resultMessage := result.Text()
+	return &resultMessage, nil
 }
