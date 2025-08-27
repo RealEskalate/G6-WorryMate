@@ -19,7 +19,9 @@ export default function JournalEditor() {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        heading: false, // we add custom heading levels below
+      }),
       Bold,
       Italic,
       Underline,
@@ -31,7 +33,6 @@ export default function JournalEditor() {
       Placeholder.configure({ placeholder: "Write your thoughts here..." }),
     ],
     content: "",
-    editorProps: {},
     immediatelyRender: false,
   });
 
@@ -58,127 +59,80 @@ export default function JournalEditor() {
     setEntries(all);
   };
 
-  if (!editor) return null; 
+  if (!editor) return null;
 
   return (
-    <div className="p-4 max-w-3xl mx-auto space-y-4 bg-white ronded shadow-black">
+    <div className="p-6 max-w-3xl mx-auto space-y-6 bg-white rounded-xl shadow-md">
       <h2 className="text-2xl font-bold text-[#132A4F]">My Journal</h2>
 
+      {/* Entry title */}
       <input
         type="text"
         placeholder="Entry Title"
         value={currentTitle}
         onChange={(e) => setCurrentTitle(e.target.value)}
-        className="w-full border-b-[#132A4F] rounded px-3 py-2 text-black shadow-[#132A4F] shadow-md"
+        className="w-full border rounded px-3 py-2 text-black shadow-sm focus:ring focus:ring-indigo-300 focus:outline-none"
       />
 
-     <div className="flex flex-wrap gap-2 border-b p-2 bg-gray-50">
-  <button
-    onClick={() => editor.chain().focus().toggleBold().run()}
-    className={`px-2 py-1 border rounded ${
-      editor?.isActive("bold") ? "bg-[#132A4F] text-white" : "bg-white text-[#132A4F]"
-    }`}
-  >
-    B
-  </button>
+      {/* Toolbar */}
+      <div className="flex flex-wrap gap-2 border-b p-2 bg-gray-50 rounded">
+        {[
+          { action: () => editor.chain().focus().toggleBold().run(), label: "B", active: editor.isActive("bold") },
+          { action: () => editor.chain().focus().toggleItalic().run(), label: "I", active: editor.isActive("italic") },
+          { action: () => editor.chain().focus().toggleUnderline().run(), label: "U", active: editor.isActive("underline") },
+          { action: () => editor.chain().focus().toggleStrike().run(), label: "S", active: editor.isActive("strike") },
+          { action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), label: "H1", active: editor.isActive("heading", { level: 1 }) },
+          { action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), label: "H2", active: editor.isActive("heading", { level: 2 }) },
+          { action: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), label: "H3", active: editor.isActive("heading", { level: 3 }) },
+          { action: () => editor.chain().focus().toggleBulletList().run(), label: "• List", active: editor.isActive("bulletList") },
+          { action: () => editor.chain().focus().toggleOrderedList().run(), label: "1. List", active: editor.isActive("orderedList") },
+        ].map((btn, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              btn.action();
+            }}
+            className={`px-3 py-1 border rounded transition ${
+              btn.active ? "bg-[#132A4F] text-white" : "bg-white text-[#132A4F]"
+            }`}
+          >
+            {btn.label}
+          </button>
+        ))}
 
-  <button
-    onClick={() => editor.chain().focus().toggleItalic().run()}
-    className={`px-2 py-1 border rounded ${
-      editor?.isActive("italic") ? "bg-[#132A4F] text-white" : "bg-white text-[#132A4F]"
-    }`}
-  >
-    I
-  </button>
+        {/* Clear Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            editor.chain().focus().unsetAllMarks().clearNodes().run();
+          }}
+          className="px-3 py-1 border rounded text-red-500 hover:bg-red-50"
+        >
+          Clear
+        </button>
+      </div>
 
-  <button
-    onClick={() => editor.chain().focus().toggleUnderline().run()}
-    className={`px-2 py-1 border rounded ${
-      editor?.isActive("underline") ? "bg-[#132A4F] text-white" : "bg-white text-[#132A4F]"
-    }`}
-  >
-    U
-  </button>
-
-  <button
-    onClick={() => editor.chain().focus().toggleStrike().run()}
-    className={`px-2 py-1 border rounded ${
-      editor?.isActive("strike") ? "bg-[#132A4F] text-white" : "bg-white text-[#132A4F]"
-    }`}
-  >
-    S
-  </button>
-
-  <button
-    onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-    className={`px-2 py-1 border rounded ${
-      editor?.isActive("heading", { level: 1 }) ? "bg-[#132A4F] text-white" : "bg-white text-[#132A4F]"
-    }`}
-  >
-    H1
-  </button>
-
-  <button
-    onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-    className={`px-2 py-1 border rounded ${
-      editor?.isActive("heading", { level: 2 }) ? "bg-[#132A4F] text-white" : "bg-white text-[#132A4F]"
-    }`}
-  >
-    H2
-  </button>
-
-  <button
-    onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-    className={`px-2 py-1 border rounded ${
-      editor?.isActive("heading", { level: 3 }) ? "bg-[#132A4F] text-white" : "bg-white text-[#132A4F]"
-    }`}
-  >
-    H3
-  </button>
-
-  <button
-    onClick={() => editor.chain().focus().toggleBulletList().run()}
-    className={`px-2 py-1 border rounded ${
-      editor?.isActive("bulletList") ? "bg-[#132A4F] text-white" : "bg-white text-[#132A4F]"
-    }`}
-  >
-    • List
-  </button>
-
-  <button
-    onClick={() => editor.chain().focus().toggleOrderedList().run()}
-    className={`px-2 py-1 border rounded ${
-      editor?.isActive("orderedList") ? "bg-[#132A4F] text-white" : "bg-white text-[#132A4F]"
-    }`}
-  >
-    1. List
-  </button>
-
-  <button
-    onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}
-    className="px-2 py-1 border rounded text-red-500"
-  >
-    Clear
-  </button>
-</div>
-
-
-      
-      <div className="border rounded p-2 min-h-[300px] text-black">
+      {/* Editor */}
+      <div className="border rounded p-3 min-h-[300px] text-black">
         <EditorContent editor={editor} />
       </div>
 
+      {/* Save Button */}
       <button
+        type="button"
         onClick={saveEntry}
-        className="px-4 py-2 bg-indigo-600 text-white rounded mt-2"
+        className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
       >
         Save Entry
       </button>
 
-    
-      <div className="space-y-2 mt-6">
+      {/* Entries List */}
+      <div className="space-y-3 mt-6">
         {entries.map((e) => (
-          <div key={e.id} className="border rounded p-2 bg-white">
+          <div key={e.id} className="border rounded p-3 bg-gray-50 shadow-sm">
             <h3 className="font-semibold">{e.title}</h3>
             <div dangerouslySetInnerHTML={{ __html: e.content }} />
             <small className="text-gray-400">{new Date(e.date).toLocaleString()}</small>
