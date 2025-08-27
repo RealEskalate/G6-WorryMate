@@ -16,7 +16,7 @@ import { db, JournalEntry } from "../lib/db";
 export default function JournalEditor() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [currentTitle, setCurrentTitle] = useState("");
-
+  const [editorState, setEditorState] = useState(0);
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -43,6 +43,19 @@ export default function JournalEditor() {
     };
     fetchEntries();
   }, []);
+  useEffect(() => {
+  if (!editor) return;
+
+  const rerender = () => setEditorState((prev) => prev + 1);
+  editor.on("selectionUpdate", rerender);
+  editor.on("update", rerender);
+
+  return () => {
+    editor.off("selectionUpdate", rerender);
+    editor.off("update", rerender);
+  };
+}, [editor]);
+
 
   const saveEntry = async () => {
     if (!editor) return;
@@ -87,6 +100,7 @@ export default function JournalEditor() {
           { action: () => editor.chain().focus().toggleBulletList().run(), label: "• List", active: editor.isActive("bulletList") },
           { action: () => editor.chain().focus().toggleOrderedList().run(), label: "1. List", active: editor.isActive("orderedList") },
         ].map((btn, i) => (
+         
           <button
             key={i}
             type="button"
@@ -102,7 +116,6 @@ export default function JournalEditor() {
           </button>
         ))}
 
-        {/* Clear Button */}
         <button
           type="button"
           onClick={(e) => {
