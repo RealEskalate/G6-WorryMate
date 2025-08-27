@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+
 import 'features/action_card/presentation/screens/action_card_screen.dart';
 import 'features/action_card/presentation/screens/chat_screen.dart';
 import 'features/action_card/presentation/screens/offline_toolkit_screen.dart';
+import 'home_page/home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +26,9 @@ class MyApp extends StatelessWidget {
         '/action_card': (context) => const ActionCardScreen(),
         '/': (context) => ChatScreen(),
         '/offline-tool': (context) => const OfflineToolkitScreen(),
+        '/home' :(context) => HomePage(),
       },
     );
   }
 }
+
