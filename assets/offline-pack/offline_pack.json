@@ -1,0 +1,833 @@
+[
+    {
+        "topic_key": "study_stress",
+        "block": {
+            "empathy_openers": [
+                "It sounds like your studies are feeling overwhelming right now.",
+                "It’s okay to feel stressed when exams or deadlines are close."
+            ],
+            "micro_steps": [
+                "Break your tasks into smaller chunks and focus on one at a time.",
+                "Take a 5–10 minute break after every 30–45 minutes of study."
+            ],
+            "scripts": [
+                "I need to take a short break before I can continue focusing.",
+                "Can we go over this together? I’m feeling stuck right now."
+            ],
+            "tool_links": [
+                { "title": "Pomodoro Timer", "url": "https://pomofocus.io" },
+                { "title": "Focus Music (LoFi)", "url": "https://lofi.co" }
+            ],
+            "if_worse": [
+                "If studying feels unbearable, please reach out to a trusted friend, teacher, or counselor."
+            ],
+            "disclaimer": "This is not a substitute for professional help. If your stress feels unmanageable, please seek support from a counselor or mental health professional."
+        },
+        "language": "en"
+    },
+
+    {
+        "topic_key": "study_stress",
+        "block": {
+            "empathy_openers": [
+                "ትምህርትዎ እየተጫነዎት እንደሆነ ይሰማኛል።",
+                "ፈተና ወይም የጊዜ ገደብ ሲቃረብ መጨነቅ የተለመደ ነው።"
+            ],
+            "micro_steps": [
+                "ተግባሮችዎን ወደ ትናንሽ ክፍሎች ይከፋፍሏቸው እና አንዱን ካንዱ በመቀጠል ይስሩ።",
+                "ከ30–45 ደቂቃ ትምህርት ወይም ጥናት በኋላ ከ5–10 ደቂቃ እረፍት ይውሰዱ።"
+            ],
+            "scripts": [
+                "ከመቀጠሌ በፊት አንድ አጭር እረፍት መውሰድ አለብኝ።",
+                "ይህን አሁን ለመስራት አልችልም፤ በጋራ ብንመረምረው ይሻላል።"
+            ],
+            "tool_links": [
+                {
+                    "title": "ፖሞዶሮ ታይመር",
+                    "url": "https://pomofocus.io"
+                },
+                {
+                    "title": "የጥናት ሙዚቃ (LoFi)",
+                    "url": "https://lofi.co"
+                }
+            ],
+            "if_worse": [
+                "ጉዳዩ ከአቅም በላይ ከሆነ፣ እባክዎ ከታመነ ጓደኛ፣ መምህር ወይም አማካሪ ጋር ይነጋገሩ።"
+            ],
+            "disclaimer": "ይህ የባለሙያ እርዳታን አይተካም። ጭንቀትዎ ከቁጥጥር ውጪ ከሆነ፣ ከምክር ባለሙያ ወይም ከጤና ባለሙያ እርዳታ ይፈልጉ።"
+        },
+        "language": "am"
+    },
+
+    {
+        "topic_key": "money_stress",
+        "block": {
+            "empathy_openers": [
+                "I hear you, worrying about money can feel very heavy.",
+                "It’s understandable to feel stressed when finances are tight."
+            ],
+            "micro_steps": [
+                "Write down your main expenses and sort them into needs vs. wants.",
+                "Take 10 minutes to review one small financial task instead of everything at once."
+            ],
+            "scripts": [
+                "I need to pause and review my budget before making a decision.",
+                "I can’t commit to this right now, I need to check my finances first."
+            ],
+            "tool_links": [
+                {
+                    "title": "Simple Budget Planner",
+                    "url": "https://www.moneyhelper.org.uk/en/everyday-money/budgeting/budget-planner"
+                },
+                {
+                    "title": "Expense Tracker App",
+                    "url": "https://www.mint.com"
+                }
+            ],
+            "if_worse": [
+                "If money stress feels overwhelming, please reach out to a trusted friend, financial counselor, or support service."
+            ],
+            "disclaimer": "This is not a substitute for professional financial or mental health advice. If stress about money feels unmanageable, please seek help from a counselor or financial advisor."
+        },
+        "language": "en"
+    },
+
+    {
+        "topic_key": "money_stress",
+        "block": {
+            "empathy_openers": [
+                "እረዳዎታለሁ፣ ስለ ገንዘብ መጨነቅ እጅግ ከባድ ሊሆን ይችላል።",
+                "ገንዘብ ሳይኖረን ሲቀር መጨነቅ የተለመደ ነው።"
+            ],
+            "micro_steps": [
+                "ዋና ወጪዎችዎን ይጻፉና አስፈላጊና አላስፈላጊ በሚል ይከፋፍሉ።",
+                "ሁሉንም በአንድ ጊዜ ከመመርመር ይልቅ፣ ለአንድ ትንሽ የገንዘብ ተግባር ብቻ 10 ደቂቃ ያህል ትኩረት ይስጡ።"
+            ],
+            "scripts": [
+                "ውሳኔ ከማድረጌ በፊት በጀቴን ማየት ስላለብኝ መዘግየት አለብኝ።",
+                "አሁን ለመሳተፍ አልችልም፣ በጀቴን መፈተሽ ያስፈልገኛል።"
+            ],
+            "tool_links": [
+                {
+                    "title": "ቀላል በጀት አዘጋጅ",
+                    "url": "https://www.moneyhelper.org.uk/en/everyday-money/budgeting/budget-planner"
+                },
+                {
+                    "title": "የወጪ መቆጣጠሪያ መተግበሪያ",
+                    "url": "https://www.mint.com"
+                }
+            ],
+            "if_worse": [
+                "የገንዘብ ጭንቀት ከቁጥጥር ውጭ ከሆነ፣ እባክዎ ከታመነ ጓደኛ፣ ከገንዘብ አማካሪ ወይም ከድጋፍ አገልግሎት ጋር ይነጋገሩ።"
+            ],
+            "disclaimer": "ይህ የባለሙያ የገንዘብ ወይም የአእምሮ ጤና ምክርን አይተካም። ስለ ገንዘብዎ ያለው ጭንቀት ከቁጥጥር ውጭ ከሆነ፣ ከአማካሪ ወይም ከጤና ባለሙያ እርዳታ ይፈልጉ።"
+        },
+        "language": "am"
+    },
+
+    {
+        "topic_key": "family_conflicts",
+        "block": {
+            "empathy_openers": [
+                "It sounds like things are really tense at home.",
+                "I can understand how tough it must feel when family disagreements come up."
+            ],
+            "micro_steps": [
+                "Take a few deep breaths before responding to avoid reacting on impulse.",
+                "Write down what you want to say before having a conversation.",
+                "Step outside or into another room for a short break if things feel heated."
+            ],
+            "scripts": [
+                "I hear what you’re saying, and I’d like to explain my side calmly.",
+                "Can we take a break and talk about this later when we’re both calmer?"
+            ],
+            "tool_links": [
+                {
+                    "title": "Conflict Resolution Tips",
+                    "url": "https://www.verywellmind.com/how-to-resolve-family-conflict-5207907"
+                },
+                {
+                    "title": "Healthy Communication Guide",
+                    "url": "https://www.psychologytoday.com/us/blog/pieces-mind/201907/7-steps-better-communication-your-family"
+                }
+            ],
+            "if_worse": [
+                "If arguments escalate or feel unsafe, try to remove yourself from the situation.",
+                "If needed, reach out to a trusted friend, counselor, or mediator for support."
+            ],
+            "disclaimer": "This is not a substitute for professional help. If conflicts at home put you at risk of harm, please reach out to a trusted professional or emergency services."
+        },
+        "language": "en"
+    },
+
+    {
+        "topic_key": "family_conflicts",
+        "block": {
+            "empathy_openers": [
+                "ቤት ውስጥ ሁኔታዎች በጣም የተጨነቁ መሆናቸው ይታያል።",
+                "ቤተሰብ አለመግባባቶች ሲከሰቱ ምን ያህል ከባድ እንደሚሆኑ እገምታለው።"
+            ],
+            "micro_steps": [
+                "ምላሽ/መፍትሀ ከመስጠትዎ በፊት ለ ጥቂት ደቂቃዎች ይተንፍሱ ፤ በችኮላ የሚመጡ ችግሮችን ለመከላከል።",
+                "ውይይቱን ከመጀመርዎ በፊት ማለት የሚፈልጉትን ነገር በወረቀት ላይ ይጻፉ።",
+                "ወይይቱ ወደ ጥል እያመራ ከመሰልዎት ከቤቱ ለጥቂት ጊዜ ይውጡ።"
+            ],
+            "scripts": [
+                "የምትለውን አስተውያለው ፤ እኔም የኔን አካል በሰላም ልገልጽ እፈልጋለሁ።",
+                "እባክህ ጊዜ እንውሰድ እና በኋላ ስንረጋጋ እንነጋገር።"
+            ],
+            "tool_links": [
+                {
+                    "title": "የግጭት መፍትሄ ምክሮች",
+                    "url": "https://www.verywellmind.com/how-to-resolve-family-conflict-5207907"
+                },
+                {
+                    "title": "ጤናማ መግባቢያ መመሪያ",
+                    "url": "https://www.psychologytoday.com/us/blog/pieces-mind/201907/7-steps-better-communication-your-family"
+                }
+            ],
+            "if_worse": [
+                "ክርክሮች ከተባባሱ ወይም አደገኛ ከሆኑ፣ ከሁኔታው ራስዎን ይለዩ።",
+                "ካስፈለገ ከታማኝ ጓደኛ ፤ ከምክር ባለሙያ ወይም ከመካከለኛ እገዛ ይፈልጉ።"
+            ],
+            "disclaimer": "ይህ የባለሙያ እገዛ አልተካተተበትም። ቤተሰብ ግጭት አደገኛ ከሆነ፣ ከታማኝ ባለሙያ ወይም ከአስቸኳይ አገልግሎት እገዛ ይፈልጉ።"
+        },
+        "language": "am"
+    },
+
+    {
+        "topic_key": "workload",
+        "block": {
+            "empathy_openers": [
+                "It sounds like you’ve got a lot on your plate right now.",
+                "Handling so many tasks at once can feel really overwhelming."
+            ],
+            "micro_steps": [
+                "Write down your tasks and pick the top 3 priorities for today.",
+                "Take a 5-minute break away from your desk to reset your focus.",
+                "Set a timer for 25 minutes and work on one task at a time (Pomodoro method)."
+            ],
+            "scripts": [
+                "I need to prioritize my tasks right now, can we revisit this later?",
+                "I’m feeling stretched thin — can we delegate or reschedule some of this?"
+            ],
+            "tool_links": [
+                {
+                    "title": "Time Management Tips",
+                    "url": "https://todoist.com/productivity-methods"
+                },
+                { "title": "Pomodoro Timer", "url": "https://pomofocus.io/" }
+            ],
+            "if_worse": [
+                "If you feel completely overwhelmed, pause and step away briefly before continuing.",
+                "If workload issues keep piling up, consider discussing boundaries with a manager or colleague."
+            ],
+            "disclaimer": "This is not a substitute for professional advice. If workload stress is affecting your health, please reach out to a trusted professional."
+        },
+        "language": "en"
+    },
+
+    {
+        "topic_key": "workload",
+        "block": {
+            "empathy_openers": [
+                "አሁን ብዙ ስራ እንዳለብህ ይሰማኛል።",
+                "ብዙ ስራዎችን በአንዴ ማስተናገድ በጣም ከባድ ስሜት ሊፈጥር ይችላል።"
+            ],
+            "micro_steps": [
+                "ሁሉንም ስራዎችህን በወረቀት ላይ ጻፋቸውና ለዛሬ ቅድሚያ የሚሰጧቸውን 3 ስራዎች ምረጥ።",
+                "ትኩረትህን ለማደስ ከጠረጴዛህ ርቀህ የ5 ደቂቃ እረፍት ውሰድ።",
+                "ለ25 ደቂቃ የሚሆን ጊዜ ያዝ እና በአንድ ጊዜ በአንድ ስራ ላይ ብቻ አተኩር (የፖሞዶሮ ዘዴ)።"
+            ],
+            "scripts": [
+                "አሁን ያሉኝን ስራዎች ቅድሚያ መስጠት ስላለብኝ፣ ወደዚህ ጉዳይ ቆይተን ብንመለስ ይቻላል?",
+                "በጣም ተወጥሬአለሁ - ከዚህ ውስጥ የተወሰነውን ሌላ ሰው እንዲሰራው መስጠት ወይም ቀጠሮውን መቀየር እንችላለን?"
+            ],
+            "tool_links": [
+                {
+                    "title": "የጊዜ አጠቃቀም ዘዴዎች",
+                    "url": "https://todoist.com/productivity-methods"
+                },
+                { "title": "የፖሞዶሮ ታይመር", "url": "https://pomofocus.io/" }
+            ],
+            "if_worse": [
+                "ሙሉ በሙሉ እንደተወጠርክ ከተሰማህ፣ መስራትህን አቁም እና ከመቀጠልህ በፊት ለአፍታ ራቅ በል።",
+                "የሥራ ጫና ችግሮች እየከመሩ ከሄዱ፣ ከስራ አስኪያጅህ ወይም ከሥራ ባልደረባህ ጋር ስለ ድንበሮችህ መነጋገርን አስብበት።"
+            ],
+            "disclaimer": "ይህ ለባለሙያ ምክር ምትክ አይደለም። የሥራ ጫና ጤናዎን እየጎዳ ከሆነ፣ እባክዎ ከሚታመን ባለሙያ ጋር ይነጋገሩ።"
+        },
+        "language": "am"
+    },
+
+    {
+        "topic_key": "sleep",
+        "block": {
+            "empathy_openers": [
+                "I know how frustrating it is when your mind won't switch off at night.",
+                "Sleep struggles are incredibly common—you’re not alone in this."
+            ],
+            "micro_steps": [
+                "Set a 'digital sunset' 60 minutes before bed (no screens).",
+                "Ensure your bedroom is cool (around 65°F or 18°C), dark, and quiet.",
+                "Do a 10-minute gentle stretch or read a physical book before getting into bed.",
+                "Get up and go to bed at the same time every day, even on weekends."
+            ],
+            "scripts": [
+                "My body needs rest, and I will focus on relaxing rather than forcing sleep.",
+                "I will get up if I am awake for more than 20 minutes, and do a quiet, non-stimulating activity (like reading a paper book) until I feel sleepy again."
+            ],
+            "tool_links": [
+                {
+                    "title": "Sleep Story App (Calm or Headspace)",
+                    "url": "https://calm.com/sleep-stories"
+                },
+                {
+                    "title": "Guided Meditation for Sleep (Insight Timer)",
+                    "url": "https://insighttimer.com/sleep-meditation"
+                }
+            ],
+            "if_worse": [
+                "If insomnia is chronic (happening most nights for over a month) and significantly impacting your daily life, please consult your doctor for a proper diagnosis and treatment plan.",
+                "Avoid using alcohol or medication to self-medicate sleep issues."
+            ],
+            "disclaimer": "This information is intended as general guidance on sleep hygiene and does not constitute professional medical advice. Always consult a healthcare provider for persistent sleep issues."
+        },
+        "language": "en"
+    },
+
+    {
+        "topic_key": "sleep",
+        "block": {
+            "empathy_openers": [
+                "ማታ ላይ አእምሮዎ ለመረጋጋት ሲቸገር ምን ያህል ተስፋ አስቆራጭ እንደሆነ አውቃለሁ።",
+                "በእንቅልፍ መቸገር በጣም የተለመደ ነው— በዚህ ችግር ውስጥ ያለፉ ብዙዎች አሉና እርስዎ ብቻዎን አይደሉም።"
+            ],
+            "micro_steps": [
+                "ከመተኛትዎ 60 ደቂቃዎች በፊት 'ዲጂታል ፀሐይ መጥለቅ' የሚል ህግ ያውጡ (ማለትም ስክሪን አይጠቀሙ)።",
+                "መኝታ ቤትዎ ቀዝቃዛ (በአካባቢው 18°C)፣ ጨለማ እና ጸጥ ያለ መሆኑን ያረጋግጡ።",
+                "አልጋ ላይ ከመግባትዎ በፊት ለ10 ደቂቃ ያህል ረጋ ያለ የአካል እንቅስቃሴ ያድርጉ ወይም መጽሐፍ ያንብቡ።",
+                "በሳምንቱ ቀናትም ሆነ በሳምንቱ መጨረሻ ሁልጊዜ በተመሳሳይ ሰዓት ለመተኛት እና ለመነሳት ይሞክሩ።"
+            ],
+            "scripts": [
+                "ሰውነቴ እረፍት ያስፈልገዋል፣ እና እንቅልፍ ለማስገደድ ከመሞከር ይልቅ አእምሮዬን ለማረጋጋት ትኩረት አደርጋለሁ።",
+                "ከ20 ደቂቃ በላይ ነቅቼ ከቆየሁ፣ ተነስቼ ሌላ እንቅስቃሴ (እንደ መጽሐፍ ማንበብ) አደርጋለሁ።"
+            ],
+            "tool_links": [
+                {
+                    "title": "የእንቅልፍ ታሪክ መተግበሪያ (Sleep Story App)",
+                    "url": "https://calm.com/sleep-stories"
+                },
+                {
+                    "title": "ለእንቅልፍ የሚሆን መሪ ያለው ማሰላሰል (Guided Meditation for Sleep)",
+                    "url": "https://insighttimer.com/sleep-meditation"
+                }
+            ],
+            "if_worse": [
+                "እንቅልፍ ማጣትዎ ለረጅም ጊዜ የሚቆይ ከሆነ (ለአንድ ወር ያህል አብዛኛውን ጊዜ የሚከሰት ከሆነ) እና የዕለት ተዕለት ኑሮዎን በእጅጉ የሚረብሽ ከሆነ፣ ትክክለኛ ምርመራ እና ህክምና ለማግኘት እባክዎን ዶክተርዎን ያማክሩ።",
+                "የእንቅልፍ ችግሮችን በራስዎ ለመፍታት አልኮል ወይም መድሃኒት ከመጠቀም ይቆጠቡ።"
+            ],
+            "disclaimer": "ይህ መረጃ ስለ ጥሩ የእንቅልፍ ልምዶች አጠቃላይ መመሪያን ለመስጠት የታሰበ ነው፣ እና የባለሙያ የሕክምና ምክርን አይተካም። ለቋሚ የእንቅልፍ ችግሮች ሁልጊዜ የጤና እንክብካቤ አቅራቢን ማማከር ያስፈልጋል።"
+        },
+        "language": "am"
+    },
+
+    {
+        "topic_key": "motivation",
+        "block": {
+            "empathy_openers": [
+                "It’s completely normal to feel a **dip in motivation** sometimes.",
+                "Losing steam happens to everyone; it doesn't mean you're failing."
+            ],
+            "micro_steps": [
+                "Break a big task into **three tiny, immediate steps**.",
+                "Practice the **'5-minute rule'**: Start the task for just 5 minutes. If you still don't feel like it, stop.",
+                "Change your **environment** (move to a new room or a coffee shop)."
+            ],
+            "scripts": [
+                "I'm going to focus on **this one small thing**, and then I can take a break.",
+                "I don't have to be perfect, I just have to **start**."
+            ],
+            "tool_links": [
+                {
+                    "title": "Accountability Partner Finder",
+                    "url": "https://focusmate.com"
+                },
+                {
+                    "title": "Pomodoro Technique Timer",
+                    "url": "https://tomato-timer.com"
+                }
+            ],
+            "if_worse": [
+                "If lack of motivation is **persistent** and includes feelings of hopelessness, consider speaking with a mental health professional.",
+                "Reach out to a close friend or mentor to talk about your goals and current struggles."
+            ],
+            "disclaimer": "This content is for informational purposes only and is **not a substitute for professional medical or mental health advice**."
+        },
+        "language": "en"
+    },
+
+    {
+        "topic_key": "motivation",
+        "block": {
+            "empathy_openers": [
+                "አንዳንድ ጊዜ በተነሳሽነት ላይ መውደቅ ሙሉ በሙሉ የተለመደ ነው።",
+                "ብርታት ማጣት በሁሉም ሰው ላይ ይከሰታል፤ ይህ ማለት እርስዎ እየወደቁ ነው ማለት አይደለም።"
+            ],
+            "micro_steps": [
+                "ትልቅ ስራን ወደ ሶስት ጥቃቅን እና ፈጣን እርምጃዎች ይከፋፍሉት።",
+                "'የ5-ደቂቃ ደንብ' ይተግብሩ፡ ስራውን ለ5 ደቂቃ ብቻ ይጀምሩ። አሁንም ካልፈለጉ ያቁሙ።",
+                "ያሉበትን አካባቢ ይቀይሩ (ወደ አዲስ ክፍል ወይም ካፌ ይሂዱ)።"
+            ],
+            "scripts": [
+                "በዚህ በአንድ ትንሽ ነገር ላይ ትኩረት አደርጋለሁ፣ ከዚያም ዕረፍት መውሰድ እችላለሁ።",
+                "ፍጹም መሆን የለብኝም፤ ዋናው ነገር መጀመር ነው።"
+            ],
+            "tool_links": [
+                {
+                    "title": "ተጠያቂነት አጋር ማግኛ (Accountability Partner Finder)",
+                    "url": "https://focusmate.com"
+                },
+                {
+                    "title": "ፖሞዶሮ ቴክኒክ ሰዓት ቆጣሪ (Pomodoro Technique Timer)",
+                    "url": "https://tomato-timer.com"
+                }
+            ],
+            "if_worse": [
+                "የተነሳሽነት እጦት ዘላቂ ከሆነ እና የተስፋ መቁረጥ ስሜትን የሚያካትት ከሆነ፣ የአእምሮ ጤና ባለሙያ ማማከርን ያስቡበት።",
+                "ስለ ግቦችዎ እና ስላሉዎት የአሁን ትግሎች ለመነጋገር የቅርብ ጓደኛን ወይም መካሪን ያነጋግሩ።"
+            ],
+            "disclaimer": "ይህ ይዘት ለመረጃ ዓላማ ብቻ የቀረበ ነው፣ እና ለሙያዊ የጤና ወይም የአእምሮ ጤና ምክር ምትክ አይደለም።"
+        },
+        "language": "am"
+    },
+
+    {
+        "topic_key": "loneliness",
+        "block": {
+            "empathy_openers": [
+                "I hear you. Feeling lonely can be a really tough and isolating experience.",
+                "It's completely normal to feel lonely, and it's brave to acknowledge that feeling."
+            ],
+            "micro_steps": [
+                "Reach out to one person with a simple text or call. It doesn't have to be a big conversation—just a quick 'Thinking of you!' can make a difference.",
+                "Take a short walk or sit at a local cafe to be around other people without pressure to interact.",
+                "Spend 15 minutes on a hobby you enjoy, like listening to music, sketching, or gardening. Engaging in something you love can help you feel more connected to yourself."
+            ],
+            "scripts": [
+                "Hey, I've been feeling a bit down lately. Would you be up for a quick chat?",
+                "Just wanted to see how you're doing. It's been a minute since we talked."
+            ],
+            "tool_links": [
+                {
+                    "title": "Find Local Groups",
+                    "url": "https://www.meetup.com"
+                },
+                {
+                    "title": "Volunteer Opportunities",
+                    "url": "https://www.volunteermatch.org"
+                }
+            ],
+            "if_worse": [
+                "If feelings of loneliness or isolation become overwhelming, please consider reaching out to a mental health professional or a support line. You are not alone, and help is available."
+            ],
+            "disclaimer": "This is not a substitute for professional mental health advice. If you're struggling, please seek help from a counselor or therapist."
+        },
+        "language": "en"
+    },
+
+    {
+        "topic_key": "loneliness_amharic",
+        "block": {
+            "empathy_openers": [
+                "የብቸኝነት ስሜት ከባድ እና አድካሚ ሊሆን እንደሚችል እረዳለሁ።",
+                "ብቸኝነት መሰማት የተለመደ ነገር ነው፣ እና ይህን ስሜት መቀበል ድፍረት ነው።"
+            ],
+            "micro_steps": [
+                "ለአንድ ሰው አጭር መልእክት ይላኩ ወይም ይደውሉ። ትልቅ ወሬ ማውራት ባይኖርም፣ 'አስታውሼሃለሁ!' ማለት ብቻ ልዩነት ሊፈጥር ይችላል።",
+                "በአቅራቢያዎ ወደሚገኝ ካፌ ወይም መናፈሻ በመሄድ ሌሎች ሰዎች ባሉበት ቦታ ትንሽ ጊዜ ያሳልፉ። ከሰዎች ጋር ወሬ ማውራት ባያስፈልግም፣ በዙሪያቸው መሆን ብቻ ጥሩ ስሜት ሊሰጥ ይችላል።",
+                "ለመሳል፣ ሙዚቃ ለማዳመጥ፣ ወይም ሌላ በሚወዱት ነገር ላይ 15 ደቂቃ ያሳልፉ። በሚወዱት ነገር ላይ ማሳለፍ ከራስዎ ጋር የተያያዘ እንዲሰማዎት ያደርግዎታል።"
+            ],
+            "scripts": [
+                "ሰላም፣ በቅርቡ ትንሽ ድብርት ስሜት እየተሰማኝ ነው። አጭር ወሬ እናውራ?",
+                "እንዴት ነህ/ነሽ? ብዙ ጊዜ ካለፈ በኋላ ማውራት ፈለግሁ።"
+            ],
+            "tool_links": [
+                {
+                    "title": "አካባቢያዊ ቡድኖች ይፈልጉ",
+                    "url": "https://www.meetup.com"
+                },
+                {
+                    "title": "የበጎ ፈቃደኝነት ዕድሎች",
+                    "url": "https://www.volunteermatch.org"
+                }
+            ],
+            "if_worse": [
+                "የብቸኝነት ስሜት ወይም መገለል በጣም ከባድ ከሆነ፣ እባክዎ የአእምሮ ጤና ባለሙያ ወይም የድጋፍ አገልግሎት ያማክሩ። ብቻዎን አይደሉም፣ እርዳታም ይገኛል።"
+            ],
+            "disclaimer": "ይህ ለሙያዊ የአእምሮ ጤና ምክር ምትክ አይደለም። እየተቸገሩ ከሆነ እባክዎ ከሳይኮሎጂስት ወይም ቴራፒስት እርዳታ ይፈልጉ።"
+        },
+        "language": "am"
+    },
+
+    {
+        "topic_key": "procrastination",
+        "block": {
+            "empathy_openers": [
+                "It's easy to feel stuck when you're facing a task you've been putting off.",
+                "That feeling of putting things off can be really draining."
+            ],
+            "micro_steps": [
+                "Break down the big task into the very first, tiny step you can take. For example, instead of 'write a report,' the step is 'open a blank document.'",
+                "Use the 'two-minute rule': If a task takes less than two minutes, do it now.",
+                "Set a timer for 15-20 minutes and focus on the task, then allow yourself a short break. This is known as the Pomodoro Technique."
+            ],
+            "scripts": [
+                "I’ll just start with this one small thing, and then I’ll see how I feel.",
+                "I'm going to set a timer for 15 minutes and just get started on this."
+            ],
+            "tool_links": [
+                {
+                    "title": "Trello",
+                    "url": "https://trello.com"
+                },
+                {
+                    "title": "Forest App",
+                    "url": "https://www.forestapp.cc"
+                },
+                {
+                    "title": "Pomodoro Timer",
+                    "url": "https://tomato-timer.com"
+                }
+            ],
+            "if_worse": [
+                "If you find that procrastination is impacting your life and causing significant distress, consider speaking with a therapist or counselor to explore underlying issues like anxiety or perfectionism."
+            ],
+            "disclaimer": "This is for informational purposes only and is not a substitute for professional advice. If procrastination is severely affecting your well-being, please seek help from a qualified professional."
+        },
+        "language": "en"
+    },
+
+    {
+        "topic_key": "procrastination_amharic",
+        "block": {
+            "empathy_openers": [
+                "አንድን ሥራ ለመጀመር ሲከብድዎና ሲያዘገዩት መቸገርዎ የተለመደ ነው።",
+                "ነገሮችን ለሌላ ጊዜ ማስተላለፍ አድካሚ ስሜት ሊፈጥር እንደሚችል ይገባኛል።"
+            ],
+            "micro_steps": [
+                "ትልቁን ሥራ ወደ መጀመሪያውና ትንሹ እርምጃ ይከፋፍሉት። ለምሳሌ፣ 'ሪፖርት ጻፍ' ከማለት ይልቅ፣ መጀመርያው እርምጃ 'ባዶ ዶክመንት ክፈት' ነው።",
+                "የ'ሁለት ደቂቃ ህግ' የሚባለውን ይጠቀሙ፡- አንድ ሥራ ከሁለት ደቂቃ ያነሰ ጊዜ የሚወስድ ከሆነ፣ አሁኑኑ ይጨርሱት።",
+                "ለ15-20 ደቂቃዎች ሰዓት ቆጣሪ (timer) በማዘጋጀት በስራው ላይ ብቻ ያተኩሩ፣ ከዚያም አጭር እረፍት ይውሰዱ። ይህ ፖሞዶሮ ቴክኒክ በመባል ይታወቃል።"
+            ],
+            "scripts": [
+                "መጀመሪያ ይህችን ትንሽ ነገር ብቻ ልጀምርና ከዚያ እንዴት እንደምሆን አያለሁ።",
+                "ለ15 ደቂቃ ሰዓት ቆጣሪ አዘጋጅቼ መጀመር አለብኝ።"
+            ],
+            "tool_links": [
+                {
+                    "title": "ትሬሎ (Trello)",
+                    "url": "https://trello.com"
+                },
+                {
+                    "title": "ፎረስት አፕ (Forest App)",
+                    "url": "https://www.forestapp.cc"
+                },
+                {
+                    "title": "ፖሞዶሮ ሰዓት ቆጣሪ (Pomodoro Timer)",
+                    "url": "https://tomato-timer.com"
+                }
+            ],
+            "if_worse": [
+                "ስራን ማዘግየት በህይወትዎ ላይ ትልቅ ተጽእኖ እየፈጠረ እና ጭንቀት እየፈጠረብዎ ከሆነ፣ እንደ ጭንቀት ወይም ፍጽምናን መፈለግን የመሳሰሉ ስሜቶችን ለመረዳት ከቴራፒስት ወይም የምክር ባለሙያ ጋር መነጋገር ያስቡበት።"
+            ],
+            "disclaimer": "ይህ ለመረጃ ብቻ የቀረበ ሲሆን ለሙያዊ ምክር ምትክ አይደለም። ስራን ማዘግየት ደህንነትዎን እየጎዳዎት ከሆነ፣ እባክዎን ብቃት ካለው ባለሙያ እርዳታ ይጠይቁ።"
+        },
+        "language": "am"
+    },
+
+    {
+        "topic_key": "time_management",
+        "block": {
+            "empathy_openers": [
+                "It can feel frustrating when time slips away so quickly.",
+                "Managing time is tough — you’re not alone in this."
+            ],
+            "micro_steps": [
+                "Make a to-do list and highlight your top 3 tasks for the day.",
+                "Use a timer to work in focused blocks with short breaks (Pomodoro).",
+                "Block specific time on your calendar for important tasks."
+            ],
+            "scripts": [
+                "I need to schedule this so I can give it the focus it deserves.",
+                "Can we set a specific time to discuss this instead of right now?"
+            ],
+            "tool_links": [
+                {
+                    "title": "Time Blocking Guide",
+                    "url": "https://todoist.com/productivity-methods/time-blocking"
+                },
+                {
+                    "title": "Focus Booster (Pomodoro App)",
+                    "url": "https://www.focusboosterapp.com/"
+                }
+            ],
+            "if_worse": [
+                "If you feel like you’re falling behind, pause and reset your priorities.",
+                "If time pressure is constant, consider discussing expectations with your manager or teacher."
+            ],
+            "disclaimer": "This is not a substitute for professional advice. If time management challenges are severely impacting your life, please reach out to a trusted professional for support."
+        },
+        "language": "en"
+    },
+
+    {
+        "topic_key": "time_management",
+        "block": {
+            "empathy_openers": [
+                "ጊዜ በጣም በፍጥነት ሲያልፍ መበሳጨት የተለመደ ነው።",
+                "ጊዜን ማስተዳደር ከባድ ነው— በዚህ ችግር ውስጥ ብቻህን አይደለህም።"
+            ],
+            "micro_steps": [
+                "የሚሰሩ ነገሮች ዝርዝር አዘጋጅ እና ለቀንህ ቅድሚያ የምትሰጣቸውን 3 ዋና ዋና ስራዎች ለይተህ አስምርባቸው።",
+                "በአጭር እረፍት እየተቆራረጠ በትኩረት ለመስራት የሰዓት ቆጣሪ ተጠቀም (ፖሞዶሮ ዘዴ)።",
+                "ለአስፈላጊ ስራዎችህ በጊዜ መቁጠሪያህ ላይ የተወሰነ ጊዜ ምረጥ።"
+            ],
+            "scripts": [
+                "ይህ ጉዳይ ትኩረት ሊሰጠው የሚገባ ስለሆነ፣ እኔ የጊዜ ሰሌዳ ማውጣት አለብኝ።",
+                "አሁን ከምንወያይበት ይልቅ የተወሰነ ጊዜ ወስደን ብንወያይበት ይቻላል?"
+            ],
+            "tool_links": [
+                {
+                    "title": "የጊዜ መገደብ መመሪያ",
+                    "url": "https://todoist.com/productivity-methods/time-blocking"
+                },
+                {
+                    "title": "የፎከስ ቡስተር (ፖሞዶሮ አፕ)",
+                    "url": "https://www.focusboosterapp.com/"
+                }
+            ],
+            "if_worse": [
+                "ከጊዜ በኋላ እንደምትዘገይ ከተሰማህ፣ አቁም እና ቅድሚያ የምትሰጣቸውን ነገሮች እንደገና አስተካክል።",
+                "የጊዜ ግፊት የማያቋርጥ ከሆነ፣ ከስራ አስኪያጅህ ወይም ከአስተማሪህ ጋር ያለውን የሚጠበቅ ነገር ለመወያየት ሞክር።"
+            ],
+            "disclaimer": "ይህ ለባለሙያ ምክር ምትክ አይደለም። የጊዜ አጠቃቀም ችግሮች በህይወትህ ላይ ከፍተኛ ተጽእኖ እያደረጉ ከሆነ፣ እባክህ ከታመነ ባለሙያ ድጋፍ ፈልግ።"
+        },
+        "language": "am"
+    },
+
+    {
+        "topic_key": "exam_panic",
+        "block": {
+            "empathy_openers": [
+                "It’s completely normal to feel nervous before an exam.",
+                "Exams can feel overwhelming, but you’re doing your best."
+            ],
+            "micro_steps": [
+                "Take 5 deep breaths to calm your mind before starting.",
+                "Write down a quick plan of how you’ll use your exam time.",
+                "Remind yourself of one thing you’ve prepared well."
+            ],
+            "scripts": [
+                "I need a moment to breathe and refocus before I continue.",
+                "I’ll tackle one question at a time instead of worrying about the whole exam."
+            ],
+            "tool_links": [
+                {
+                    "title": "Exam Anxiety Tips",
+                    "url": "https://www.healthline.com/health/exam-anxiety"
+                },
+                {
+                    "title": "Calm Breathing Tool",
+                    "url": "https://calm.com/breathing"
+                }
+            ],
+            "if_worse": [
+                "If panic feels overwhelming, pause and close your eyes for a short reset.",
+                "If exam stress keeps interfering with daily life, consider reaching out to a counselor."
+            ],
+            "disclaimer": "This is not a substitute for professional advice. If exam anxiety is severely affecting you, please seek help from a trusted professional."
+        },
+        "language": "en"
+    },
+
+    {
+        "topic_key": "exam_panic",
+        "block": {
+            "empathy_openers": [
+                "ከፈተና በፊት መጨናነቅ ፍጹም የተለመደ ነገር ነው።",
+                "ፈተናዎች ከባድ ስሜት ሊፈጥሩ ይችላሉ፣ ግን አንተ/አንቺ እየቻልክ/ሽ ነው።"
+            ],
+            "micro_steps": [
+                "ከመጀመርህ በፊት አዕምሮህን ለማረጋጋት 5 ጥልቅ ትንፋሽ ውሰድ።",
+                "የፈተና ጊዜህን እንዴት እንደምትጠቀም ፈጣን እቅድ ጻፍ።",
+                "በደንብ የተዘጋጀህበትን አንድ ነገር ለራሰህ/ሽ አስታውስ/ሺ።"
+            ],
+            "scripts": [
+                "ከመቀጠሌ በፊት መረጋጋት እና ማሰብ አለብኝ።",
+                "ስለ ሙሉው ፈተና ከመጨነቅ ይልቅ አንድ ጥያቄ በአንድ ጊዜ እሰራለሁ።"
+            ],
+            "tool_links": [
+                {
+                    "title": "የፈተና ጭንቀት መቋቋሚያ መንገዶች",
+                    "url": "https://www.healthline.com/health/exam-anxiety"
+                },
+                {
+                    "title": "አረጋጊ የአተነፋፈስ ዘዴ",
+                    "url": "https://calm.com/breathing"
+                }
+            ],
+            "if_worse": [
+                "ፍርሃት በጣም ከባድ ከሆነ፣ ለአፍታ ቆም በልና አይኖችህን ጨፍነህ እራስህን/ሽን አረጋጋ/ጊ።",
+                "የፈተና ጭንቀት በዕለት ተዕለት ህይወትህ ላይ ተጽዕኖ ማሳደሩን ከቀጠለ፣ አማካሪ ማነጋገሩን አስብበት።"
+            ],
+            "disclaimer": "ይህ ለባለሙያ ምክር ምትክ አይደለም። የፈተና ጭንቀት በከፍተኛ ሁኔታ እየጎዳህ ከሆነ፣ እባክህ ከታመነ ባለሙያ እርዳታ ፈልግ።"
+        },
+        "language": "am"
+    },
+
+    {
+        "topic_key": "new_city_anxiety",
+        "block": {
+            "empathy_openers": [
+                "It is completely normal to feel a mix of excitement and deep anxiety when facing so much change.",
+                "The stress of the unknown is real, and it is okay to feel out of place right now."
+            ],
+            "micro_steps": [
+                "Unpack one 'comfort box' of familiar items to place where you can see them immediately.",
+                "Identify and walk or drive the route to one essential location (like the nearest grocery store or pharmacy).",
+                "Dedicate 10 minutes to writing down just one thing you are curious about exploring in your new area.",
+                "Plan one small, simple routine (e.g., getting coffee at the same time every morning) to create structure."
+            ],
+            "scripts": [
+                "I feel overwhelmed right now, but I will focus only on this one small step.",
+                "This is a temporary feeling, and it is part of the adjustment process.",
+                "I am safe, and it is okay for me to give myself grace while I adapt."
+            ],
+            "tool_links": [
+                {
+                    "title": "Local Meetup Groups (e.g., Meetup.com)",
+                    "url": "https://www.meetup.com"
+                },
+                {
+                    "title": "Community Building Apps (e.g., Nextdoor)",
+                    "url": "https://nextdoor.com"
+                }
+            ],
+            "if_worse": [
+                "If anxiety is leading to panic attacks, or persistent feelings of isolation or hopelessness, please seek support from a licensed therapist.",
+                "Prioritize connecting with a loved one from home to share your true feelings, not just the highlights."
+            ],
+            "disclaimer": "This information is intended as general coping guidance for transition stress and does not replace the advice of a qualified mental health professional."
+        },
+        "language": "en"
+    },
+
+    {
+        "topic_key": "new_city_anxiety",
+        "block": {
+            "empathy_openers": [
+                "እጅግ በጣም ብዙ ለውጦችን ሲያጋጥምዎ የደስታ እና የጥልቅ ጭንቀት ስሜት መኖር ሙሉ በሙሉ የተለመደ ነው።",
+                "ያልታወቀው ነገር ጭንቀት እውነት ነው፣ እና አሁን ከቦታው የወጡ ሊመስልዎ መቻሉ ምንም ችግር የለውም።"
+            ],
+            "micro_steps": [
+                "ወዲያውኑ በሚታይበት ቦታ ለማስቀመጥ የአንድ 'መጽናኛ ሣጥን' የታወቁ ዕቃዎችን ይክፈቱ።",
+                "አንድ አስፈላጊ ቦታ (እንደ ቅርብ ሱፐርማርኬት ወይም ፋርማሲ) ያለውን መንገድ በእግር ወይም በመኪና ይለዩና ይሂዱ።",
+                "አዲሱ አካባቢዎ ላይ ማወቅ ስለሚፈልጉት አንድ ነገር ብቻ ለመጻፍ 10 ደቂቃ ይመድቡ።",
+                "አወቃቀር ለመፍጠር አንድ ትንሽ እና ቀላል ልማድ (ለምሳሌ፡ በየማለዳው በተመሳሳይ ሰዓት ቡና መጠጣት) ያቅዱ።"
+            ],
+            "scripts": [
+                "አሁን ግራ ተጋብቻለሁ፣ ነገር ግን በዚህ አንድ ትንሽ እርምጃ ላይ ብቻ ትኩረት አደርጋለሁ።",
+                "ይህ ጊዜያዊ ስሜት ነው፣ እና የማስተካከያ ሂደቱ አካል ነው።",
+                "ደህና ነኝ፣ እና ራሴን ለማስተካከል ጊዜ መስጠት እችላለሁ።"
+            ],
+            "tool_links": [
+                {
+                    "title": "የአካባቢ የህብረተሰብ ቡድኖች (Local Meetup Groups)",
+                    "url": "https://www.meetup.com"
+                },
+                {
+                    "title": "የማህበረሰብ ግንባታ መተግበሪያዎች (Community Building Apps)",
+                    "url": "https://nextdoor.com"
+                }
+            ],
+            "if_worse": [
+                "ጭንቀትዎ ድንጋጤ የሚፈጥር ወይም ለብቸኝነት ወይም ለተስፋ መቁረጥ ስሜት ዘላቂ ምክንያት ከሆነ፣ እባክዎን የሰለጠነ ቴራፒስት ድጋፍ ይጠይቁ።",
+                "እውነተኛ ስሜትዎን ለማካፈል (የሚያስደስቱ ነገሮችን ብቻ ሳይሆን) ከቤት ካሉ የሚወዱት ሰው ጋር ለመገናኘት ቅድሚያ ይስጡ።"
+            ],
+            "disclaimer": "ይህ መረጃ ለመሸጋገሪያ ጭንቀት እንደ አጠቃላይ የመቋቋሚያ መመሪያ ለመስጠት የታሰበ ነው፣ እና የብቃት ያለው የአእምሮ ጤና ባለሙያ ምክርን አይተካም።"
+        },
+        "language": "am"
+    },
+    {
+        "topic_key": "self_confidence",
+        "block": {
+            "empathy_openers": [
+                "It is perfectly normal to feel self-doubt, especially when facing new challenges.",
+                "Your self-worth is not defined by external achievements or comparison to others."
+            ],
+            "micro_steps": [
+                "Keep a 'win journal' and write down one small achievement or compliment you received today.",
+                "Practice a 'power pose' (stand tall, shoulders back) for two minutes before a challenging situation.",
+                "Challenge one negative thought about yourself by asking: Is this 100% true?",
+                "Take a small, manageable action to move toward a goal, even if you feel unsure (action builds confidence)."
+            ],
+            "scripts": [
+                "I am capable of learning and growing through this experience.",
+                "I choose to believe in my abilities, even if I make a mistake.",
+                "I will speak slowly and clearly because my thoughts are valuable."
+            ],
+            "tool_links": [
+                {
+                    "title": "Cognitive Reframing Guide",
+                    "url": "https://www.mind.org.uk/information-support/types-of-mental-health-problems/self-esteem/tips-to-improve-your-self-esteem/"
+                },
+                {
+                    "title": "Positive Affirmations List",
+                    "url": "https://www.verywellmind.com/positive-affirmations-for-self-esteem-5206935"
+                }
+            ],
+            "if_worse": [
+                "If self-doubt is consistently preventing you from acting or is linked to deep-seated anxiety, seek professional help from a therapist or counselor.",
+                "Surround yourself with supportive, positive people who recognize your strengths and accept you as you are."
+            ],
+            "disclaimer": "This content provides general self-help tips and is not a substitute for clinical psychological assessment or treatment."
+        },
+        "language": "en"
+    },
+    {
+        "topic_key": "self_confidence",
+        "block": {
+            "empathy_openers": [
+                "በተለይ አዲስ ፈተናዎች ሲገጥሙዎት የራስን ጥርጣሬ መሰማት ፍጹም የተለመደ ነው።",
+                "የእርስዎ ዋጋ የሚወሰነው በውጫዊ ስኬቶች ወይም ከሌሎች ጋር በማወዳደር አይደለም።"
+            ],
+            "micro_steps": [
+                "'የድል ማስታወሻ ደብተር' ይያዙ እና ዛሬ ያገኙትን አንድ ትንሽ ስኬት ወይም ምስጋና ይጻፉ።",
+                "አንድ ከባድ ሁኔታ ከመጀመርዎ በፊት ለሁለት ደቂቃ 'የኃይል አቋም' ይለማመዱ (ቀጥ ብለው ይቁሙ፣ ትከሻዎን ወደ ኋላ ይጎትቱ)።",
+                "ስለራስዎ ያለዎትን አንድ አሉታዊ አስተሳሰብ 'ይህ 100% እውነት ነው ወይ?' ብለው በመጠየቅ ይሞግቱት።",
+                "እርግጠኛ ባይሆኑም እንኳ ወደ ግብ ለመሄድ አንድ ትንሽ፣ በቀላሉ የሚተዳደር እርምጃ ይውሰዱ (እርምጃ በራስ መተማመንን ይገነባል)።"
+            ],
+            "scripts": [
+                "በዚህ ልምድ ውስጥ የማደግ እና የመማር ችሎታ አለኝ።",
+                "ስህተት ብሠራም እንኳ በችሎታዎቼ ለማመን እመርጣለሁ።",
+                "አስተሳሰቦቼ ጠቃሚ ስለሆኑ ቀስ ብዬ እና በግልጽ እናገራለሁ።"
+            ],
+            "tool_links": [
+                {
+                    "title": "የግንዛቤ መልሶ ማስተካከያ መመሪያ (Cognitive Reframing Guide)",
+                    "url": "https://www.mind.org.uk/information-support/types-of-mental-health-problems/self-esteem/tips-to-improve-your-self-esteem/"
+                },
+                {
+                    "title": "አዎንታዊ ማረጋገጫዎች ዝርዝር (Positive Affirmations List)",
+                    "url": "https://www.verywellmind.com/positive-affirmations-for-self-esteem-5206935"
+                }
+            ],
+            "if_worse": [
+                "የራስ ጥርጣሬ ያለማቋረጥ ከድርጊት የሚከለክልዎት ከሆነ ወይም ከጥልቅ ጭንቀት ጋር የተያያዘ ከሆነ፣ ከቴራፒስት ወይም የምክር ሰጭ ሙያተኛ የባለሙያ እርዳታ ይጠይቁ።",
+                "ጥንካሬዎትን ከሚያውቁ እና እርስዎ እንዳሉዎት ከሚቀበሉ ደጋፊ እና አዎንታዊ ሰዎች ጋር ይተባበሩ።"
+            ],
+            "disclaimer": "ይህ ይዘት አጠቃላይ የራስ አገዝ ምክሮችን ይሰጣል እንጂ ለክሊኒካዊ የስነ-ልቦና ግምገማ ወይም ህክምና ምትክ አይደለም።"
+        },
+        "language": "am"
+    }
+]

@@ -40,7 +40,7 @@ func ResourcesMiddleware(basepath string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		region := c.Query("region")
 		if region == "" {
-			region = "ET"
+			region = "ET.en"
 		}
 
 		region = strings.ToUpper(region)
