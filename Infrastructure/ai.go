@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -117,7 +118,8 @@ func (ai *AI) GenerateTopicKey(content string) (string, error) {
 	ctx := context.Background()
 
 	userPrompt := genai.Text(fmt.Sprintf(`
-	Extract one topic key from the following content that is close to %s:
+	Extract one topic key from the following content that is close to %s but if there is no related topic, return "No related topic found"
+	and also give me your response in the form topic_key: <topic_key>:
 	1. Study Stress
 	2. Money Stress
 	3. Family conflict
@@ -142,8 +144,30 @@ func (ai *AI) GenerateTopicKey(content string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	response := result.Text()
 
-	return result.Text(), nil
+	// Try to extract topic_key from JSON if present
+	var topicKey string
+	// Remove code block markers if present
+	response = strings.ReplaceAll(response, "```json", "")
+	response = strings.ReplaceAll(response, "```", "")
+	response = strings.TrimSpace(response)
+
+	// Try to parse as JSON
+	var jsonObj map[string]interface{}
+	if err := json.Unmarshal([]byte(response), &jsonObj); err == nil {
+		if val, ok := jsonObj["topic_key"]; ok {
+			if str, ok := val.(string); ok && str != "" {
+				topicKey = str
+			}
+		}
+	}
+
+	if topicKey == "" {
+		topicKey = "No related topic found"
+	}
+
+	return topicKey, nil
 }
 
 func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
