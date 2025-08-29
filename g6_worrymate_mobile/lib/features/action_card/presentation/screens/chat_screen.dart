@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen_ai_chat_ui/flutter_gen_ai_chat_ui.dart';
-
-import 'action_card_screen.dart';
+import 'package:g6_worrymate_mobile/core/widgets/custom_bottom_nav_bar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -9,15 +8,58 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  Widget _exampleQuestion(String text) {
+    return GestureDetector(
+      onTap: () {
+        _sendMessage(text);
+      },
+      child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFF22314A), width: 1.2),
+        ),
+        child: Text(
+          text,
+          style: GoogleFonts.poppins(
+            color: const Color(0xFF22314A),
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _sendMessage(String text) {
+    if (text.trim().isEmpty) return;
+    setState(() {
+      _messages.add(_ChatMessage(text: text.trim(), isUser: true));
+    });
+    Future.delayed(const Duration(milliseconds: 400), () {
+      setState(() {
+        _messages.add(
+          _ChatMessage(text: _getDummyResponse(text), isUser: false),
+        );
+      });
+    });
+  }
+
+  String _getDummyResponse(String userText) {
+    return "Thanks for sharing! I'm here to help you with: '$userText'";
+  }
+
   String _selectedLang = 'EN';
-  final _controller = ChatMessagesController();
-  final _currentUser = const ChatUser(id: 'user', firstName: 'User');
-  final _aiUser = const ChatUser(id: 'ai', firstName: 'AI Assistant');
-  bool _isLoading = false;
+  int _currentTab = 3;
+  final TextEditingController _textController = TextEditingController();
+  final List<_ChatMessage> _messages = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -104,235 +146,222 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-
       body: Column(
         children: [
           Expanded(
-            child: AiChatWidget(
-              currentUser: _currentUser,
-              aiUser: _aiUser,
-              controller: _controller,
-              onSendMessage: _handleSendMessage,
-              loadingConfig: LoadingConfig(isLoading: _isLoading),
-
-              messageOptions: MessageOptions(
-                customBubbleBuilder: (context, message, isCurrentUser) {
-                  if (!isCurrentUser) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: ActionCardScreen(
-                        
+            child: Container(
+              color: Colors.white,
+              child: _messages.isEmpty
+                  ? SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // Welcome message card
+                          Container(
+                            margin: const EdgeInsets.only(
+                              top: 32,
+                              left: 24,
+                              right: 24,
+                              bottom: 18,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 32,
+                              horizontal: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF22314A),
+                              borderRadius: BorderRadius.circular(18),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.08),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Hey i am your worrybuddy, vent your problems' on me",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 20,
+                                  height: 1.2,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Try asking about
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 24,
+                              top: 8,
+                              bottom: 6,
+                              right: 24,
+                            ),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Try asking about:',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Column(
+                              children: [
+                                _exampleQuestion(
+                                  "I'm really stressed about my exams",
+                                ),
+                                _exampleQuestion(
+                                  "I lost my job and i'm worried about money.",
+                                ),
+                                _exampleQuestion(
+                                  "My family and i keep fighting.",
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  }
-                  // Fallback for user message bubble (simple default style)
-                  return Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 6,
-                        horizontal: 16,
-                      ),
+                    )
+                  : ListView.builder(
                       padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 14,
+                        vertical: 16,
+                        horizontal: 8,
                       ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F0FE),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Text(
-                        message.text,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black87,
+                      itemCount: _messages.length,
+                      reverse: false,
+                      itemBuilder: (context, index) {
+                        final msg = _messages[index];
+                        return Align(
+                          alignment: msg.isUser
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              color: msg.isUser
+                                  ? const Color(0xFFE8F0FE)
+                                  : const Color(0xFF22314A),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              msg.text,
+                              style: GoogleFonts.poppins(
+                                color: msg.isUser
+                                    ? Colors.black87
+                                    : Colors.white,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ),
+          // Input box at the bottom
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _textController,
+                    decoration: InputDecoration(
+                      hintText: "Type your message...",
+                      hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF22314A),
+                          width: 2,
                         ),
                       ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF22314A),
+                          width: 2.5,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.mic, color: Color(0xFF22314A)),
+                        onPressed: () {},
+                      ),
                     ),
-                  );
-                },
-              ),
-
-              inputOptions: const InputOptions(
-                containerDecoration: BoxDecoration(
-                  color: Color(0xFFF7F7F8),
-                  border: Border(
-                    top: BorderSide(width: 1, color: Color(0xFFE7E7EA)),
-                  ),
-                ),
-                containerBackgroundColor: Colors.transparent,
-                decoration: InputDecoration(
-                  suffixIcon: Icon(Icons.mic_outlined, color: Colors.grey),
-                  isDense: true,
-                  hintText: 'Share what\'s on your mind...',
-                  hintStyle: TextStyle(fontSize: 12),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    borderSide: BorderSide(color: Color(0xFFE7E7EA)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    borderSide: BorderSide(color: Color(0xFFE7E7EA)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    borderSide: BorderSide(
-                      color: Color.fromARGB(255, 20, 11, 43),
-                      width: 2,
+                    style: GoogleFonts.poppins(
+                      color: Colors.black87,
+                      fontSize: 15,
                     ),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                ),
-                sendOnEnter: true,
-              ),
-
-              welcomeMessageConfig: const WelcomeMessageConfig(
-                title: 'Welcome to WorryMate ',
-                questionsSectionTitle: 'Try asking me:',
-              ),
-              exampleQuestions: const [
-                ExampleQuestion(
-                  question: "I'm really stressed about my exams ",
-                ),
-                ExampleQuestion(
-                  question: "I lost my job and i'm worried about money.",
-                ),
-                ExampleQuestion(question: " My family and i keep fighting."),
-              ],
-            ),
-          ),
-
-          Container(
-            padding: const EdgeInsets.all(16),
-            // color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ), // smaller padding
-                    minimumSize: const Size(
-                      0,
-                      0,
-                    ), // allows the button to shrink
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        6,
-                      ), // or 8 for more roundness
-                    ),
-
-                    backgroundColor: const Color.fromARGB(255, 221, 219, 219),
-                  ),
-                  onPressed: () {},
-                  child: const Text(
-                    "Offline Ready",
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 39, 20, 85),
-                      fontSize: 11, // slightly smaller font
-                    ),
+                    onSubmitted: (val) {
+                      _sendMessage(val);
+                      _textController.clear();
+                    },
                   ),
                 ),
-                const SizedBox(width: 15),
-                const Expanded(
-                  child: Text(
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    "General wellbieng info, not medical advice",
-                    style: TextStyle(fontSize: 12),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    side: const BorderSide(width: 1, color: Colors.grey),
-                    backgroundColor: const Color.fromARGB(255, 248, 248, 248),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(6)),
-                    ),
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.send, color: Color(0xFF22314A)),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/offline-tool');
+                    _sendMessage(_textController.text);
+                    _textController.clear();
                   },
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        Icons.private_connectivity_outlined,
-                        color: Colors.black,
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        "Offline Tools",
-                        style: TextStyle(fontSize: 13, color: Colors.black),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    side: const BorderSide(width: 1, color: Colors.grey),
-                    backgroundColor: const Color.fromARGB(255, 248, 248, 248),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(6)),
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(Icons.settings_outlined, color: Colors.black),
-                      SizedBox(width: 10),
-                      Text(
-                        "Settings",
-                        style: TextStyle(fontSize: 13, color: Colors.black),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
+
+
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _currentTab,
+        onTap: (i) {
+          if (i == _currentTab) return;
+          setState(() => _currentTab = i);
+          switch (i) {
+            case 0:
+              Navigator.pushReplacementNamed(context, '/');
+              break;
+            case 1:
+              Navigator.pushReplacementNamed(context, '/journal');
+              break;
+            case 2:
+              Navigator.pushReplacementNamed(context, '/offlinetoolkit');
+              break;
+            case 3:
+              break;
+            case 4:
+              Navigator.pushReplacementNamed(context, '/settings');
+              break;
+          }
+        },
+      ),
+
+
     );
   }
+}
 
-  Future<void> _handleSendMessage(ChatMessage message) async {
-    setState(() => _isLoading = true);
-
-    try {
-      await Future.delayed(const Duration(seconds: 1));
-
-      _controller.addMessage(
-        ChatMessage(
-          text: "", // content rendered by custom bubble
-          user: _aiUser,
-          createdAt: DateTime.now(),
-        ),
-      );
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
+class _ChatMessage {
+  final String text;
+  final bool isUser;
+  _ChatMessage({required this.text, required this.isUser});
 }
