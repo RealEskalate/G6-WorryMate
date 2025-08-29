@@ -119,6 +119,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	return &resultMessage, nil
 }
 
+
 func (ai *AI) GenerateTopicKey(content string) (string, error) {
     ctx := context.Background()
 
@@ -194,6 +195,7 @@ IMPORTANT: Your entire response should be exactly one line in the specified form
     // If we get an unexpected response, return the error case
     return "No related topic found", nil
 }
+
 func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
     ctx := context.Background()
 
