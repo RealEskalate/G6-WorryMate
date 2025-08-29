@@ -2,11 +2,11 @@ package infrastructure
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	domain "sema/Domain"
+	"strconv"
 	"strings"
 
 	"google.golang.org/genai"
@@ -16,6 +16,10 @@ type AI struct {
 	model_name string
 	Ai_client  *genai.Client
 	config     *genai.GenerateContentConfig
+}
+
+func ptrFloat32(f float32) *float32 {
+	return &f
 }
 
 func InitAIClient() *AI {
@@ -46,6 +50,7 @@ func InitAIClient() *AI {
 
 	Output must strictly follow the given JSON schema.
 `, genai.RoleUser),
+		Temperature: ptrFloat32(0.0), // Use pointer to float32
 	}
 
 	model_name := os.Getenv("GEMINI_MODEL")
@@ -115,164 +120,183 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 }
 
 func (ai *AI) GenerateTopicKey(content string) (string, error) {
-	ctx := context.Background()
+    ctx := context.Background()
 
-	userPrompt := genai.Text(fmt.Sprintf(`
-	Extract one topic key from the following content that is close to %s but if there is no related topic, return "No related topic found"
-	and also give me your response in the form topic_key: <topic_key>:
-	1. Study Stress
-	2. Money Stress
-	3. Family conflict
-	4. Workload 
-	5. sleep
-	6. Motivation
-	7. Loneliness
-	8. Procrastination
-	9. Time management
-	10. Exam Panic
-	11. New City anxiety
-	12. Self confidence
-	`, content))
+    userPrompt := genai.Text(fmt.Sprintf(`
+STRICT INSTRUCTIONS: Analyze the user's content and select exactly ONE topic key from the predefined list below.
 
-	result, err := ai.Ai_client.Models.GenerateContent(
-		ctx,
-		ai.model_name,
-		userPrompt,
-		ai.config,
-	)
+USER CONTENT: "%s"
 
-	if err != nil {
-		return "", err
-	}
-	response := result.Text()
+TOPIC KEYS (choose exactly one if related):
+- Study Stress
+- Money Stress
+- Family conflict
+- Workload
+- Sleep
+- Motivation
+- Loneliness
+- Procrastination
+- Time management
+- Exam Panic
+- New City anxiety
+- Self confidence
 
-	// Try to extract topic_key from JSON if present
-	var topicKey string
-	// Remove code block markers if present
-	response = strings.ReplaceAll(response, "```json", "")
-	response = strings.ReplaceAll(response, "```", "")
-	response = strings.TrimSpace(response)
+RULES:
+1. You MUST choose exactly one key ONLY if there's a clear match to the user's content
+2. If no clear match exists, respond with "topic_key: No related topic found"
+3. Your response MUST begin with "topic_key: "
+4. Output ONLY the required format: "topic_key: <selected_key>" or "topic_key: No related topic found"
+5. DO NOT include any other text, explanations, or conversational phrases
+6. DO NOT create new topic keys - use only from the provided list
 
-	// Try to parse as JSON
-	var jsonObj map[string]interface{}
-	if err := json.Unmarshal([]byte(response), &jsonObj); err == nil {
-		if val, ok := jsonObj["topic_key"]; ok {
-			if str, ok := val.(string); ok && str != "" {
-				topicKey = str
-			}
-		}
-	}
+IMPORTANT: Your entire response should be exactly one line in the specified format.
+`, content))
 
-	if topicKey == "" {
-		topicKey = "No related topic found"
-	}
+    result, err := ai.Ai_client.Models.GenerateContent(
+        ctx,
+        ai.model_name,
+        userPrompt,
+        ai.config,
+    )
 
-	return topicKey, nil
+    if err != nil {
+        return "", err
+    }
+    
+    response := result.Text()
+    response = strings.ReplaceAll(response, "```json", "")
+    response = strings.ReplaceAll(response, "```", "")
+    response = strings.TrimSpace(response)
+
+    // Extract the topic key from the response
+    if strings.HasPrefix(response, "topic_key: ") {
+        return strings.TrimPrefix(response, "topic_key: "), nil
+    }
+    
+    // If the response doesn't start with the expected prefix, check if it's one of the valid keys
+    validKeys := []string{
+        "Study Stress", "Money Stress", "Family conflict", "Workload", 
+        "Sleep", "Motivation", "Loneliness", "Procrastination", 
+        "Time management", "Exam Panic", "New City anxiety", "Self confidence",
+    }
+    
+    for _, key := range validKeys {
+        if response == key {
+            return key, nil
+        }
+    }
+    
+    // If response contains "No related topic found" but without the prefix
+    if strings.Contains(strings.ToLower(response), "no related topic") {
+        return "No related topic found", nil
+    }
+    
+    // If we get an unexpected response, return the error case
+    return "No related topic found", nil
 }
-
 func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
-	ctx := context.Background()
+    ctx := context.Background()
 
-	userPrompt := genai.Text(fmt.Sprintf(`
-	Analyze the following content for risk factors:
-	Please assess the risk level of the following situation. 
-    There are three risk levels:
+    userPrompt := genai.Text(fmt.Sprintf(`
+STRICT RISK ASSESSMENT INSTRUCTIONS:
 
-	1. Low Risk
-	Definition: A situation that causes minor inconvenience or frustration but is unlikely to result in significant harm, emotional distress, or long-term negative consequences. These are typically everyday annoyances or distractions that can be resolved easily.
+Analyze the following user content for risk factors and provide EXACTLY the requested output format.
 
-	Examples:
+USER CONTENT: "%s"
 
-	Getting a low grade on a single homework assignment due to a lack of focus.
+RISK LEVEL DEFINITIONS (choose exactly ONE):
 
-	Feeling unproductive after spending too much time on social media.
+1 - Low Risk: Minor inconvenience or frustration, unlikely to result in significant harm or long-term negative consequences.
 
-	Minor disagreements with a friend about a movie to watch.
+2 - Medium Risk: Possible negative outcome or moderate concern that could lead to emotional distress or relationship damage if not addressed.
 
-	Losing an item of low value, such as a pen or a hair tie.
+3 - High Risk: Serious consequences requiring immediate attention, including threats to physical safety, mental health, or legal well-being.
 
-	Feeling annoyed by a slow internet connection.
+TAGS REQUIREMENT:
+- Generate 3-5 relevant tags describing the main themes
+- Tags must be concise, lowercase, hyphen-separated (e.g., "academic-stress")
+- Tags must reflect the specific content
+- Tags cannot be empty
 
-	2. Medium Risk
-	Definition: A situation with a possible negative outcome or moderate concern. While not immediately life-threatening, these issues can lead to emotional distress, damage relationships, or have negative impacts on well-being if not addressed.
+OUTPUT FORMAT RULES:
+1. Response MUST begin with "Risk Level: " followed by exactly 1, 2, or 3
+2. Next line MUST begin with "Tags: " followed by comma-separated tags
+3. NO other text, explanations, or conversational phrases
+4. NO markdown formatting
+5. NO deviations from this format
 
-	Examples:
+EXAMPLE OUTPUT:
+Risk Level: 2
+Tags: academic-pressure, time-management, exam-anxiety
 
-	Persistent conflict with a family member or friend that is causing emotional strain.
+IMPORTANT: Be consistent. Same content should always produce the same risk level and similar tags.
+`, content))
 
-	Feeling overwhelmed with anxiety about a future exam or presentation.
+    result, err := ai.Ai_client.Models.GenerateContent(
+        ctx,
+        ai.model_name,
+        userPrompt,
+        ai.config,
+    )
 
-	A significant drop in grades across multiple subjects due to a lack of motivation.
+    if err != nil {
+        return 0, nil, err
+    }
 
-	Experiencing a conflict at work that is affecting your professional performance.
+    var risk int
+    var tags []string
 
-	A difficult argument with a romantic partner.
+    // Parse the result
+    response := result.Text()
+    response = strings.ReplaceAll(response, "```", "")
+    response = strings.TrimSpace(response)
+    
+    lines := strings.Split(response, "\n")
+    
+    for _, line := range lines {
+        line = strings.TrimSpace(line)
+        
+        // Parse risk level
+        if strings.HasPrefix(line, "Risk Level:") {
+            riskStr := strings.TrimSpace(strings.TrimPrefix(line, "Risk Level:"))
+            if parsed, err := strconv.Atoi(riskStr); err == nil && parsed >= 1 && parsed <= 3 {
+                risk = parsed
+            }
+        }
+        
+        // Parse tags
+        if strings.HasPrefix(line, "Tags:") {
+            tagsStr := strings.TrimSpace(strings.TrimPrefix(line, "Tags:"))
+            if tagsStr != "" {
+                rawTags := strings.Split(tagsStr, ",")
+                for _, tag := range rawTags {
+                    cleanTag := strings.TrimSpace(tag)
+                    cleanTag = strings.ToLower(cleanTag)
+                    cleanTag = strings.ReplaceAll(cleanTag, " ", "-")
+                    if cleanTag != "" {
+                        tags = append(tags, cleanTag)
+                    }
+                }
+            }
+        }
+    }
 
-	3. High Risk
-	Definition: A situation that involves serious consequences, requires immediate and urgent attention, and could result in significant harm to oneself or others. This category includes severe threats to physical safety, mental health, or legal well-being.
+    // Validation and fallbacks
+    if risk < 1 || risk > 3 {
+        risk = 1 // Default to low risk if parsing fails
+    }
+    
+    if len(tags) == 0 {
+        // Generate fallback tags based on risk level
+        switch risk {
+        case 1:
+            tags = []string{"minor-issue", "everyday-concern", "low-priority"}
+        case 2:
+            tags = []string{"moderate-concern", "emotional-strain", "needs-attention"}
+        case 3:
+            tags = []string{"urgent-matter", "serious-concern", "immediate-help-needed"}
+        }
+    }
 
-	Examples:
-
-	Experiencing suicidal ideation or thoughts of self-harm.
-
-	Engaging in or planning to engage in illegal or criminal activities.
-
-	Providing or seeking instructions for harmful or dangerous acts.
-
-	Severe and persistent depression or anxiety that is debilitating.
-
-    Based on this context, what is the risk level for the user's input?
-	and generate a list of relevant tags. Those tags can not be empty.
-	Give me your response in the format: Risk Level: <1 or 2 or 3>\nTags: tag1, tag2, tag3
-	%s
-	`, content))
-
-	result, err := ai.Ai_client.Models.GenerateContent(
-		ctx,
-		ai.model_name,
-		userPrompt,
-		ai.config,
-	)
-
-	if err != nil {
-		return 0, nil, err
-	}
-
-	var risk int
-	var tags []string
-
-	// Parse the result to extract risk and tags
-	response := result.Text()
-	lines := strings.Split(response, "\n")
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "Risk Level:") {
-			var parsed int
-			_, scanErr := fmt.Sscanf(line, "Risk Level: %d", &parsed)
-			if scanErr == nil && parsed >= 1 && parsed <= 3 {
-				risk = parsed
-			}
-		}
-		if strings.HasPrefix(line, "Tags:") {
-			tagsStr := strings.TrimPrefix(line, "Tags:")
-			tagsStr = strings.TrimSpace(tagsStr)
-			if tagsStr != "" {
-				tags = strings.Split(tagsStr, ",")
-				for i := range tags {
-					tags[i] = strings.TrimSpace(tags[i])
-				}
-			}
-		}
-	}
-
-	// Ensure risk is between 1 and 3, default to 1 if not parsed
-	if risk < 1 || risk > 3 {
-		risk = 1
-	}
-	// Ensure tags is not nil
-	if tags == nil {
-		tags = []string{}
-	}
-
-	return risk, tags, nil
+    return risk, tags, nil
 }
