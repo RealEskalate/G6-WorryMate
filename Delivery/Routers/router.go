@@ -12,7 +12,7 @@ func SetupRouter(ChtCtrl *controllers.ChatController) {
 	// Chat routes
 	chatRoutes := router.Group("/chat")
 	{
-		chatRoutes.GET("/compose", ChtCtrl.ComposeCardController)
+		chatRoutes.POST("/compose", ChtCtrl.ComposeCardController)
 		chatRoutes.POST("/risk_check", ChtCtrl.RiskCheckController)
 		chatRoutes.POST("/intent_mapping", ChtCtrl.IntentMappingController)
 		chatRoutes.GET("/resources", ChtCtrl.ResourceController)
