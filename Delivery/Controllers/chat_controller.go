@@ -101,7 +101,7 @@ func (cc *ChatController) ActionBlockController(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error" : err.Error()})
 		return 
 	}
-	c.JSON(http.StatusOK, gin.H{"action-block" : actBlk})
+	c.JSON(http.StatusOK, gin.H{"action_block" : actBlk})
 }
 
 func (cc *ChatController) OfflinePackController(c *gin.Context) {
