@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import 'offline_toolkit_screen.dart';
+import '../../../offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
 
 class ActionCardScreen extends StatefulWidget {
   const ActionCardScreen({super.key});
@@ -10,7 +11,6 @@ class ActionCardScreen extends StatefulWidget {
 }
 
 class _ActionCardScreenState extends State<ActionCardScreen> {
-  // It's easier to use a List of Strings for steps
   List<String> steps = [
     "Take a deep breath",
     "Try a 25-minute focused study session (Pomodoro technique)",
@@ -25,28 +25,38 @@ class _ActionCardScreenState extends State<ActionCardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 26,
-          height: 26,
+          width: 28,
+          height: 28,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: const Color(0xFF2ECC71),
+            color: Colors.greenAccent,
             borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.greenAccent.withOpacity(0.2),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Text(
             index.toString(),
-            style: const TextStyle(
-              color: Colors.white,
+            style: GoogleFonts.poppins(
+              color: Colors.blueGrey[900],
               fontWeight: FontWeight.bold,
+              fontSize: 15,
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 14),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(
+            style: GoogleFonts.poppins(
               fontSize: 15,
-              color: Color.fromARGB(255, 39, 40, 48),
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+              height: 1.3,
             ),
           ),
         ),
@@ -61,24 +71,29 @@ class _ActionCardScreenState extends State<ActionCardScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFF2ECC71)),
-          borderRadius: BorderRadius.circular(10),
-          color: const Color(0xFFEFFAF3),
+          gradient: const LinearGradient(
+            colors: [Color.fromARGB(255, 9, 43, 71), Color(0xFF094470)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.greenAccent, width: 1.2),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: const Color(0xFF2ECC71), size: 18),
-            const SizedBox(width: 8),
+            Icon(icon, color: Colors.greenAccent, size: 20),
+            const SizedBox(width: 10),
             Text(
               label,
-              style: const TextStyle(
-                color: Color(0xFF2ECC71),
+              style: GoogleFonts.poppins(
+                color: Colors.greenAccent,
                 fontWeight: FontWeight.w600,
+                fontSize: 13,
               ),
             ),
           ],
@@ -90,165 +105,158 @@ class _ActionCardScreenState extends State<ActionCardScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: const BorderSide(color: Color(0xFFE7E7EA)),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 9, 43, 71),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Action Plan',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.greenAccent,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                Icon(Icons.bolt_rounded, color: Colors.greenAccent, size: 28),
+              ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+            const SizedBox(height: 8),
+            Text(
+              "Let's break this down into manageable steps.",
+              style: GoogleFonts.poppins(
+                color: Colors.white70,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              "You can try now:",
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                fontSize: 15,
+              ),
+            ),
+            const SizedBox(height: 14),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: steps.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: _buildStepItem(index: index + 1, text: steps[index]),
+                );
+              },
+            ),
+            const SizedBox(height: 18),
+            Divider(color: Colors.white24, thickness: 1.1),
+            const SizedBox(height: 10),
+            Text(
+              "Quick tools:",
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                fontSize: 15,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                _buildQuickTool(
+                  icon: Icons.favorite_border,
+                  label: "Breathing Exercise",
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const OfflineToolkitScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildQuickTool(
+                  icon: Icons.camera,
+                  label: "5-4-3-2-1 Grounding",
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const OfflineToolkitScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.white10,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.greenAccent.withOpacity(0.2)),
+              ),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          'Exam Stress Relief',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: Color.fromARGB(255, 39, 40, 48),
-                          ),
-                        ),
+                  const Icon(
+                    Icons.warning_amber_rounded,
+                    color: Color(0xFFF6A800),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      "If it gets worse: If panic sets in, try the grounding exercise or reach out to a trusted friend.",
+                      style: GoogleFonts.poppins(
+                        color: Colors.amber[900],
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                       ),
-                      TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFF2ECC71),
-                          side: const BorderSide(color: Color(0xFF2ECC71)),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text("Action Plan"),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    "Let's break this down into manageable steps.",
-                    style: TextStyle(color: Colors.black54),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    "You can try now:",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: Color.fromARGB(255, 39, 40, 48),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-
-                  SizedBox(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: steps.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
-                          child: _buildStepItem(
-                            index: index + 1,
-                            text: steps[index],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Quick tools:",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: Color.fromARGB(255, 39, 40, 48),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      _buildQuickTool(
-                        icon: Icons.favorite_border,
-                        label: "Breathing Exercise",
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const OfflineToolkitScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildQuickTool(
-                        icon: Icons.camera,
-                        label: "5-4-3-2-1 Grounding",
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const OfflineToolkitScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF7E6),
-                      border: Border.all(color: const Color(0xFFFFE0A6)),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Icon(
-                          Icons.warning_amber_rounded,
-                          color: Color(0xFFF6A800),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            "If it gets worse: If panic sets in, try the grounding exercise or reach out to a trusted friend.",
-                            style: TextStyle(color: Color(0xFF6B5E3C)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F2F4),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Text(
-                      "This is general wellbeing information, not medical or mental health advice.",
-                      style: TextStyle(color: Colors.black54),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(13),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                "This is general wellbeing information, not medical or mental health advice.",
+                style: GoogleFonts.poppins(
+                  color: Colors.white70,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

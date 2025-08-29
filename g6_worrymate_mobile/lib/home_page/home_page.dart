@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:g6_worrymate_mobile/core/widgets/custom_bottom_nav_bar.dart';
+import 'package:g6_worrymate_mobile/features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -115,7 +117,14 @@ class _HomePageState extends State<HomePage> {
       case 2:
         return _stubPage('Wins (TODO)');
       case 3:
-        return _stubPage('Chat (TODO)');
+        // Cancel the hero slide timer before navigating to chat
+        _heroSlideTimer?.cancel();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (ModalRoute.of(context)?.settings.name != '/chat') {
+            Navigator.of(context).pushNamed('/chat');
+          }
+        });
+        return Container();
       case 4:
         return _stubPage('Profile (TODO)');
       default:
@@ -145,44 +154,38 @@ class _HomePageState extends State<HomePage> {
           Positioned.fill(child: _pageFor(_currentTab)),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentTab,
-        onTap: (i) => setState(() => _currentTab = i),
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: const Color(0xFF0B2F4E),
-        elevation: 8,
-        selectedItemColor: Colors.greenAccent,
-        unselectedItemColor: Colors.white54,
-        selectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: 11,
-        ),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.edit_note_rounded),
-            label: 'Journal',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.emoji_events_rounded),
-            label: 'Wins',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_rounded),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'You',
-          ),
-        ],
+        onTap: (i) {
+          if (i == _currentTab) return;
+          switch (i) {
+            case 0:
+              // Home
+              setState(() => _currentTab = 0);
+              break;
+            case 1:
+              // Journal
+              Navigator.pushReplacementNamed(context, '/journal');
+              break;
+            case 2:
+              // Wins (Offline Toolkit)
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const OfflineToolkitScreen(),
+                ),
+              );
+              break;
+            case 3:
+              // Chat
+              Navigator.pushReplacementNamed(context, '/chat');
+              break;
+            case 4:
+              // Settings
+              Navigator.pushReplacementNamed(context, '/settings');
+              break;
+          }
+        },
       ),
     );
   }
@@ -522,13 +525,15 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Icon(icon, color: Colors.white, size: 28),
                   const SizedBox(height: 6),
-                  Text(
-                    label,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                  Expanded(
+                    child: Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],

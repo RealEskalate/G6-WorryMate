@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 
-
-import 'features/crisis_card/presentation/pages/crisis_card.dart';
-import 'features/setting/settings.dart';
-
 import 'features/action_card/presentation/screens/action_card_screen.dart';
 import 'features/action_card/presentation/screens/chat_screen.dart';
-import 'features/action_card/presentation/screens/offline_toolkit_screen.dart';
+import 'features/offline_toolkit/presentation/pages/daily_journal_screen.dart';
+import 'features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
+import 'features/setting/settings.dart';
 import 'home_page/home_page.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -28,12 +25,12 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/action_card': (context) => const ActionCardScreen(),
-        '/': (context) => ChatScreen(),
-        '/offline-tool': (context) => const OfflineToolkitScreen(),
-        '/home' :(context) => HomePage(),
-        '/settings' :(context) =>  SettingsPage(),
+        '/': (context) => const HomePage(),
+        '/chat': (context) => ChatScreen(),
+        '/settings': (context) => const SettingsPage(),
+        '/offlinetoolkit': (context) => const OfflineToolkitScreen(),
+        '/journal':(context) => const DailyJournalScreen()
       },
     );
   }
 }
-
