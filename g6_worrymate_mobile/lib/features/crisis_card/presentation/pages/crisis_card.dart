@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class CrisisCard extends StatelessWidget {
   const CrisisCard({super.key});
 
@@ -36,24 +35,30 @@ class CrisisCard extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      // Navigator.of(context).pop();
                     },
                     icon: const Icon(Icons.close),
-                  )
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
 
               // 🟢 Immediate Help Badge
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 6,
+                  horizontal: 12,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.red,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(
                   "Immediate Help Available",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
 
@@ -68,12 +73,18 @@ class CrisisCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              _buildStep(1,
-                  "If you're in immediate danger, call 911 or go to the nearest emergency room"),
-              _buildStep(2,
-                  "Reach out to a trusted friend, family member, or mental health professional"),
-              _buildStep(3,
-                  "Remove any means of self-harm from your immediate environment"),
+              _buildStep(
+                1,
+                "If you're in immediate danger, call 911 or go to the nearest emergency room",
+              ),
+              _buildStep(
+                2,
+                "Reach out to a trusted friend, family member, or mental health professional",
+              ),
+              _buildStep(
+                3,
+                "Remove any means of self-harm from your immediate environment",
+              ),
               _buildStep(4, "Stay with someone you trust until you feel safer"),
 
               const Divider(height: 32),
@@ -99,7 +110,7 @@ class CrisisCard extends StatelessWidget {
                 subtitle: "Local mental health crisis support",
                 availability: "24/7",
                 buttonText: "8335",
-                onPressed:  () => _makePhoneCall('8335'),
+                onPressed: () => _makePhoneCall('8335'),
               ),
               _buildContactCard(
                 title: "Ethiopia Red Cross Society",
@@ -110,11 +121,14 @@ class CrisisCard extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pop();
+                  Navigator.pushNamed(context, '/');
                 },
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: Color.fromARGB(16, 185, 129, 1),
                     borderRadius: BorderRadius.circular(12), // Rounded corners
@@ -136,7 +150,7 @@ class CrisisCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -156,7 +170,10 @@ class CrisisCard extends StatelessWidget {
             backgroundColor: Colors.red.shade200,
             child: Text(
               "$number",
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -187,12 +204,19 @@ class CrisisCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(title,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(6),
@@ -211,10 +235,14 @@ class CrisisCard extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               icon: const Icon(Icons.phone, color: Colors.white),
-              label: Text(buttonText, style: const TextStyle(color: Colors.white)),
+              label: Text(
+                buttonText,
+                style: const TextStyle(color: Colors.white),
+              ),
               onPressed: onPressed,
             ),
           ],
@@ -226,14 +254,14 @@ class CrisisCard extends StatelessWidget {
 
 Future<void> _makePhoneCall(String phoneNumber) async {
   final Uri launchUri = Uri(
-    scheme: 'tel',      // This tells the phone to use the dialer
-    path: phoneNumber,  // The number to call
+    scheme: 'tel', // This tells the phone to use the dialer
+    path: phoneNumber, // The number to call
   );
 
   // Check if the device can make phone calls
   if (await canLaunchUrl(launchUri)) {
-    await launchUrl(launchUri);  // Open the phone app with the number
+    await launchUrl(launchUri); // Open the phone app with the number
   } else {
-    throw 'Could not launch $phoneNumber';  // Error handling
+    throw 'Could not launch $phoneNumber'; // Error handling
   }
 }

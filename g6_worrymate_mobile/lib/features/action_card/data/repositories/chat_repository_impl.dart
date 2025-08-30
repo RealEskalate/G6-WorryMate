@@ -1,0 +1,47 @@
+import 'package:dartz/dartz.dart';
+
+import '../../../../core/connection/network_info.dart';
+import '../../../../core/errors/failure.dart';
+import '../../../../core/params/params.dart';
+import '../../domain/repositories/chat_repository.dart';
+import '../datasources/chat_local_data_source.dart';
+import '../datasources/chat_remote_data_source.dart';
+
+class ChatRepositoryImpl implements ChatRepository {
+  final ChatRemoteDataSource remoteDataSource;
+  final ChatLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
+
+  ChatRepositoryImpl({
+    required this.localDataSource,
+    required this.networkInfo,
+    required this.remoteDataSource,
+  });
+
+  Future<Either<Failure, int>> addChat(ChatParams params) async {
+    try {
+      print(
+        '[ChatRepositoryImpl] addChat called with params: ' + params.toString(),
+      );
+      final risk = await remoteDataSource.addChat(params);
+      print(
+        '[ChatRepositoryImpl] Received risk from remoteDataSource: ' +
+            risk.toString(),
+      );
+      if (risk == 3) {
+        print('[ChatRepositoryImpl] Risk is 3 (highest)');
+        return Right(risk);
+      } else if (risk == 2 || risk == 1) {
+        print('[ChatRepositoryImpl] Risk is 2 or 1 (medium/low)');
+        return Right(risk);
+      } else {
+        print('[ChatRepositoryImpl] Error: Risk value is not a valid int');
+        return Left(ServerFailure(error: "Risk value is not a valid int"));
+      }
+    } catch (e, stack) {
+      print('[ChatRepositoryImpl] Exception: ' + e.toString());
+      print(stack);
+      return Left(ServerFailure(error: e.toString()));
+    }
+  }
+}

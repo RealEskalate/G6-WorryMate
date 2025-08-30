@@ -35,7 +35,7 @@ class CustomBottomNavBar extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.emoji_events_rounded),
-          label: 'Wins',
+          label: 'offline pack',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.chat_bubble_rounded),
