@@ -68,7 +68,7 @@ func (cc *ChatController) IntentMappingController(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"topic_key:": key})
+	c.JSON(http.StatusOK, gin.H{"topic_key": key})
 }
 
 func (cc *ChatController) ResourceController(c *gin.Context) {
