@@ -7,14 +7,14 @@ function EmojiSelection() {
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   const [emojiname, setEmojiname] = useState<string | null>(null);
 
-  // Load today's emoji on mount
+
   useEffect(() => {
     async function getEmoji() {
       const today = new Date().toISOString().split('T')[0];
       const entry = await db.dailyemoji.get(today);
       if (entry) {
         setSelectedEmoji(entry.emoji);
-        setEmojiname(entry.emoji); // or use a description if stored
+        setEmojiname(entry.emoji); 
       }
     }
     getEmoji();
