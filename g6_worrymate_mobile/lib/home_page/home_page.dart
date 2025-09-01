@@ -8,6 +8,8 @@ import 'package:g6_worrymate_mobile/core/widgets/custom_bottom_nav_bar.dart';
 import 'package:g6_worrymate_mobile/features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
+import 'package:g6_worrymate_mobile/core/theme/theme_manager.dart';
 
 import 'data.dart';
 import 'scrollable_services_widget.dart';
@@ -65,9 +67,9 @@ class _HomePageState extends State<HomePage> {
     _heroImages = featuredAppServices
         .map(
           (m) => (m.coverImage.url.isNotEmpty)
-              ? AssetImage(m.coverImage.url)
-              : const AssetImage('assets/images/placeholder.png'),
-        )
+          ? AssetImage(m.coverImage.url)
+          : const AssetImage('assets/images/placeholder.png'),
+    )
         .toList();
     _affirmationIndex = _affirmations.isNotEmpty
         ? Random().nextInt(_affirmations.length)
@@ -117,7 +119,7 @@ class _HomePageState extends State<HomePage> {
       case 2:
         return _stubPage('Wins (TODO)');
       case 3:
-        // Cancel the hero slide timer before navigating to chat
+      // Cancel the hero slide timer before navigating to chat
         _heroSlideTimer?.cancel();
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (ModalRoute.of(context)?.settings.name != '/chat') {
@@ -141,16 +143,43 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+    final isDarkMode = themeManager.isDarkMode;
+
     _deviceWidth = MediaQuery.of(context).size.width;
     _deviceHeight = MediaQuery.of(context).size.height;
     final bool showHero = _currentTab == 0;
 
+    Color getBackgroundColor() => isDarkMode
+        ? const Color.fromARGB(255, 9, 43, 71)
+        : Colors.white;
+
+    Color getTextColor() => isDarkMode
+        ? Colors.white
+        : Colors.black;
+
+    Color getPrimaryColor() => isDarkMode
+        ? Colors.greenAccent
+        : const Color.fromARGB(255, 9, 43, 71);
+
+    Color getSubtitleColor() => isDarkMode
+        ? Colors.white70
+        : Colors.black54;
+
+    Color getCardColor() => isDarkMode
+        ? Colors.white.withOpacity(0.08)
+        : Colors.grey[50]!;
+
+    Color getBorderColor() => isDarkMode
+        ? Colors.greenAccent.withOpacity(0.3)
+        : Colors.grey[300]!;
+
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 9, 43, 71),
+      backgroundColor: getBackgroundColor(),
       body: Stack(
         children: [
-          if (showHero) _heroModulesBackground(),
-          if (showHero) _gradientOverlay(),
+          if (showHero) _heroModulesBackground(isDarkMode),
+          if (showHero) _gradientOverlay(isDarkMode),
           Positioned.fill(child: _pageFor(_currentTab)),
         ],
       ),
@@ -160,15 +189,15 @@ class _HomePageState extends State<HomePage> {
           if (i == _currentTab) return;
           switch (i) {
             case 0:
-              // Home
+            // Home
               setState(() => _currentTab = 0);
               break;
             case 1:
-              // Journal
+            // Journal
               Navigator.pushReplacementNamed(context, '/journal');
               break;
             case 2:
-              // Wins (Offline Toolkit)
+            // Wins (Offline Toolkit)
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -177,11 +206,11 @@ class _HomePageState extends State<HomePage> {
               );
               break;
             case 3:
-              // Chat
+            // Chat
               Navigator.pushReplacementNamed(context, '/chat');
               break;
             case 4:
-              // Settings
+            // Settings
               Navigator.pushReplacementNamed(context, '/settings');
               break;
           }
@@ -192,7 +221,7 @@ class _HomePageState extends State<HomePage> {
 
   // ================= HERO BACKGROUND =================
 
-  Widget _heroModulesBackground() {
+  Widget _heroModulesBackground(bool isDarkMode) {
     final count = featuredAppServices.length;
     return RepaintBoundary(
       child: SizedBox(
@@ -225,7 +254,7 @@ class _HomePageState extends State<HomePage> {
                     fit: BoxFit.cover,
                     image: img,
                     colorFilter: ColorFilter.mode(
-                      Colors.black.withValues(alpha: 0.45),
+                      Colors.black.withOpacity(isDarkMode ? 0.45 : 0.25),
                       BlendMode.darken,
                     ),
                   ),
@@ -238,16 +267,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _gradientOverlay() {
+  Widget _gradientOverlay(bool isDarkMode) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
         height: 0.85 * _deviceHeight,
         width: _deviceWidth,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color.fromARGB(255, 9, 43, 71), Colors.transparent],
-            stops: [0.65, 1.0],
+            colors: isDarkMode
+                ? [const Color.fromARGB(255, 9, 43, 71), Colors.transparent]
+                : [Colors.white, Colors.transparent],
+            stops: const [0.65, 1.0],
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
           ),
@@ -259,6 +290,15 @@ class _HomePageState extends State<HomePage> {
   // ================= FOREGROUND CONTENT =================
 
   Widget _contentLayer() {
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+    final isDarkMode = themeManager.isDarkMode;
+
+    Color getTextColor() => isDarkMode ? Colors.white : Colors.black;
+    Color getSubtitleColor() => isDarkMode ? Colors.white70 : Colors.black54;
+    Color getPrimaryColor() => isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71);
+    Color getCardColor() => isDarkMode ? Colors.white.withOpacity(0.08) : Colors.grey[50]!;
+    Color getBorderColor() => isDarkMode ? Colors.greenAccent.withOpacity(0.3) : Colors.grey[300]!;
+
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -268,25 +308,25 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _topBar(),
+            _topBar(isDarkMode),
             SizedBox(height: _deviceHeight * 0.02),
-            _greeting(),
+            _greeting(isDarkMode),
             SizedBox(height: _deviceHeight * 0.02),
-            _moduleHeader(),
+            _moduleHeader(isDarkMode),
             SizedBox(height: _deviceHeight * 0.02),
-            _progressRow(),
+            _progressRow(isDarkMode),
             SizedBox(height: _deviceHeight * 0.02),
-            _quickActionsRow(),
+            _quickActionsRow(isDarkMode),
             SizedBox(height: _deviceHeight * 0.02),
-            _dailyAffirmationCard(),
+            _dailyAffirmationCard(isDarkMode),
             SizedBox(height: _deviceHeight * 0.02),
-            _aiPromptSection(),
+            _aiPromptSection(isDarkMode),
             SizedBox(height: _deviceHeight * 0.02),
-            _safetyBanner(),
+            _safetyBanner(isDarkMode),
             SizedBox(height: _deviceHeight * 0.025),
-            _moodCheckInCard(),
+            _moodCheckInCard(isDarkMode),
             SizedBox(height: _deviceHeight * 0.02),
-            _activityTracker(),
+            _activityTracker(isDarkMode),
             SizedBox(height: _deviceHeight * 0.04),
             ScrollableServicesWidget(
               height: _deviceHeight * 0.24,
@@ -303,7 +343,7 @@ class _HomePageState extends State<HomePage> {
 
   // ================= TOP BAR / GREETING =================
 
-  Widget _topBar() {
+  Widget _topBar(bool isDarkMode) {
     return SizedBox(
       height: _deviceHeight * 0.10,
       child: Row(
@@ -315,7 +355,7 @@ class _HomePageState extends State<HomePage> {
                 TextSpan(
                   text: 'Worry ',
                   style: GoogleFonts.poppins(
-                    color: Colors.white,
+                    color: isDarkMode ? Colors.white : Colors.black,
                     fontSize: _deviceHeight * 0.035,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5,
@@ -324,7 +364,7 @@ class _HomePageState extends State<HomePage> {
                 TextSpan(
                   text: 'Mate',
                   style: GoogleFonts.poppins(
-                    color: Colors.greenAccent,
+                    color: isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71),
                     fontSize: _deviceHeight * 0.035,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.0,
@@ -335,17 +375,17 @@ class _HomePageState extends State<HomePage> {
           ),
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.settings_rounded,
                 size: 30,
-                color: Colors.white,
+                color: isDarkMode ? Colors.white : Colors.black,
                 semanticLabel: 'Settings',
               ),
               SizedBox(width: _deviceWidth * 0.03),
-              const Icon(
+              Icon(
                 Icons.notifications,
                 size: 30,
-                color: Colors.white,
+                color: isDarkMode ? Colors.white : Colors.black,
                 semanticLabel: 'Notifications',
               ),
             ],
@@ -355,7 +395,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _greeting() {
+  Widget _greeting(bool isDarkMode) {
     final hour = DateTime.now().hour;
     final greeting = hour < 12
         ? 'Good morning'
@@ -365,7 +405,7 @@ class _HomePageState extends State<HomePage> {
     return Text(
       '$greeting 👋',
       style: TextStyle(
-        color: Colors.white,
+        color: isDarkMode ? Colors.white : Colors.black,
         fontSize: _deviceHeight * 0.04,
         fontWeight: FontWeight.w600,
       ),
@@ -374,7 +414,7 @@ class _HomePageState extends State<HomePage> {
 
   // ================= HERO TITLE + INDICATORS =================
 
-  Widget _moduleHeader() {
+  Widget _moduleHeader(bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -382,7 +422,7 @@ class _HomePageState extends State<HomePage> {
           featuredAppServices[_selectedModule].title,
           maxLines: 2,
           style: TextStyle(
-            color: Colors.white,
+            color: isDarkMode ? Colors.white : Colors.black,
             fontSize: _deviceHeight * 0.028,
             fontWeight: FontWeight.bold,
           ),
@@ -397,7 +437,9 @@ class _HomePageState extends State<HomePage> {
               height: _deviceHeight * 0.01,
               width: active ? _deviceHeight * 0.035 : _deviceHeight * 0.015,
               decoration: BoxDecoration(
-                color: active ? Colors.greenAccent : Colors.white24,
+                color: active
+                    ? (isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71))
+                    : (isDarkMode ? Colors.white24 : Colors.grey[400]),
                 borderRadius: BorderRadius.circular(20),
               ),
             );
@@ -409,7 +451,7 @@ class _HomePageState extends State<HomePage> {
 
   // ================= STATS ROW =================
 
-  Widget _progressRow() {
+  Widget _progressRow(bool isDarkMode) {
     final now = DateTime.now();
     final todayKey = DateTime(now.year, now.month, now.day);
     final weekCount = _activityData.keys
@@ -418,14 +460,15 @@ class _HomePageState extends State<HomePage> {
     final streak = _computeStreak();
     return Row(
       children: [
-        _miniStat('Streak', '${streak}d', Icons.local_fire_department),
+        _miniStat('Streak', '${streak}d', Icons.local_fire_department, isDarkMode),
         const SizedBox(width: 12),
-        _miniStat('This Week', '$weekCount', Icons.calendar_today),
+        _miniStat('This Week', '$weekCount', Icons.calendar_today, isDarkMode),
         const SizedBox(width: 12),
         _miniStat(
           'Today',
           '${_activityData[todayKey] ?? 0}',
           Icons.bubble_chart,
+          isDarkMode,
         ),
       ],
     );
@@ -433,11 +476,11 @@ class _HomePageState extends State<HomePage> {
 
   int _computeStreak() {
     final dates =
-        _activityData.keys
-            .map((d) => DateTime(d.year, d.month, d.day))
-            .toSet()
-            .toList()
-          ..sort();
+    _activityData.keys
+        .map((d) => DateTime(d.year, d.month, d.day))
+        .toSet()
+        .toList()
+      ..sort();
     int streak = 0;
     DateTime cursor = DateTime(
       DateTime.now().year,
@@ -451,32 +494,35 @@ class _HomePageState extends State<HomePage> {
     return streak;
   }
 
-  Widget _miniStat(String label, String value, IconData icon) {
+  Widget _miniStat(String label, String value, IconData icon, bool isDarkMode) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white10,
+          color: isDarkMode ? Colors.white10 : Colors.grey[100],
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.greenAccent, size: 20),
+            Icon(icon, color: isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71), size: 20),
             const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   value,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.white : Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),
                 Text(
                   label,
-                  style: const TextStyle(color: Colors.white70, fontSize: 11),
+                  style: TextStyle(
+                      color: isDarkMode ? Colors.white70 : Colors.black54,
+                      fontSize: 11
+                  ),
                 ),
               ],
             ),
@@ -488,7 +534,7 @@ class _HomePageState extends State<HomePage> {
 
   // ================= QUICK ACTIONS =================
 
-  Widget _quickActionsRow() {
+  Widget _quickActionsRow(bool isDarkMode) {
     final actions = [
       (Icons.edit_note, 'Journal'),
       (Icons.mood, 'Mood'),
@@ -507,30 +553,33 @@ class _HomePageState extends State<HomePage> {
           final label = pair.$2;
           return GestureDetector(
             onTap: () {
-              if (label == 'Mood') _openMoodQuickPick();
+              if (label == 'Mood') _openMoodQuickPick(isDarkMode);
             },
             child: Container(
               width: _deviceWidth * 0.23,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color.fromARGB(255, 9, 43, 71), Color(0xFF094470)],
+                gradient: LinearGradient(
+                  colors: isDarkMode
+                      ? [const Color.fromARGB(255, 9, 43, 71), const Color(0xFF094470)]
+                      : [Colors.white, Colors.grey[100]!],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
+                border: isDarkMode ? null : Border.all(color: Colors.grey[300]!),
               ),
               padding: const EdgeInsets.all(12),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon, color: Colors.white, size: 28),
+                  Icon(icon, color: isDarkMode ? Colors.white : const Color.fromARGB(255, 9, 43, 71), size: 28),
                   const SizedBox(height: 6),
                   Expanded(
                     child: Text(
                       label,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: isDarkMode ? Colors.white : Colors.black,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -547,24 +596,24 @@ class _HomePageState extends State<HomePage> {
 
   // ================= AFFIRMATION =================
 
-  Widget _dailyAffirmationCard() {
+  Widget _dailyAffirmationCard(bool isDarkMode) {
     final affirmation = _affirmations[_affirmationIndex];
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white10,
+        color: isDarkMode ? Colors.white10 : Colors.grey[100],
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
         children: [
-          Icon(Icons.lightbulb, color: Colors.amber[300], size: 28),
+          Icon(Icons.lightbulb, color: isDarkMode ? Colors.amber[300] : Colors.amber, size: 28),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               affirmation,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: isDarkMode ? Colors.white : Colors.black,
                 fontSize: 14,
                 height: 1.3,
               ),
@@ -577,14 +626,14 @@ class _HomePageState extends State<HomePage> {
 
   // ================= AI PROMPT SECTION =================
 
-  Widget _aiPromptSection() {
+  Widget _aiPromptSection(bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Ask for support',
           style: TextStyle(
-            color: Colors.white,
+            color: isDarkMode ? Colors.white : Colors.black,
             fontSize: _deviceHeight * 0.022,
             fontWeight: FontWeight.bold,
           ),
@@ -606,18 +655,22 @@ class _HomePageState extends State<HomePage> {
                 ),
                 decoration: BoxDecoration(
                   color: selected
-                      ? Colors.greenAccent.withValues(alpha: 0.25)
-                      : Colors.white12,
+                      ? (isDarkMode ? Colors.greenAccent.withOpacity(0.25) : const Color.fromARGB(255, 9, 43, 71))
+                      : (isDarkMode ? Colors.white12 : Colors.grey[200]),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: selected ? Colors.greenAccent : Colors.white24,
-                    width: 1,
+                    // color: selected
+                    //     ? (isDarkMode ? Colors.greenAccent : Colors.blue)
+                    //     : (isDarkMode ? Colors.white24 : Colors.grey[400]),
+                    // width: 1,
                   ),
                 ),
                 child: Text(
                   p,
                   style: TextStyle(
-                    color: selected ? Colors.greenAccent : Colors.white70,
+                    color: selected
+                        ? (isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71))
+                        : (isDarkMode ? Colors.white70 : Colors.black54),
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.2,
@@ -630,7 +683,7 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: isDarkMode ? Colors.white.withOpacity(0.08) : Colors.grey[100],
             borderRadius: BorderRadius.circular(14),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -639,10 +692,10 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: TextField(
                   controller: _promptCtrl,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                  decoration: InputDecoration(
                     hintText: 'Describe how you feel or ask a question...',
-                    hintStyle: TextStyle(color: Colors.white54),
+                    hintStyle: TextStyle(color: isDarkMode ? Colors.white54 : Colors.grey[600]),
                     border: InputBorder.none,
                   ),
                   minLines: 1,
@@ -651,7 +704,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.send, color: Colors.greenAccent),
+                icon: Icon(Icons.send, color: isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71)),
                 onPressed: _submitPrompt,
                 tooltip: 'Send',
               ),
@@ -679,7 +732,7 @@ class _HomePageState extends State<HomePage> {
 
   // ================= SAFETY BANNER =================
 
-  Widget _safetyBanner() {
+  Widget _safetyBanner(bool isDarkMode) {
     // fallback index safe
     final idx = featuredAppServices.length > 2 ? 2 : 0;
     final imgProvider = (featuredAppServices[idx].coverImage.url.isNotEmpty)
@@ -694,7 +747,7 @@ class _HomePageState extends State<HomePage> {
           fit: BoxFit.cover,
           image: imgProvider,
           colorFilter: ColorFilter.mode(
-            Colors.black.withValues(alpha: 0.55),
+            Colors.black.withOpacity(isDarkMode ? 0.55 : 0.35),
             BlendMode.darken,
           ),
         ),
@@ -703,9 +756,9 @@ class _HomePageState extends State<HomePage> {
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: _deviceWidth * 0.04),
-            child: const Icon(
+            child: Icon(
               Icons.shield_rounded,
-              color: Colors.greenAccent,
+              color: isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71),
               size: 42,
             ),
           ),
@@ -722,7 +775,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_forward_ios,
               color: Colors.white70,
               size: 18,
@@ -737,7 +790,7 @@ class _HomePageState extends State<HomePage> {
 
   // ================= MOOD =================
 
-  Widget _moodCheckInCard() {
+  Widget _moodCheckInCard(bool isDarkMode) {
     final moods = [
       ('😞', 'Low'),
       ('😐', 'Meh'),
@@ -748,7 +801,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white10,
+        color: isDarkMode ? Colors.white10 : Colors.grey[100],
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
@@ -757,7 +810,7 @@ class _HomePageState extends State<HomePage> {
           Text(
             'Mood check-in',
             style: TextStyle(
-              color: Colors.white,
+              color: isDarkMode ? Colors.white : Colors.black,
               fontSize: _deviceHeight * 0.02,
               fontWeight: FontWeight.bold,
             ),
@@ -787,8 +840,8 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(height: 4),
                         Text(
                           label,
-                          style: const TextStyle(
-                            color: Colors.white70,
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white70 : Colors.black54,
                             fontSize: 11,
                           ),
                         ),
@@ -804,43 +857,44 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _openMoodQuickPick() {
+  void _openMoodQuickPick(bool isDarkMode) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF0B2F4E),
+      backgroundColor: isDarkMode ? const Color(0xFF0B2F4E) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
       ),
       builder: (_) =>
-          Padding(padding: const EdgeInsets.all(24), child: _moodCheckInCard()),
+          Padding(padding: const EdgeInsets.all(24), child: _moodCheckInCard(isDarkMode)),
     );
   }
 
-  // REPLACE _activityTracker():
-  Widget _activityTracker() {
+  // ================= ACTIVITY TRACKER =================
+
+  Widget _activityTracker(bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Your activity',
           style: TextStyle(
-            color: Colors.white,
+            color: isDarkMode ? Colors.white : Colors.black,
             fontSize: _deviceHeight * 0.022,
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 10),
-        _weeklyBarChart(),
+        _weeklyBarChart(isDarkMode),
         const SizedBox(height: 14),
-        _activityRingsRow(),
+        _activityRingsRow(isDarkMode),
         const SizedBox(height: 8),
-        _streakBar(),
+        _streakBar(isDarkMode),
       ],
     );
   }
 
   // Weekly bar (uses past 7 days)
-  Widget _weeklyBarChart() {
+  Widget _weeklyBarChart(bool isDarkMode) {
     final now = DateTime.now();
     final days = List.generate(7, (i) {
       final d = now.subtract(Duration(days: 6 - i));
@@ -855,11 +909,11 @@ class _HomePageState extends State<HomePage> {
             toY: v,
             width: 14,
             borderRadius: BorderRadius.circular(4),
-            color: Colors.greenAccent,
+            color: isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71),
             backDrawRodData: BackgroundBarChartRodData(
               show: true,
               toY: 6, // expected max
-              color: Colors.white12,
+              color: isDarkMode ? Colors.white12 : Colors.grey[200]!,
             ),
           ),
         ],
@@ -870,7 +924,7 @@ class _HomePageState extends State<HomePage> {
       height: 180,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white10,
+        color: isDarkMode ? Colors.white10 : Colors.grey[100],
         borderRadius: BorderRadius.circular(14),
       ),
       child: BarChart(
@@ -896,7 +950,10 @@ class _HomePageState extends State<HomePage> {
                   final idx = (val.toInt() - 1) % 7;
                   return Text(
                     w[idx],
-                    style: const TextStyle(color: Colors.white60, fontSize: 11),
+                    style: TextStyle(
+                        color: isDarkMode ? Colors.white60 : Colors.black54,
+                        fontSize: 11
+                    ),
                   );
                 },
               ),
@@ -909,7 +966,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Activity rings (example metrics – adapt)
-  Widget _activityRingsRow() {
+  Widget _activityRingsRow(bool isDarkMode) {
     // Derive pseudo metrics
     final today = DateTime.now();
     final key = DateTime(today.year, today.month, today.day);
@@ -923,21 +980,24 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _ring('Today', todayCount / 6, '$todayCount', Colors.greenAccent),
-        _ring('7 Days', weekTotal / 40, '$weekTotal', Colors.tealAccent),
-        _ring('Streak', streak / 30, '${streak}d', Colors.lightBlueAccent),
+        _ring('Today', todayCount / 6, '$todayCount',
+            isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71), isDarkMode),
+        _ring('7 Days', weekTotal / 40, '$weekTotal',
+            isDarkMode ? Colors.tealAccent : Colors.teal, isDarkMode),
+        _ring('Streak', streak / 30, '${streak}d',
+            isDarkMode ? Colors.lightBlueAccent : Colors.lightBlue, isDarkMode),
       ],
     );
   }
 
-  Widget _ring(String label, double pct, String center, Color color) {
+  Widget _ring(String label, double pct, String center, Color color, bool isDarkMode) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white10,
+            color: isDarkMode ? Colors.white10 : Colors.grey[100],
             borderRadius: BorderRadius.circular(14),
           ),
           child: Column(
@@ -949,12 +1009,12 @@ class _HomePageState extends State<HomePage> {
                 percent: pct.clamp(0, 1),
                 animation: true,
                 circularStrokeCap: CircularStrokeCap.round,
-                backgroundColor: Colors.white24,
+                backgroundColor: isDarkMode ? Colors.white24 : Colors.grey[300]!,
                 progressColor: color,
                 center: Text(
                   center,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.white : Colors.black,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -963,8 +1023,8 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 6),
               Text(
                 label,
-                style: const TextStyle(
-                  color: Colors.white70,
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white70 : Colors.black54,
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
                 ),
@@ -977,14 +1037,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Streak bar
-  Widget _streakBar() {
+  Widget _streakBar(bool isDarkMode) {
     final streak = _computeStreak();
     final maxVisual = 30;
     final fill = (streak / maxVisual).clamp(0, 1.0);
     return Container(
       height: 20,
       decoration: BoxDecoration(
-        color: Colors.white10,
+        color: isDarkMode ? Colors.white10 : Colors.grey[100],
         borderRadius: BorderRadius.circular(30),
       ),
       clipBehavior: Clip.antiAlias,
@@ -993,9 +1053,11 @@ class _HomePageState extends State<HomePage> {
           FractionallySizedBox(
             widthFactor: fill.toDouble(),
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF1EB980), Color(0xFF0B6BB5)],
+                  colors: isDarkMode
+                      ? [const Color(0xFF1EB980), const Color(0xFF0B6BB5)]
+                      : [const Color.fromARGB(255, 9, 43, 71), Colors.lightBlue],
                 ),
               ),
             ),
@@ -1004,8 +1066,8 @@ class _HomePageState extends State<HomePage> {
             alignment: Alignment.center,
             child: Text(
               'Streak: $streak',
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: isDarkMode ? Colors.white : Colors.black,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.3,
@@ -1016,6 +1078,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
   // ================= ACTIVITY / HEATMAP =================
 
   void _incrementActivity(DateTime day) {
