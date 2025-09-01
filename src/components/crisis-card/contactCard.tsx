@@ -7,11 +7,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import React from "react";
-import { HiOutlinePhone } from "react-icons/hi2";
-import { FiGlobe } from "react-icons/fi";
 import MyCard from "../DisplayInfo";
-import { MdOutlineEmail } from "react-icons/md";
-import { FiPhone } from "react-icons/fi";
+import { Globe2, Mail, Phone } from "lucide-react";
 
 interface contactCardProps {
   name: string;
@@ -39,13 +36,14 @@ const contactCard = ({
         </span>
       </CardHeader>
       <CardContent className="space-y-1 p-2">
-        <MyCard type="Website" info={website || "N/A"} small />
+        <MyCard icon={<Globe2 />} type="Website" info={website || "N/A"} small />
         <MyCard
+          icon={<Mail />}
           type="Email"
           info={email || "N/A"}
           small
         />
-        <MyCard type="Phone" info={phone || "N/A"} small />
+        <MyCard icon={<Phone />} type="Phone" info={phone || "N/A"} small />
       </CardContent>
     </Card>
   );
