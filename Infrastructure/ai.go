@@ -86,7 +86,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	- Use the same language as in the action cards.
     - The ui tools section is for the frontend to use for displaying appropriate ui elements along with the card.
     - You can use ui tools only if they are in this list : ["box_breathing", "daily_journal", "grounding", "tracker"].
-    - return only the relevant ui tools for the topic based on the action block.
+    - always return two relevant ui tools for the topic based on the action block.
 
 	Steps:
 	%s
