@@ -67,8 +67,12 @@ export const ImagesSlider: React.FC<ImagesSliderProps> = ({
 
     window.addEventListener("keydown", handleKeyDown);
 
-    let interval: NodeJS.Timer;
-    if (autoplay) interval = setInterval(handleNext, 5000);
+    let interval: number | undefined;
+    if (autoplay){
+       interval=window.setInterval(() => {
+      handleNext();
+    }, 5000);
+    }
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
@@ -115,7 +119,6 @@ export const ImagesSlider: React.FC<ImagesSliderProps> = ({
           <motion.div
             key={currentIndex}
             custom={direction}
-            variants={slideVariants}
             initial="enter"
             animate="center"
             exit="exit"
