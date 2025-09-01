@@ -1,6 +1,6 @@
 "use client"
 import Sidebar from '@/components/Sidebar'
-import { Mic, Send } from 'lucide-react'
+import { Mic, Send, Menu } from 'lucide-react'
 import React, { useState } from 'react'
 import CrisisCard from '@/app/components/CrisisCard'
 
@@ -118,15 +118,26 @@ const Workspace = () => {
         // "እኔና ቤተሰቤ እንከራከራለን"
     ];
     return (
-        <div className='h-screen flex flex-row min-h-screen text-[#2a4461]  bg-[#ffffff]'>
-            <div className='items-start'>
+        <div className='h-screen flex flex-row min-h-screen text-[#2a4461] bg-[#ffffff]'>
+            {/* Mobile Menu Button */}
+            <button
+                onClick={toggleSidebar}
+                className="fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg border"
+            >
+                <Menu className="w-5 h-5" />
+            </button>
+
+            {/* Sidebar - Hidden on mobile when collapsed, visible on desktop */}
+            <div className={`${sidebarCollapsed ? 'hidden lg:block' : 'block'} lg:relative lg:items-start`}>
                 <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
             </div>
+
+            {/* Main Content */}
             <div className='flex flex-col flex-1 relative items-stretch h-screen min-h-0'>
                 {!hasStarted && messages.length === 0 && (
-                    <div className='flex flex-col gap-3 justify-center items-center flex-1 pt-16'>
-                        <h1 className='font-bold text-2xl'>Hey Mate, How can i Help you today?</h1>
-                        <div>
+                    <div className='flex flex-col gap-3 justify-center items-center flex-1 pt-16 px-4'>
+                        <h1 className='font-bold text-xl md:text-2xl text-center'>Hey Mate, How can i Help you today?</h1>
+                        <div className='w-full max-w-md'>
                             {sampleQuestions.map((question, index) => (
                                 <div className='flex flex-col gap-y-3' key={index}>
                                     <button
@@ -142,7 +153,7 @@ const Workspace = () => {
                 )}
 
                 {(messages.length > 0 || actionCards.length > 0) && (
-                    <div className='w-full flex-1 overflow-y-auto px-4 pt-8 self-stretch'>
+                    <div className='w-full flex-1 overflow-y-auto px-2 md:px-4 pt-8 self-stretch'>
                         <div className='mx-auto w-full max-w-[700px]'>
                             {messages.map((msg, idx) => {
                                 const isUser = msg.role === 'user'
@@ -234,9 +245,9 @@ const Workspace = () => {
                 )}
                 {/* Composer */}
                 {!isCrisisMode ? (
-                    <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6">
-                        <h1 className='mx-auto text-blue font-bold mb-2'>General wellbeing advice, not medical advice.</h1>
-                        <div className="border rounded-lg overflow-hidden mt-2 flex w-[700px] h-28 bg-white sticky bottom-0">
+                    <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6 px-2 md:px-0">
+                        <h1 className='mx-auto text-blue font-bold mb-2 text-center text-sm md:text-base'>General wellbeing advice, not medical advice.</h1>
+                        <div className="border rounded-lg overflow-hidden mt-2 flex w-full max-w-[700px] h-28 bg-white sticky bottom-0">
                             <div className="flex items-stretch gap-3 p-4 w-full">
                                 <div className="flex-1">
                                     <textarea
@@ -256,9 +267,9 @@ const Workspace = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6">
+                    <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6 px-2 md:px-0">
                         <div className="text-center">
-                            <p className="text-red-600 font-medium mb-4">Crisis mode active - Chat disabled for your safety</p>
+                            <p className="text-red-600 font-medium mb-4 text-sm md:text-base">Crisis mode active - Chat disabled for your safety</p>
                             <button
                                 onClick={() => {
                                     setIsCrisisMode(false)
