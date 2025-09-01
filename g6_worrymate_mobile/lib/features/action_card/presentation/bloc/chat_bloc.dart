@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../domain/entities/chat_message_entity.dart';
 import '../../domain/usecases/action_block_usecase.dart';
 import '../../domain/usecases/action_card_usecase.dart';
 import '../../domain/usecases/add_chat.dart';
@@ -17,7 +18,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     required this.addChatUsecase,
     required this.getActionBlockUsecase,
     required this.getTopicKeyUsecase,
-  }) : super(ChatInitial()) {
+  }) : super(const ChatInitial()) {
     on<SendChatMessageEvent>(_onSendChatMessage);
   }
 
@@ -25,33 +26,44 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     SendChatMessageEvent event,
     Emitter<ChatState> emit,
   ) async {
-    emit(ChatLoading());
+    final currentMessages = List<ChatMessage>.from(state.messages);
+    // Add user message
+    currentMessages.add(
+      ChatMessage(text: event.params.content, sender: ChatSender.user),
+    );
+    emit(ChatLoading(messages: currentMessages));
     try {
       final result = await addChatUsecase.call(event.params);
       await result.fold(
         (failure) async {
-          emit(ChatError(failure.toString()));
+          emit(ChatError(failure.toString(), messages: currentMessages));
         },
         (risk) async {
           if (risk == 3) {
-            emit(ChatCrisis());
-          }
-
-          else if (risk == 2 || risk == 1) {
+            currentMessages.add(
+              ChatMessage(
+                text: 'Crisis detected. Please seek help immediately.',
+                sender: ChatSender.bot,
+              ),
+            );
+            emit(ChatCrisis(messages: currentMessages));
+          } else if (risk == 2 || risk == 1) {
             final topicKeyResult = await getTopicKeyUsecase.call(event.params);
             await topicKeyResult.fold(
               (failure) async {
-                emit(ChatError(failure.toString()));
+                emit(ChatError(failure.toString(), messages: currentMessages));
               },
               (topicKey) async {
-                final lang = 'en'; // or get from event/params
+                final lang = 'en';
                 final actionBlockResult = await getActionBlockUsecase.call(
                   topicKey,
                   lang,
                 );
                 await actionBlockResult.fold(
                   (failure) async {
-                    emit(ChatError(failure.toString()));
+                    emit(
+                      ChatError(failure.toString(), messages: currentMessages),
+                    );
                   },
                   (actionBlock) async {
                     final composeResult = await composeActionCardUsecase.call(
@@ -68,24 +80,42 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                       },
                       language: lang,
                     );
-
                     composeResult.fold(
-                      (failure) => emit(ChatError(failure.toString())),
-                      (actionCard) => emit(
-                        ChatSuccess(risk: risk, actionCard: actionCard),
-                      ), // or pass the whole entity
+                      (failure) => emit(
+                        ChatError(
+                          failure.toString(),
+                          messages: currentMessages,
+                        ),
+                      ),
+                      (actionCard) {
+                        currentMessages.add(
+                          ChatMessage(
+                            text: 'Here is an action card for you.',
+                            sender: ChatSender.bot,
+                            actionCard: actionCard,
+                          ),
+                        );
+                        emit(
+                          ChatSuccess(risk: risk, messages: currentMessages),
+                        );
+                      },
                     );
                   },
                 );
               },
             );
           } else {
-            emit(ChatError('Unexpected risk value: $risk'));
+            emit(
+              ChatError(
+                'Unexpected risk value: $risk',
+                messages: currentMessages,
+              ),
+            );
           }
         },
       );
     } catch (e) {
-      emit(ChatError(e.toString()));
+      emit(ChatError(e.toString(), messages: currentMessages));
     }
   }
 }
