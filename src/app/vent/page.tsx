@@ -1,11 +1,8 @@
-<<<<<<< HEAD
-import React from 'react'
-const Page = () => {
-=======
 "use client"
 import Sidebar from '@/components/Sidebar'
 import { Mic, Send } from 'lucide-react'
 import React, { useState } from 'react'
+import CrisisCard from '@/app/components/CrisisCard'
 
 const Workspace = () => {
     type ChatMessage = { role: 'user' | 'assistant', content: string }
@@ -47,35 +44,8 @@ const Workspace = () => {
             const riskTags = riskData?.tags || []
 
             if (risk === 3) {
-                // Crisis: fetch crisis resources and enter crisis mode
+                // Crisis: enter crisis mode and show crisis card modal
                 setIsCrisisMode(true)
-                try {
-                    const res = await fetch('/api/resources')
-                    const data = await res.json().catch(() => ({}))
-                    if (!res.ok) {
-                        console.log('resources error', data)
-                        return
-                    }
-                    const resourcesPayload = data?.["resources: "] || data?.resources || data
-                    const region = resourcesPayload?.region
-                    const resources = resourcesPayload?.resources || []
-                    const safety = resourcesPayload?.safety_plan || []
-
-                    setActionCards(prev => [...prev, {
-                        __crisis: true,
-                        title: 'Immediate Support Resources',
-                        description: region ? `Region: ${region}` : 'Crisis support resources near you.',
-                        steps: safety.map((s: any) => `${s.step}. ${s.instruction}`),
-                        miniTools: resources.map((r: any) => ({
-                            title: `${r.name} (${r.type})`,
-                            url: r?.contact?.website || (r?.contact?.phone ? `tel:${r.contact.phone}` : '#')
-                        })),
-                        ifWorse: 'If you feel unsafe, contact emergency services immediately.',
-                        disclaimer: 'This is not medical advice.'
-                    }])
-                } catch (e) {
-                    console.log('Failed fetching crisis resources', e)
-                }
                 return
             }
 
@@ -108,7 +78,7 @@ const Workspace = () => {
                 setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I could not load the action block.' }])
                 return
             }
-            const block = actionBlockData?.actionBlock || actionBlockData?.Block || actionBlockData?.block
+            const block = actionBlockData?.actionBlock || actionBlockData?.Block || actionBlockData?.block || actionBlockData.action_block
 
             // 4. compose full card from backend
             const composeRes = await fetch('/api/compose', {
@@ -147,7 +117,6 @@ const Workspace = () => {
         // "ስለ ፈተናዬ በጣም ተጨንቄያለሁ",
         // "እኔና ቤተሰቤ እንከራከራለን"
     ];
->>>>>>> vent-chat
     return (
         <div className='h-screen flex flex-row min-h-screen text-[#2a4461]  bg-[#ffffff]'>
             <div className='items-start'>
@@ -255,6 +224,14 @@ const Workspace = () => {
                         </div>
                     </div>
                 )}
+                {/* Crisis Card Modal */}
+                {isCrisisMode && (
+                    <div className="fixed inset-0 z-90 flex items-center justify-center bg-black/50 animate-in fade-in duration-300">
+                        <div className="animate-in slide-in-from-bottom-4 duration-300">
+                            <CrisisCard />
+                        </div>
+                    </div>
+                )}
                 {/* Composer */}
                 {!isCrisisMode ? (
                     <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6">
@@ -290,7 +267,7 @@ const Workspace = () => {
                                     setHasStarted(false)
                                     setPrompt('')
                                 }}
-                                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                             >
                                 Reset Chat & Start Fresh
                             </button>
@@ -302,9 +279,4 @@ const Workspace = () => {
     )
 }
 
-<<<<<<< HEAD
-
-export default Page
-=======
 export default Workspace
->>>>>>> vent-chat
