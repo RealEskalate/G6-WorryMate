@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:g6_worrymate_mobile/core/widgets/custom_bottom_nav_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../core/theme/theme_manager.dart';
+import '../../../../core/widgets/custom_bottom_nav_bar.dart';
 import 'box_breathing_screen.dart';
 import 'daily_journal_screen.dart';
 import 'five_four_screen.dart';
@@ -23,19 +25,22 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
     required String title,
     required String description,
     required VoidCallback onTap,
+    required bool isDarkMode,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 18),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
+        color: isDarkMode ? Colors.white.withOpacity(0.04) : Colors.grey[50],
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.greenAccent.withOpacity(0.18),
+          color: isDarkMode
+              ? Colors.greenAccent.withOpacity(0.18)
+              : const Color.fromARGB(255, 9, 43, 71),
           width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(isDarkMode ? 0.08 : 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -53,14 +58,16 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
                 height: 44,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [color, Colors.greenAccent],
+                    colors: isDarkMode
+                        ? [color, Colors.greenAccent]
+                        : [color, const Color.fromARGB(255, 9, 43, 71)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withOpacity(0.18),
+                      color: color.withOpacity(isDarkMode ? 0.18 : 0.2),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -78,7 +85,7 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: isDarkMode ? Colors.white : Colors.black,
                         letterSpacing: 0.2,
                       ),
                     ),
@@ -87,7 +94,7 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
                       description,
                       style: GoogleFonts.poppins(
                         fontSize: 13,
-                        color: Colors.white70,
+                        color: isDarkMode ? Colors.white70 : Colors.black54,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -96,7 +103,7 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Colors.greenAccent,
+                color: isDarkMode ? Colors.greenAccent : Colors.blue,
                 size: 18,
               ),
             ],
@@ -108,138 +115,159 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 9, 43, 71),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 9, 43, 71),
-        elevation: 0,
-       
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Offline Toolkit',
-              style: GoogleFonts.poppins(
-                color: Colors.greenAccent,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
+    return Consumer<ThemeManager>(
+        builder: (context, themeManager, child)
+    {
+      final isDarkMode = themeManager.isDarkMode;
+
+      Color getPrimaryColor() => isDarkMode ? Colors.greenAccent : Colors.blue;
+      Color getBackgroundColor() =>
+          isDarkMode
+              ? const Color.fromARGB(255, 9, 43, 71)
+              : Colors.white;
+      Color getTextColor() => isDarkMode ? Colors.white : Colors.black;
+      Color getSubtitleColor() => isDarkMode ? Colors.white70 : Colors.black54;
+
+      return Scaffold(
+        backgroundColor: getBackgroundColor(),
+        appBar: AppBar(
+          backgroundColor: isDarkMode
+              ? const Color.fromARGB(255, 9, 43, 71)
+              : Colors.white,
+          elevation: 0,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Offline Toolkit',
+                style: GoogleFonts.poppins(
+                  color: getPrimaryColor(),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
               ),
-            ),
-            Text(
-              'Wellness tools that work without internet',
-              style: GoogleFonts.poppins(
-                color: Colors.white70,
-                fontSize: 13,
-                fontWeight: FontWeight.normal,
+              Text(
+                'Wellness tools that work without internet',
+                style: GoogleFonts.poppins(
+                  color: getSubtitleColor(),
+                  fontSize: 13,
+                  fontWeight: FontWeight.normal,
+                ),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.greenAccent.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Text(
-              'Works Offline',
-              style: GoogleFonts.poppins(
-                color: Colors.greenAccent,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            ],
           ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildToolCard(
-              color: const Color(0xFF007AFF),
-              icon: Icons.favorite_border,
-              title: 'Box Breathing',
-              description: '4-4-4-4 breathing pattern to calm your mind',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => BoxBreathingScreen()),
-                );
-              },
-            ),
-            _buildToolCard(
-              color: const Color(0xFF34C759),
-              icon: Icons.camera_alt_outlined,
-              title: '5-4-3-2-1 Grounding',
-              description: 'Focus on your senses to stay present',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const FiveFourScreen(),
-                  ),
-                );
-              },
-            ),
-            _buildToolCard(
-              color: const Color(0xFFAF52DE),
-              icon: Icons.book_outlined,
-              title: 'Daily Journal',
-              description: 'Reflect on your thoughts and feelings',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const DailyJournalScreen(),
-                  ),
-                );
-              },
-            ),
-            _buildToolCard(
-              color: const Color(0xFFFF9500),
-              icon: Icons.trending_up,
-              title: 'Win Tracker',
-              description: 'Celebrate small victories and progress',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const WinTrackerScreen(),
-                  ),
-                );
-              },
+          actions: [
+            Container(
+              margin: const EdgeInsets.only(right: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: getPrimaryColor().withOpacity(0.18),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                'Works Offline',
+                style: GoogleFonts.poppins(
+                  color: getPrimaryColor(),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentTab,
-        onTap: (i) {
-          if (i == _currentTab) return;
-          setState(() => _currentTab = i);
-          switch (i) {
-            case 0:
-              Navigator.pushReplacementNamed(context, '/');
-              break;
-            case 1:
-              Navigator.pushReplacementNamed(context, '/journal');
-              break;
-            case 2:
-              break;
-            case 3:
-              Navigator.pushReplacementNamed(context, '/chat');
-              break;
-            case 4:
-              Navigator.pushReplacementNamed(context, '/settings');
-              break;
-          }
-        },
-      ),
+        body: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildToolCard(
+                color: const Color.fromARGB(255, 9, 43, 71),
+                icon: Icons.favorite_border,
+                title: 'Box Breathing',
+                description: '4-4-4-4 breathing pattern to calm your mind',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BoxBreathingScreen()),
+                  );
+                },
+                isDarkMode: isDarkMode,
+              ),
+              _buildToolCard(
+                color: isDarkMode ? const Color(0xFF34C759) : Colors.green,
+                icon: Icons.camera_alt_outlined,
+                title: '5-4-3-2-1 Grounding',
+                description: 'Focus on your senses to stay present',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FiveFourScreen(),
+                    ),
+                  );
+                },
+                isDarkMode: isDarkMode,
+              ),
+              _buildToolCard(
+                color: isDarkMode ? const Color(0xFFAF52DE) : Colors.purple,
+                icon: Icons.book_outlined,
+                title: 'Daily Journal',
+                description: 'Reflect on your thoughts and feelings',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DailyJournalScreen(),
+                    ),
+                  );
+                },
+                isDarkMode: isDarkMode,
+              ),
+              _buildToolCard(
+                color: isDarkMode ? const Color(0xFFFF9500) : Colors.orange,
+                icon: Icons.trending_up,
+                title: 'Win Tracker',
+                description: 'Celebrate small victories and progress',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WinTrackerScreen(),
+                    ),
+                  );
+                },
+                isDarkMode: isDarkMode,
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: CustomBottomNavBar(
+          currentIndex: _currentTab,
+          onTap: (i) {
+            if (i == _currentTab) return;
+            setState(() => _currentTab = i);
+            switch (i) {
+              case 0:
+                Navigator.pushReplacementNamed(context, '/');
+                break;
+              case 1:
+                Navigator.pushReplacementNamed(context, '/journal');
+                break;
+              case 2:
+                break;
+              case 3:
+                Navigator.pushReplacementNamed(context, '/chat');
+                break;
+              case 4:
+                Navigator.pushReplacementNamed(context, '/settings');
+                break;
+            }
+          },
+        ),
+      );
+
+    },
     );
-  }
-}
+  }}

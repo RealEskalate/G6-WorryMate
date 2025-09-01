@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../core/theme/theme_manager.dart';
 import '../../../../core/widgets/custom_bottom_nav_bar.dart';
 
 class DailyJournalScreen extends StatefulWidget {
@@ -14,7 +16,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
   final List<String> _prompts = [
     'How am I feeling right now?',
     'What made me smile today?',
-    'What is one thing I’m grateful for?',
+    'What is one thing I\'m grateful for?',
     'What challenge did I overcome recently?',
     'What do I hope for tomorrow?',
   ];
@@ -43,16 +45,54 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FB),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF7F9FB),
-        elevation: 0,
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+    final isDarkMode = themeManager.isDarkMode;
 
+    Color getBackgroundColor() => isDarkMode
+        ? const Color.fromARGB(255, 9, 43, 71)
+        : const Color(0xFFF7F9FB);
+
+    Color getCardColor() => isDarkMode
+        ? Colors.white.withOpacity(0.08)
+        : Colors.white;
+
+    Color getTextColor() => isDarkMode
+        ? Colors.white
+        : Colors.black87;
+
+    Color getSubtitleColor() => isDarkMode
+        ? Colors.white70
+        : Colors.black54;
+
+    Color getPrimaryColor() => isDarkMode
+        ? Colors.greenAccent
+        : const Color.fromARGB(255, 9, 43, 71);
+
+    Color getBorderColor() => isDarkMode
+        ? Colors.greenAccent.withOpacity(0.3)
+        : const Color(0xFFE0E6ED);
+
+    Color getInputBackgroundColor() => isDarkMode
+        ? Colors.white.withOpacity(0.05)
+        : const Color(0xFFF7F9FB);
+
+    Color getHintColor() => isDarkMode
+        ? Colors.white60
+        : Colors.grey[500]!;
+
+    Color getEntryBackgroundColor() => isDarkMode
+        ? Colors.white.withOpacity(0.05)
+        : const Color(0xFFF7F9FB);
+
+    return Scaffold(
+      backgroundColor: getBackgroundColor(),
+      appBar: AppBar(
+        backgroundColor: getBackgroundColor(),
+        elevation: 0,
         title: Text(
           'Daily Journal',
           style: GoogleFonts.poppins(
-            color: Colors.black87,
+            color: getTextColor(),
             fontWeight: FontWeight.w600,
             fontSize: 20,
           ),
@@ -65,12 +105,12 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
           padding: const EdgeInsets.all(24),
           margin: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: getCardColor(),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xFFE0E6ED)),
+            border: Border.all(color: getBorderColor()),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withOpacity(isDarkMode ? 0.04 : 0.02),
                 blurRadius: 12,
                 offset: const Offset(0, 2),
               ),
@@ -85,13 +125,13 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                   children: [
                     Icon(
                       Icons.library_books_outlined,
-                      color: Colors.purple[400],
+                      color: getPrimaryColor(),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'Daily Journal',
                       style: GoogleFonts.poppins(
-                        color: Colors.black87,
+                        color: getTextColor(),
                         fontWeight: FontWeight.w500,
                         fontSize: 16,
                       ),
@@ -102,7 +142,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                 Text(
                   'Journal Prompts:',
                   style: GoogleFonts.poppins(
-                    color: Colors.black87,
+                    color: getTextColor(),
                     fontWeight: FontWeight.w500,
                     fontSize: 15,
                   ),
@@ -118,12 +158,12 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                       margin: const EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? const Color(0xFF2563EB).withOpacity(0.08)
-                            : const Color(0xFFF7F9FB),
+                            ? getPrimaryColor().withOpacity(0.08)
+                            : getInputBackgroundColor(),
                         border: Border.all(
                           color: isSelected
-                              ? const Color(0xFF2563EB)
-                              : const Color(0xFFE0E6ED),
+                              ? getPrimaryColor()
+                              : getBorderColor(),
                           width: isSelected ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(8),
@@ -139,8 +179,8 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                                 ? Icons.radio_button_checked
                                 : Icons.radio_button_unchecked,
                             color: isSelected
-                                ? const Color(0xFF2563EB)
-                                : Colors.grey[400],
+                                ? getPrimaryColor()
+                                : getHintColor(),
                             size: 20,
                           ),
                           const SizedBox(width: 10),
@@ -148,7 +188,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                             child: Text(
                               prompt,
                               style: GoogleFonts.poppins(
-                                color: Colors.black87,
+                                color: getTextColor(),
                                 fontSize: 15,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -163,7 +203,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                 Text(
                   'Your thoughts:',
                   style: GoogleFonts.poppins(
-                    color: Colors.black87,
+                    color: getTextColor(),
                     fontWeight: FontWeight.w500,
                     fontSize: 15,
                   ),
@@ -178,31 +218,31 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                         minLines: 3,
                         maxLines: 6,
                         style: GoogleFonts.poppins(
-                          color: Colors.black87,
+                          color: getTextColor(),
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
                         ),
                         decoration: InputDecoration(
                           hintText:
-                              'Write about your day, feelings, or anything on your mind...',
+                          'Write about your day, feelings, or anything on your mind...',
                           hintStyle: GoogleFonts.poppins(
-                            color: Colors.grey[500],
+                            color: getHintColor(),
                           ),
                           contentPadding: const EdgeInsets.all(16),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFE0E6ED),
+                            borderSide: BorderSide(
+                              color: getBorderColor(),
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFE0E6ED),
+                            borderSide: BorderSide(
+                              color: getBorderColor(),
                             ),
                           ),
                           filled: true,
-                          fillColor: const Color(0xFFF7F9FB),
+                          fillColor: getInputBackgroundColor(),
                         ),
                         onSubmitted: (_) => _sendEntry(),
                       ),
@@ -211,7 +251,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                     ElevatedButton(
                       onPressed: _sendEntry,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
+                        backgroundColor: getPrimaryColor(),
                         foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(
@@ -231,7 +271,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                   Text(
                     'Your Journal Entries:',
                     style: GoogleFonts.poppins(
-                      color: Colors.black87,
+                      color: getTextColor(),
                       fontWeight: FontWeight.w500,
                       fontSize: 15,
                     ),
@@ -247,9 +287,9 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF7F9FB),
+                          color: getEntryBackgroundColor(),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFE0E6ED)),
+                          border: Border.all(color: getBorderColor()),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,7 +297,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                             Text(
                               entry['prompt'] ?? '',
                               style: GoogleFonts.poppins(
-                                color: const Color(0xFF2563EB),
+                                color: getPrimaryColor(),
                                 fontWeight: FontWeight.w500,
                                 fontSize: 14,
                               ),
@@ -266,7 +306,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                             Text(
                               entry['response'] ?? '',
                               style: GoogleFonts.poppins(
-                                color: Colors.black87,
+                                color: getTextColor(),
                                 fontSize: 15,
                               ),
                             ),
@@ -280,7 +320,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                 Text(
                   'Your journal entries are saved locally and private to you.',
                   style: GoogleFonts.poppins(
-                    color: Colors.grey[600],
+                    color: getSubtitleColor(),
                     fontSize: 12,
                   ),
                 ),
@@ -289,7 +329,6 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
           ),
         ),
       ),
-
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 4,
         onTap: (i) {
@@ -308,7 +347,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
               Navigator.pushReplacementNamed(context, '/chat');
               break;
             case 4:
-              // Already on settings
+            // Already on settings
               break;
           }
         },

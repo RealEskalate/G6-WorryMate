@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:g6_worrymate_mobile/core/theme/theme_manager.dart';
 
 class FiveFourScreen extends StatefulWidget {
   const FiveFourScreen({super.key});
@@ -21,27 +23,62 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const background = Color.fromARGB(255, 9, 43, 71); // chat screen bg
-    const cardColor = Colors.white;
-    const accent = Color.fromARGB(255, 9, 43, 71); // blue accent
-    const borderColor = Color(0xFFE0E6ED);
-    const stepActiveColor = Color(0xFF22314A); // dark blue
-    const stepInactiveColor = Color(0xFFF7F9FB);
-    const stepInactiveText = Color(0xFF7B8CA6);
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+    final isDarkMode = themeManager.isDarkMode;
+
+    Color getBackgroundColor() => isDarkMode
+        ? const Color.fromARGB(255, 9, 43, 71)
+        : const Color(0xFFF7F9FB);
+
+    Color getCardColor() => isDarkMode
+        ? Colors.white.withOpacity(0.08)
+        : Colors.white;
+
+    Color getPrimaryColor() => isDarkMode
+        ? Colors.greenAccent
+        : const Color.fromARGB(255, 9, 43, 71);
+
+    Color getTextColor() => isDarkMode
+        ? Colors.white
+        : const Color(0xFF22314A);
+
+    Color getSubtitleColor() => isDarkMode
+        ? Colors.white70
+        : const Color(0xFF7B8CA6);
+
+    Color getBorderColor() => isDarkMode
+        ? Colors.greenAccent.withOpacity(0.3)
+        : const Color(0xFFE0E6ED);
+
+    Color getStepInactiveColor() => isDarkMode
+        ? Colors.white.withOpacity(0.05)
+        : const Color(0xFFF7F9FB);
+
+    Color getStepInactiveText() => isDarkMode
+        ? Colors.white60
+        : const Color(0xFF7B8CA6);
+
+    Color getButtonTextColor() => isDarkMode
+        ? Colors.white
+        : const Color.fromARGB(255, 9, 43, 71);
+
+    Color getButtonBackgroundColor() => isDarkMode
+        ? Colors.white.withOpacity(0.1)
+        : Colors.white;
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: getBackgroundColor(),
       appBar: AppBar(
-        backgroundColor: background,
+        backgroundColor: getBackgroundColor(),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: getTextColor()),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           '5-4-3-2-1 Grounding',
           style: GoogleFonts.poppins(
-            color: Colors.white,
+            color: getTextColor(),
             fontWeight: FontWeight.w600,
             fontSize: 20,
             letterSpacing: 0.2,
@@ -55,12 +92,12 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
           padding: const EdgeInsets.all(24),
           margin: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: cardColor,
+            color: getCardColor(),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: borderColor),
+            border: Border.all(color: getBorderColor()),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withOpacity(isDarkMode ? 0.04 : 0.02),
                 blurRadius: 12,
                 offset: const Offset(0, 2),
               ),
@@ -72,12 +109,12 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.adjust, color: accent),
+                  Icon(Icons.adjust, color: getPrimaryColor()),
                   const SizedBox(width: 8),
                   Text(
                     '5-4-3-2-1 Grounding Exercise',
                     style: GoogleFonts.poppins(
-                      color: stepActiveColor,
+                      color: getTextColor(),
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
                     ),
@@ -87,8 +124,8 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
               const SizedBox(height: 18),
               LinearProgressIndicator(
                 value: (_currentStep + 1) / _steps.length,
-                backgroundColor: borderColor,
-                valueColor: const AlwaysStoppedAnimation<Color>(accent),
+                backgroundColor: getBorderColor(),
+                valueColor: AlwaysStoppedAnimation<Color>(getPrimaryColor()),
                 minHeight: 6,
                 borderRadius: BorderRadius.circular(3),
               ),
@@ -99,21 +136,21 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
                     color: isActive
-                        ? accent.withOpacity(0.08)
-                        : stepInactiveColor,
+                        ? getPrimaryColor().withOpacity(0.08)
+                        : getStepInactiveColor(),
                     border: Border.all(
-                      color: isActive ? accent : borderColor,
+                      color: isActive ? getPrimaryColor() : getBorderColor(),
                       width: isActive ? 2 : 1,
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: isActive ? accent : Colors.grey[300],
+                      backgroundColor: isActive ? getPrimaryColor() : getBorderColor(),
                       child: Text(
                         '${i + 1}',
                         style: GoogleFonts.poppins(
-                          color: isActive ? Colors.white : stepInactiveText,
+                          color: isActive ? Colors.white : getStepInactiveText(),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -121,7 +158,7 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
                     title: Text(
                       _steps[i],
                       style: GoogleFonts.poppins(
-                        color: isActive ? stepActiveColor : stepInactiveText,
+                        color: isActive ? getTextColor() : getStepInactiveText(),
                         fontWeight: isActive
                             ? FontWeight.w500
                             : FontWeight.w400,
@@ -140,13 +177,13 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
                         ? () => setState(() => _currentStep--)
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: accent,
+                      backgroundColor: getButtonBackgroundColor(),
+                      foregroundColor: getButtonTextColor(),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      side: const BorderSide(color: accent),
+                      side: BorderSide(color: getPrimaryColor()),
                     ),
                     child: Text(
                       'Previous',
@@ -158,22 +195,22 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
                       ElevatedButton(
                         onPressed: () => setState(() => _currentStep = 0),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: accent,
+                          backgroundColor: getButtonBackgroundColor(),
+                          foregroundColor: getButtonTextColor(),
                           elevation: 0,
-                          side: const BorderSide(color: accent),
+                          side: BorderSide(color: getPrimaryColor()),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.refresh, size: 18, color: accent),
+                            Icon(Icons.refresh, size: 18, color: getButtonTextColor()),
                             const SizedBox(width: 4),
                             Text(
                               'Reset',
                               style: GoogleFonts.poppins(
-                                color: accent,
+                                color: getButtonTextColor(),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -186,7 +223,7 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
                             ? () => setState(() => _currentStep++)
                             : null,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: accent,
+                          backgroundColor: getPrimaryColor(),
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
