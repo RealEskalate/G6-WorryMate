@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  IoWarningOutline,
-  IoInformationCircleOutline,
-  IoMegaphoneOutline,
-} from "react-icons/io5";
+import { AlertCircle, Info, Megaphone } from "lucide-react";
 
 interface InfoBoxProps {
   message: string;
@@ -20,15 +16,13 @@ const InfoBox: React.FC<InfoBoxProps> = ({ message, type }) => {
 
   const Icon = () => {
     if (type === "warning") {
-      return <IoWarningOutline className="h-5 w-5 mr-2 mt-0.5 shrink-0" />;
+      return <AlertCircle className="h-5 w-5 mr-2 mt-0.5 shrink-0" />;
     }
     if (type === "info") {
-      return (
-        <IoInformationCircleOutline className="h-5 w-5 mr-2 mt-0.5 shrink-0" />
-      );
+      return <Info className="h-5 w-5 mr-2 mt-0.5 shrink-0" />;
     }
     if (type === "announcement") {
-      return <IoMegaphoneOutline className="h-5 w-5 mr-2 mt-0.5 shrink-0" />;
+      return <Megaphone className="h-5 w-5 mr-2 mt-0.5 shrink-0" />;
     }
     return null; // Fallback
   };

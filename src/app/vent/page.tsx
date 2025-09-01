@@ -1,8 +1,8 @@
 "use client"
 import Sidebar from '@/components/Sidebar'
-import { Mic, Send, Menu } from 'lucide-react'
+import { Mic, Send, Menu, ToggleLeft, ToggleRight } from 'lucide-react'
 import React, { useState } from 'react'
-import CrisisCard from '@/app/components/CrisisCard'
+import CrisisCard from '@/components/CrisisCard'
 
 const Workspace = () => {
     type ChatMessage = { role: 'user' | 'assistant', content: string }
@@ -11,7 +11,17 @@ const Workspace = () => {
     const [isListening, setIsListening] = useState(false)
     const [isMuted, setIsMuted] = useState(false)
     const [messages, setMessages] = useState<ChatMessage[]>([])
-    const [actionCards, setActionCards] = useState<any[]>([])
+    interface ActionCard {
+        title?: string;
+        description?: string;
+        steps?: string[];
+        miniTools?: { title: string; url: string }[];
+        ifWorse?: string;
+        disclaimer?: string;
+        __crisis?: boolean;
+        [key: string]: unknown;
+    }
+    const [actionCards, setActionCards] = useState<ActionCard[]>([])
     const [isCrisisMode, setIsCrisisMode] = useState(false)
     const [hasStarted, setHasStarted] = useState(false)
     const toggleSidebar = () => {
@@ -41,7 +51,6 @@ const Workspace = () => {
             }
 
             const risk = Number(riskData?.risk)
-            const riskTags = riskData?.tags || []
 
             if (risk === 3) {
                 // Crisis: enter crisis mode and show crisis card modal
@@ -50,7 +59,7 @@ const Workspace = () => {
             }
 
             // 2. map - intent
-            let mapRes = await fetch('/api/map_intent', {
+            const mapRes = await fetch('/api/map_intent', {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
                 body: JSON.stringify({ content: trimmed })
@@ -92,8 +101,8 @@ const Workspace = () => {
                 return
             }
 
-            let cardPayload: any = composeData?.card ?? composeData
-            let parsedObj: any
+            const cardPayload = composeData?.card ?? composeData
+            let parsedObj: Record<string, unknown>
             if (typeof cardPayload === 'string') {
                 const stripped = cardPayload
                     .replace(/^```json\n?/i, '')
@@ -101,7 +110,7 @@ const Workspace = () => {
                     .trim()
                 parsedObj = JSON.parse(stripped)
             } else {
-                parsedObj = cardPayload
+                parsedObj = cardPayload as Record<string, unknown>
             }
             const firstKey = Object.keys(parsedObj)[0]
             const cardObj = parsedObj[firstKey] ?? parsedObj
@@ -122,10 +131,11 @@ const Workspace = () => {
             {/* Mobile Menu Button */}
             <button
                 onClick={toggleSidebar}
-                className="fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg border"
+                className="fixed top-4 left-2 z-50  rounded-lg border"
             >
-                <Menu className="w-5 h-5" />
+                {sidebarCollapsed ? (<ToggleLeft className="w-5 h-5" />) : (<ToggleRight className="w-5 h-5" />)}
             </button>
+            {/* {!sidebarCollapsed && <span className="text-lg font-medium">WorryMate</span>} */}
 
             {/* Sidebar - Hidden on mobile when collapsed, visible on desktop */}
             <div className={`${sidebarCollapsed ? 'hidden lg:block' : 'block'} lg:relative lg:items-start`}>
@@ -186,7 +196,7 @@ const Workspace = () => {
                                             <div className='mb-3'>
                                                 <h3 className='font-medium mb-1'>Mini Tools</h3>
                                                 <div className='flex flex-wrap gap-2'>
-                                                    {card.miniTools.map((t: any, i: number) => (
+                                                    {card.miniTools.map((t: { title: string; url: string }, i: number) => (
                                                         <a key={i} href={t.url} target='_blank' rel='noreferrer' className='text-blue-600 underline text-sm'>
                                                             {t.title}
                                                         </a>

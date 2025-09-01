@@ -9,7 +9,7 @@ import {
 import React from "react";
 import { HiOutlinePhone } from "react-icons/hi2";
 import { FiGlobe } from "react-icons/fi";
-import MyCard from "../ui/DisplayInfo";
+import MyCard from "../DisplayInfo";
 import { MdOutlineEmail } from "react-icons/md";
 import { FiPhone } from "react-icons/fi";
 
@@ -39,14 +39,13 @@ const contactCard = ({
         </span>
       </CardHeader>
       <CardContent className="space-y-1 p-2">
-        <MyCard icon=<FiGlobe /> type="Website" info={website || "N/A"} small />
+        <MyCard type="Website" info={website || "N/A"} small />
         <MyCard
-          icon=<MdOutlineEmail />
           type="Email"
           info={email || "N/A"}
           small
         />
-        <MyCard icon=<FiPhone /> type="Phone" info={phone || "N/A"} small />
+        <MyCard type="Phone" info={phone || "N/A"} small />
       </CardContent>
     </Card>
   );

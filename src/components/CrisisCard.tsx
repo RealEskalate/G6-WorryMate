@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import InfoBox from "./ui/InfoBox";
-import DisplayInfo from "./ui/DisplayInfo";
+import InfoBox from "./InfoBox";
+import DisplayInfo from "./DisplayInfo";
 import ContactCard from "./crisis-card/contactCard";
 import {
   Card,
@@ -12,8 +12,30 @@ import {
 } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 
+type SafetyPlanResource = {
+  name?: string;
+  contact?: {
+    phone?: string;
+    email?: string;
+    website?: string;
+    availability?: string;
+  };
+};
+
+type SafetyPlanStep = {
+  step?: string | number;
+  instruction?: string;
+};
+
+type SafetyPlanData = {
+  region?: string;
+  resources?: SafetyPlanResource[];
+  safety_plan?: SafetyPlanStep[];
+  [key: string]: unknown;
+};
+
 function useSafetyPlan() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<SafetyPlanData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,8 +46,12 @@ function useSafetyPlan() {
         if (!res.ok) throw new Error("Failed to fetch");
         const json = await res.json();
         setData(json);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(
+          typeof err === 'object' && err !== null && 'message' in err
+            ? String((err as { message?: unknown }).message)
+            : String(err)
+        );
       } finally {
         setLoading(false);
       }
@@ -43,10 +69,10 @@ const CrisisCard = () => {
   if (error) return <p className="text-red-500">Error: {error}</p>;
 
   // Extract data from the "resources: " key structure
-  const resourcesData = data?.["resources: "] || data?.resources || data;
-  const region = resourcesData?.region;
-  const resources = resourcesData?.resources || [];
-  const safetyPlan = resourcesData?.safety_plan || [];
+  const resourcesData: SafetyPlanData = (typeof data === 'object' && data !== null ? data : {}) as SafetyPlanData;
+  const region = resourcesData.region;
+  const resources: SafetyPlanResource[] = Array.isArray(resourcesData.resources) ? resourcesData.resources : [];
+  const safetyPlan: SafetyPlanStep[] = Array.isArray(resourcesData.safety_plan) ? resourcesData.safety_plan : [];
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center  py-4 px-1">
@@ -57,8 +83,8 @@ const CrisisCard = () => {
           Crisis Support
         </h2>
         <p className="text-gray-700 mb-3 text-center text-base lg:text-lg">
-          If you're feeling overwhelmed, unsafe, or struggling with thoughts of
-          harm, you're not alone.
+          If you&apos;re feeling overwhelmed, unsafe, or struggling with thoughts of
+          harm, you&apos;re not alone.
           <br />
           <span className="text-red-600 font-semibold">
             Support is available
@@ -76,15 +102,15 @@ const CrisisCard = () => {
           Immediate Steps
         </h3>
         <div className="space-y-2 mb-4 lg:grid lg:grid-cols-2 lg:gap-4">
-          {safetyPlan.map((step: any) => (
+          {safetyPlan.map((step, idx) => (
             <div
-              key={step.step}
+              key={String(step.step ?? idx)}
               className="p-2 lg:p-3 rounded-lg border border-red-100 bg-red-50 shadow-sm flex flex-col gap-0.5"
             >
               <p className="font-semibold text-red-700 text-sm lg:text-base">
-                Step {step.step}
+                Step {String(step.step ?? idx)}
               </p>
-              <p className="text-gray-700 text-xs lg:text-sm">{step.instruction}</p>
+              <p className="text-gray-700 text-xs lg:text-sm">{String(step.instruction ?? '')}</p>
             </div>
           ))}
         </div>
@@ -93,14 +119,14 @@ const CrisisCard = () => {
           Resources
         </h3>
         <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:gap-4">
-          {resources.map((res: any, index: number) => (
+          {resources.map((res, index: number) => (
             <ContactCard
               key={index}
-              name={res.name}
-              phone={res.contact?.phone || undefined}
-              email={res.contact?.email || undefined}
-              website={res.contact?.website || undefined}
-              availability={res.contact?.availability || undefined}
+              name={res.name ?? ''}
+              phone={res.contact?.phone ?? undefined}
+              email={res.contact?.email ?? undefined}
+              website={res.contact?.website ?? undefined}
+              availability={res.contact?.availability ?? undefined}
             />
           ))}
         </div>

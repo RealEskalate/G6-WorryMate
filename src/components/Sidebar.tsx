@@ -18,7 +18,7 @@ interface SidebarProps {
     onToggle: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
         favorites: false,
         favoriteChats: false,
@@ -45,11 +45,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
     return (
         <div className={`bg-[#eaf6ff] shadow-2xl text-blue h-screen  flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'
             }`}>
-            {/* Header */}
-            <div className="p-4 border-b">
-                <button className="w-full  text-[#2a4461] px-3 py-2 rounded-lg flex items-center gap-2 transition-colors hover:bg-[#0D2A4B] hover:text-white">
-                    <MessageSquarePlus className="w-4 h-4" />
-                    {!isCollapsed && <span className="text-lg font-medium">WorryMate</span>}
+            {/* Sidebar Toggle Button */}
+            <div className="p-4 border-b flex items-center justify-between">
+                <button
+                    className="text-[#2a4461] px-3 py-2 rounded-lg flex items-center gap-2 transition-colors hover:bg-[#0D2A4B] hover:text-white"
+                    onClick={typeof onToggle === 'function' ? onToggle : undefined}
+                    aria-label="Toggle Sidebar"
+                >
+                    {/* <MessageSquarePlus className="w-4 h-4" /> */}
                 </button>
             </div>
 

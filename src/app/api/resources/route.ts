@@ -30,11 +30,14 @@ export async function GET() {
       status: 200,
       headers: { "content-type": "application/json" },
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
     return new Response(
       JSON.stringify({
         error: "Failed to fetch resources",
-        detail: String(e?.message || e),
+        detail:
+          typeof e === "object" && e !== null && "message" in e
+            ? String((e as { message?: unknown }).message)
+            : String(e),
       }),
       { status: 500, headers: { "content-type": "application/json" } }
     );
