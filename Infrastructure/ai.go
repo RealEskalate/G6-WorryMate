@@ -84,6 +84,9 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	- Always include "ifWorse" and "disclaimer".
 	- Return JSON ONLY. No explanations.
 	- Use the same language as in the action cards.
+    - The ui tools section is for the frontend to use for displaying appropriate ui elements along with the card.
+    - You can use ui tools only if they are in this list : ["box_breathing", "daily_journal", "grounding", "tracker"].
+    - return only the relevant ui tools for the topic based on the action block.
 
 	Steps:
 	%s
@@ -98,6 +101,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 			"description": "Let's break this down into manageable steps.",
 			"steps": [...],
 			"miniTools": [...],
+            "uiTools" : ["box_breathing", "daily_journal"],
 			"ifWorse": "If panic sets in, try the grounding exercise or reach out to a trusted friend.",
 			"disclaimer": "This is general wellbeing information, not medical or mental health advice."
 		}
