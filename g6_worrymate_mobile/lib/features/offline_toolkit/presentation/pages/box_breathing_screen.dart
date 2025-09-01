@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:g6_worrymate_mobile/core/theme/theme_manager.dart';
 
 class BoxBreathingScreen extends StatefulWidget {
   const BoxBreathingScreen({super.key});
@@ -65,25 +67,54 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const background = Color.fromARGB(255, 9, 43, 71);
-    const cardColor = Colors.white;
-    const accent = Colors.greenAccent;
-    const borderColor = Color(0xFFE0E6ED);
-    const iconColor = Color(0xFF22314A);
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+    final isDarkMode = themeManager.isDarkMode;
+
+    Color getBackgroundColor() => isDarkMode
+        ? const Color.fromARGB(255, 9, 43, 71)
+        : Colors.white;
+
+    Color getCardColor() => isDarkMode
+        ? Colors.white.withOpacity(0.08)
+        : Colors.white;
+
+    Color getPrimaryColor() => isDarkMode
+        ? Colors.greenAccent
+        : const Color.fromARGB(255, 9, 43, 71);
+
+    Color getTextColor() => isDarkMode
+        ? Colors.white
+        : Colors.black;
+
+    Color getSubtitleColor() => isDarkMode
+        ? Colors.white70
+        : Colors.black54;
+
+    Color getIconColor() => isDarkMode
+        ? Colors.white
+        : const Color.fromARGB(255, 9, 43, 71);
+
+    Color getBorderColor() => isDarkMode
+        ? Colors.greenAccent.withOpacity(0.3)
+        : Colors.grey[300]!;
+
+    Color getButtonColor() => isDarkMode
+        ? const Color(0xFF22314A)
+        : const Color.fromARGB(255, 9, 43, 71);
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: getBackgroundColor(),
       appBar: AppBar(
-        backgroundColor: background,
+        backgroundColor: getBackgroundColor(),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: getTextColor()),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Box Breathing',
           style: GoogleFonts.poppins(
-            color: Colors.white,
+            color: getTextColor(),
             fontWeight: FontWeight.w600,
             fontSize: 20,
             letterSpacing: 0.2,
@@ -97,12 +128,12 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
           padding: const EdgeInsets.all(32),
           margin: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: cardColor,
+            color: getCardColor(),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: borderColor),
+            border: Border.all(color: getBorderColor()),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withOpacity(isDarkMode ? 0.04 : 0.02),
                 blurRadius: 12,
                 offset: const Offset(0, 2),
               ),
@@ -114,12 +145,12 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.favorite_border, color: accent.shade700),
+                  Icon(Icons.favorite_border, color: getPrimaryColor()),
                   const SizedBox(width: 8),
                   Text(
                     'Box Breathing Exercise',
                     style: GoogleFonts.poppins(
-                      color: iconColor,
+                      color: getIconColor(),
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
                     ),
@@ -132,38 +163,37 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
                 height: 140,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: accent.withOpacity(0.3), width: 5),
+                  border: Border.all(
+                    color: getPrimaryColor().withOpacity(0.3),
+                    width: 5,
+                  ),
                 ),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.favorite_border,
-                        color: Color(0xFF22314A),
+                        color: getIconColor(),
                         size: 54,
                       ),
                       const SizedBox(height: 8),
                       if (_isRunning)
-                        Expanded(
-                          child: Text(
-                            '${_steps[_currentStep]}',
-                            style: GoogleFonts.poppins(
-                              color: iconColor,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
+                        Text(
+                          '${_steps[_currentStep]}',
+                          style: GoogleFonts.poppins(
+                            color: getIconColor(),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
                           ),
                         ),
                       if (_isRunning)
-                        Expanded(
-                          child: Text(
-                            '$_secondsLeft',
-                            style: GoogleFonts.poppins(
-                              color: const Color(0xFF22314A),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 28,
-                            ),
+                        Text(
+                          '$_secondsLeft',
+                          style: GoogleFonts.poppins(
+                            color: getIconColor(),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 28,
                           ),
                         ),
                     ],
@@ -175,7 +205,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
                 'Breathe in for 4 seconds, hold for 4, exhale for 4, hold for 4',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
-                  color: iconColor.withOpacity(0.7),
+                  color: getSubtitleColor(),
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
                 ),
@@ -186,7 +216,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
                   width: 180,
                   height: 44,
                   child: ElevatedButton.icon(
-                    icon: const Icon(Icons.play_arrow, color: Colors.white),
+                    icon: Icon(Icons.play_arrow, color: Colors.white),
                     label: Text(
                       'Start Breathing',
                       style: GoogleFonts.poppins(
@@ -196,7 +226,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF22314A),
+                      backgroundColor: getButtonColor(),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -210,7 +240,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
                   width: 120,
                   height: 44,
                   child: ElevatedButton.icon(
-                    icon: const Icon(Icons.stop, color: Colors.white),
+                    icon: Icon(Icons.stop, color: Colors.white),
                     label: Text(
                       'Reset',
                       style: GoogleFonts.poppins(
@@ -220,7 +250,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: iconColor,
+                      backgroundColor: getButtonColor(),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
