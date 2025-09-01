@@ -8,6 +8,7 @@ import '../../../crisis_card/presentation/pages/crisis_card.dart';
 import '../bloc/chat_bloc.dart';
 import '../bloc/chat_event.dart';
 import '../bloc/chat_state.dart';
+import 'action_card_screen.dart';
 
 class ChatScreen extends StatelessWidget {
   ChatScreen({Key? key}) : super(key: key);
@@ -67,22 +68,24 @@ class ChatScreen extends StatelessWidget {
             ),
           ),
         ),
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "WorryMate",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Color.fromARGB(255, 9, 43, 71),
+        title: SingleChildScrollView(
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "WorryMate",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Color.fromARGB(255, 9, 43, 71),
+                ),
               ),
-            ),
-            Text(
-              "Your AI worry buddy",
-              style: TextStyle(color: Colors.black, fontSize: 13),
-            ),
-          ],
+              Text(
+                "Your AI worry buddy",
+                style: TextStyle(color: Colors.black, fontSize: 13),
+              ),
+            ],
+          ),
         ),
         actions: [
           Row(
@@ -136,108 +139,104 @@ class ChatScreen extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: BlocBuilder<ChatBloc, ChatState>(
-              builder: (context, state) {
-                if (state is ChatLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is ChatCrisis) {
-                  return const CrisisCard();
-                } else if (state is ChatSuccess) {
-                  return Center(
-                    child: Text(
-                      state.content ?? 'No content',
-                      style: GoogleFonts.poppins(
-                        color: Colors.black87,
-                        fontSize: 16,
-                      ),
-                    ),
-                  );
-                } else if (state is ChatError) {
-                  return Center(child: Text(state.message));
-                }
-                // Initial state UI
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      // Welcome message card
-                      Container(
-                        margin: const EdgeInsets.only(
-                          top: 32,
-                          left: 24,
-                          right: 24,
-                          bottom: 18,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 32,
-                          horizontal: 16,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF22314A),
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  BlocBuilder<ChatBloc, ChatState>(
+                    builder: (context, state) {
+                      if (state is ChatLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is ChatCrisis) {
+                        return const CrisisCard();
+                      } else if (state is ChatSuccess) {
+                        return ActionCardWidget(actionCard: state.actionCard);
+                      } else if (state is ChatError) {
+                        return Center(child: Text(state.message));
+                      }
+                      // Initial state UI
+                      return Column(
+                        children: [
+                          // Welcome message card
+                          Container(
+                            margin: const EdgeInsets.only(
+                              top: 32,
+                              left: 24,
+                              right: 24,
+                              bottom: 18,
                             ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            "Hey i am your worrybuddy, vent your problems' on me",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 20,
-                              height: 1.2,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 32,
+                              horizontal: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF22314A),
+                              borderRadius: BorderRadius.circular(18),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.08),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Hey i am your worrybuddy, vent your problems' on me",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 20,
+                                  height: 1.2,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      // Try asking about
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 24,
-                          top: 8,
-                          bottom: 6,
-                          right: 24,
-                        ),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Try asking about:',
-                            style: GoogleFonts.poppins(
-                              color: Colors.black54,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 13,
+                          // Try asking about
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 24,
+                              top: 8,
+                              bottom: 6,
+                              right: 24,
+                            ),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Try asking about:',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 13,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          children: [
-                            _exampleQuestion(
-                              context,
-                              "I'm really stressed about my exams",
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Column(
+                              children: [
+                                _exampleQuestion(
+                                  context,
+                                  "I'm really stressed about my exams",
+                                ),
+                                _exampleQuestion(
+                                  context,
+                                  "I lost my job and i'm worried about money.",
+                                ),
+                                _exampleQuestion(
+                                  context,
+                                  "My family and i keep fighting.",
+                                ),
+                              ],
                             ),
-                            _exampleQuestion(
-                              context,
-                              "I lost my job and i'm worried about money.",
-                            ),
-                            _exampleQuestion(
-                              context,
-                              "My family and i keep fighting.",
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                          ),
+                        ],
+                      );
+                    },
                   ),
-                );
-              },
+                ],
+              ),
             ),
           ),
           // Input box at the bottom

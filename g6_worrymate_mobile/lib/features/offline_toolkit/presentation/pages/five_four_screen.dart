@@ -66,145 +66,159 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
               ),
             ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.adjust, color: accent),
-                  const SizedBox(width: 8),
-                  Text(
-                    '5-4-3-2-1 Grounding Exercise',
-                    style: GoogleFonts.poppins(
-                      color: stepActiveColor,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 18),
-              LinearProgressIndicator(
-                value: (_currentStep + 1) / _steps.length,
-                backgroundColor: borderColor,
-                valueColor: const AlwaysStoppedAnimation<Color>(accent),
-                minHeight: 6,
-                borderRadius: BorderRadius.circular(3),
-              ),
-              const SizedBox(height: 18),
-              ...List.generate(_steps.length, (i) {
-                final isActive = i == _currentStep;
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: isActive
-                        ? accent.withOpacity(0.08)
-                        : stepInactiveColor,
-                    border: Border.all(
-                      color: isActive ? accent : borderColor,
-                      width: isActive ? 2 : 1,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: isActive ? accent : Colors.grey[300],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.adjust, color: accent),
+                    const SizedBox(width: 8),
+                    Expanded(
                       child: Text(
-                        '${i + 1}',
+                        '5-4-3-2-1 Grounding Exercise',
                         style: GoogleFonts.poppins(
-                          color: isActive ? Colors.white : stepInactiveText,
-                          fontWeight: FontWeight.bold,
+                          color: stepActiveColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                LinearProgressIndicator(
+                  value: (_currentStep + 1) / _steps.length,
+                  backgroundColor: borderColor,
+                  valueColor: const AlwaysStoppedAnimation<Color>(accent),
+                  minHeight: 6,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+                const SizedBox(height: 18),
+                ...List.generate(_steps.length, (i) {
+                  final isActive = i == _currentStep;
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: isActive
+                          ? accent.withOpacity(0.08)
+                          : stepInactiveColor,
+                      border: Border.all(
+                        color: isActive ? accent : borderColor,
+                        width: isActive ? 2 : 1,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: isActive ? accent : Colors.grey[300],
+                        child: Text(
+                          '${i + 1}',
+                          style: GoogleFonts.poppins(
+                            color: isActive ? Colors.white : stepInactiveText,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        _steps[i],
+                        style: GoogleFonts.poppins(
+                          color: isActive ? stepActiveColor : stepInactiveText,
+                          fontWeight: isActive
+                              ? FontWeight.w500
+                              : FontWeight.w400,
+                          fontSize: 15,
                         ),
                       ),
                     ),
-                    title: Text(
-                      _steps[i],
-                      style: GoogleFonts.poppins(
-                        color: isActive ? stepActiveColor : stepInactiveText,
-                        fontWeight: isActive
-                            ? FontWeight.w500
-                            : FontWeight.w400,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                );
-              }),
-              const SizedBox(height: 18),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: _currentStep > 0
-                        ? () => setState(() => _currentStep--)
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: accent,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      side: const BorderSide(color: accent),
-                    ),
-                    child: Text(
-                      'Previous',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () => setState(() => _currentStep = 0),
+                  );
+                }),
+                const SizedBox(height: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _currentStep > 0
+                            ? () => setState(() => _currentStep--)
+                            : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: accent,
                           elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           side: const BorderSide(color: accent),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.refresh, size: 18, color: accent),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Reset',
-                              style: GoogleFonts.poppins(
-                                color: accent,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      ElevatedButton(
-                        onPressed: _currentStep < _steps.length - 1
-                            ? () => setState(() => _currentStep++)
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: accent,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
                         ),
                         child: Text(
-                          'Next',
+                          'Previous',
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+                    ),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => setState(() => _currentStep = 0),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: accent,
+                            elevation: 0,
+                            side: const BorderSide(color: accent),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.refresh,
+                                size: 18,
+                                color: accent,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Reset',
+                                style: GoogleFonts.poppins(
+                                  color: accent,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: _currentStep < _steps.length - 1
+                              ? () => setState(() => _currentStep++)
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: accent,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Next',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

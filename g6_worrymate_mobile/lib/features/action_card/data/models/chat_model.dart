@@ -11,3 +11,4 @@ class ChatModel extends ChatEntity {
     return {'risk': risk};
   }
 }
+

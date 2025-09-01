@@ -3,25 +3,33 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../../../../core/params/params.dart';
-import '../models/chat_model.dart';
 
 class ChatRemoteDataSource {
   ChatRemoteDataSource();
 
-  Future<ChatModel> getChat(ChatParams params) async {
+  Future<String> getTopicKey(ChatParams params) async {
     final url = Uri.parse(
       'https://g6-worrymate-zt0r.onrender.com/chat/intent_mapping',
     );
-    print('[ChatRemoteDataSource] Sending GET to /chat/intent_mapping');
-    final response = await http.get(url);
-    print('[ChatRemoteDataSource] GET response: ' + response.body);
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'content': params.content}),
+    );
+
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      return ChatModel.fromJson(data);
+      print("topic key endpoint hitted.");
+      final topicKey = data['topic_key'];
+      if (topicKey != null && topicKey is String) {
+        print("got topic key successfully $topicKey");
+        return topicKey;
+      } else {
+        print("didn't get topic key");
+        throw Exception('topic_key missing or not a string in response');
+      }
     } else {
-      print(
-        '[ChatRemoteDataSource] Error: GET failed with status ${response.statusCode}',
-      );
       throw Exception('Failed to load chat intent mapping');
     }
   }
@@ -31,10 +39,7 @@ class ChatRemoteDataSource {
       final url = Uri.parse(
         'https://g6-worrymate-zt0r.onrender.com/chat/risk_check',
       );
-      print(
-        '[ChatRemoteDataSource] Sending POST to /chat/risk_check with content: ' +
-            params.content,
-      );
+
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

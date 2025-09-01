@@ -11,3 +11,12 @@ class AddChatUsecase {
     return repository.addChat(chat);
   }
 }
+
+class GetTopicKeyUsecase{
+  final ChatRepository repository;
+  GetTopicKeyUsecase({required this.repository});
+
+  Future<Either<Failure,String>> call(ChatParams chat){
+    return repository.getTopicKey(chat);
+  }
+}

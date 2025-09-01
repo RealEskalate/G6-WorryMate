@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/action_card': (context) => const ActionCardScreen(),
+        // '/action_card': (context) => const ActionCardWidget(),
         '/': (context) => const HomePage(),
         '/chat': (_) =>
             BlocProvider(create: (_) => sl<ChatBloc>(), child: ChatScreen()),

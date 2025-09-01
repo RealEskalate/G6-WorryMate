@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../../core/connection/network_info.dart';
 import '../../../../core/errors/failure.dart';
@@ -12,12 +13,12 @@ class ChatRepositoryImpl implements ChatRepository {
   final ChatLocalDataSource localDataSource;
   final NetworkInfo networkInfo;
 
-  ChatRepositoryImpl({
-    required this.localDataSource,
+  ChatRepositoryImpl({required this.localDataSource,
     required this.networkInfo,
     required this.remoteDataSource,
   });
 
+  @override
   Future<Either<Failure, int>> addChat(ChatParams params) async {
     try {
       print(
@@ -44,4 +45,18 @@ class ChatRepositoryImpl implements ChatRepository {
       return Left(ServerFailure(error: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, String>> getTopicKey(ChatParams chat) async {
+    try {
+      final topicKey = await remoteDataSource.getTopicKey(chat);
+      print("repo level topic key: $topicKey");
+      return Right(topicKey);
+    } catch (e, stack) {
+      print('[ChatRepositoryImpl] Exception in getTopicKey: ' + e.toString());
+      print(stack);
+      return Left(ServerFailure(error: e.toString()));
+    }
+  }
+
 }
