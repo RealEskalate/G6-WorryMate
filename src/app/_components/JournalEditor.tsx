@@ -106,7 +106,7 @@ export default function JournalEditor() {
                 e.preventDefault();
                 editor.chain().focus().unsetAllMarks().clearNodes().run();
               }}
-              className="rounded-lg border border-[#EF4444] px-5 py-2.5 text-[#EF4444] font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed transition hover:bg-[#EF4444]/10"
+              className="rounded-lg cursor-pointer border border-[#EF4444] px-5 py-2.5 text-[#EF4444] font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed transition hover:bg-[#EF4444]/10"
               aria-label="Clear editor content"
             >
               Clear
@@ -114,7 +114,7 @@ export default function JournalEditor() {
             <button
               type="button"
               onClick={saveEntry}
-              className="rounded-lg bg-[#10B981] px-5 py-2.5 text-white font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed transition hover:bg-[#10B981]/80"
+              className="rounded-lg cursor-pointer bg-[#10B981] px-5 py-2.5 text-white font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed transition hover:bg-[#10B981]/80"
               aria-label="Save journal entry"
             >
               Save Entry
@@ -136,7 +136,7 @@ export default function JournalEditor() {
                 <button
                   key={entry.id}
                   onClick={() => router.push(`/journal/${entry.id}`)}
-                  className="w-full rounded-lg border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:bg-[#F7F9FB] font-['Inter','Noto_Sans_Ethiopic']"
+                  className="w-full cursor-pointer rounded-lg border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:bg-[#F7F9FB] font-['Inter','Noto_Sans_Ethiopic']"
                   aria-label={`View journal entry: ${entry.title}`}
                 >
                   <h4 className="font-semibold text-[#0D2A4B] text-[18px] leading-relaxed">
