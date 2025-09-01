@@ -1,29 +1,29 @@
 'use client';
 
 import {useLocale} from 'next-intl';
-import {usePathname, useRouter} from 'next-intl/client';
+import {usePathname, useRouter} from 'next/navigation';
 
 export default function LanguageSelect() {
+  const locale = useLocale();
   const router = useRouter();
-  const pathname = usePathname(); // current path without locale prefix
-  const currentLocale = useLocale();
+  const pathname = usePathname();
 
-  function onChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const nextLocale = e.target.value;
-    // Swap locale on the current path (no full reload)
-    router.replace(pathname, {locale: nextLocale});
-    // next-intl also maintains a cookie so refreshes stick to the chosen locale
-  }
+  const changeLanguage = (newLocale: string) => {
+    // Remove the current locale from the pathname
+    const pathnameWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
+    // Build URL with the new locale
+    const newPath = `/${newLocale}${pathnameWithoutLocale}`;
+    router.push(newPath);
+  };
 
   return (
-    <select
-      defaultValue={currentLocale}
-      onChange={onChange}
-      className="border rounded-lg p-2"
-      aria-label="Change language"
+    <select 
+      value={locale} 
+      onChange={(e) => changeLanguage(e.target.value)}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
     >
       <option value="en">English</option>
-      <option value="am">አማርኛ</option>
+      <option value="am">አማርኛ (Amharic)</option>
     </select>
   );
 }

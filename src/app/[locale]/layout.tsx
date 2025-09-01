@@ -1,26 +1,35 @@
-import {NextIntlClientProvider} from 'next-intl';
-import {getMessages} from 'next-intl/server';
-import {ReactNode} from 'react';
+import {NextIntlClientProvider, hasLocale} from 'next-intl';
+import {notFound} from 'next/navigation';
+import {routing} from '@/i18n/routing';
+import { Metadata } from 'next';
+import '@/app/globals.css';
 
-export default async function LocaleLayout({
-  children,
-  params: {locale}
-}: {
-  children: ReactNode;
-  params: {locale: string};
-}) {
-  const messages = await getMessages();
+type Props = {
+  children: React.ReactNode;
+  params: Promise<{locale: string}>;
+};
+export const metadata: Metadata = {
+  title: "WorryMate",
+  description: "Your AI companion for mental wellness",
+};
 
+export default async function RootLayout({
+  children, params
+}: Readonly<{
+  children: React.ReactNode;
+  params: Promise<{locale: string}>;
+}>) {
+  const {locale} = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
   return (
-    <html lang={locale}>
+    <html>
       <body>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider>
           {children}
         </NextIntlClientProvider>
       </body>
     </html>
   );
-}
-export function generateStaticParams() {
-  return [{locale: 'en'}, {locale: 'am'}];
 }
