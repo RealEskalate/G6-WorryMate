@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:g6_worrymate_mobile/features/crisis_card/presentation/pages/crisis_card.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import '../../../../core/localization/locales.dart';
 
 import '../../../../core/params/params.dart';
 import '../../../../core/widgets/custom_bottom_nav_bar.dart';
@@ -21,7 +23,15 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _textController = TextEditingController();
   int _currentTab = 3;
-  String _selectedLang = 'EN';
+  String _selectedLang = 'en';
+  late FlutterLocalization _flutterLocalization;
+
+  @override
+  void initState() {
+    super.initState();
+    _flutterLocalization = FlutterLocalization.instance;
+    _selectedLang = _flutterLocalization.currentLocale?.languageCode ?? 'en';
+  }
 
   Widget _exampleQuestion(BuildContext context, String text) {
     return Padding(
@@ -87,20 +97,20 @@ class _ChatScreenState extends State<ChatScreen> {
               child: const Icon(Icons.favorite_border_rounded, color: Colors.white),
             ),
           ),
-          title: const Column(
+          title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "WorryMate",
-                style: TextStyle(
+                'WorryMate',
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                   color: Color(0xFF22314A),
                 ),
               ),
               Text(
-                "Your AI worry buddy",
-                style: TextStyle(color: Color(0xFF6B7280), fontSize: 13),
+                LocalData.chatTagline.getString(context),
+                style: const TextStyle(color: Color(0xFF6B7280), fontSize: 13),
               ),
             ],
           ),
@@ -111,19 +121,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: TextButton(
                     onPressed: () {
-                      setState(() {
-                        _selectedLang = 'EN';
-                      });
+                      _flutterLocalization.translate('en');
+                      setState(() => _selectedLang = 'en');
                     },
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       side: const BorderSide(width: 1, color: Color(0xFF22314A)),
-                      backgroundColor: _selectedLang == 'EN'
+                      backgroundColor: _selectedLang == 'en'
                           ? const Color(0xFF22314A)
                           : Colors.transparent,
-                      foregroundColor: _selectedLang == 'EN'
+                      foregroundColor: _selectedLang == 'en'
                           ? Colors.white
                           : const Color(0xFF22314A),
                     ),
@@ -134,19 +143,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: TextButton(
                     onPressed: () {
-                      setState(() {
-                        _selectedLang = 'AM';
-                      });
+                      _flutterLocalization.translate('am');
+                      setState(() => _selectedLang = 'am');
                     },
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       side: const BorderSide(width: 1, color: Color(0xFF22314A)),
-                      backgroundColor: _selectedLang == 'AM'
+                      backgroundColor: _selectedLang == 'am'
                           ? const Color(0xFF22314A)
                           : Colors.transparent,
-                      foregroundColor: _selectedLang == 'AM'
+                      foregroundColor: _selectedLang == 'am'
                           ? Colors.white
                           : const Color(0xFF22314A),
                     ),
@@ -170,7 +178,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Try asking about:',
+                    LocalData.chatTryAsking.getString(context),
                     style: GoogleFonts.poppins(
                       color: Colors.black54,
                       fontWeight: FontWeight.w500,
@@ -180,13 +188,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   const SizedBox(height: 8),
                   _exampleQuestion(
                     context,
-                    "I'm really stressed about my exams",
+                    LocalData.chatExampleStressedExams.getString(context),
                   ),
                   _exampleQuestion(
                     context,
-                    "I lost my job and i'm worried about money.",
+                    LocalData.chatExampleLostJob.getString(context),
                   ),
-                  _exampleQuestion(context, "My family and i keep fighting."),
+                  _exampleQuestion(context, LocalData.chatExampleFamilyFighting.getString(context)),
                 ],
               ),
             ),
@@ -269,7 +277,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: TextField(
                       controller: _textController,
                       decoration: InputDecoration(
-                        hintText: "Type your message...",
+                        hintText: LocalData.chatInputHint.getString(context),
                         hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),

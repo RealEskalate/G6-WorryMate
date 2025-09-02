@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import '../../../../core/localization/locales.dart';
 import 'package:provider/provider.dart';
 import 'package:g6_worrymate_mobile/core/theme/theme_manager.dart';
 
@@ -13,11 +15,11 @@ class BoxBreathingScreen extends StatefulWidget {
 }
 
 class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
-  static const List<String> _steps = [
-    'Breathe In',
-    'Hold',
-    'Breathe Out',
-    'Hold',
+  static const List<String> _stepsKeys = [
+    LocalData.boxBreathingStepIn,
+    LocalData.boxBreathingStepHold,
+    LocalData.boxBreathingStepOut,
+    LocalData.boxBreathingStepHold,
   ];
   static const int _stepDuration = 4; // seconds per step
   int _currentStep = 0;
@@ -37,7 +39,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
         if (_secondsLeft > 1) {
           _secondsLeft--;
         } else {
-          if (_currentStep < _steps.length - 1) {
+          if (_currentStep < _stepsKeys.length - 1) {
             _currentStep++;
             _secondsLeft = _stepDuration;
           } else {
@@ -112,7 +114,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Box Breathing',
+          LocalData.boxBreathingTitle.getString(context),
           style: GoogleFonts.poppins(
             color: getTextColor(),
             fontWeight: FontWeight.w600,
@@ -148,7 +150,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
                   Icon(Icons.favorite_border, color: getPrimaryColor()),
                   const SizedBox(width: 8),
                   Text(
-                    'Box Breathing Exercise',
+                    LocalData.boxBreathingExerciseTitle.getString(context),
                     style: GoogleFonts.poppins(
                       color: getIconColor(),
                       fontWeight: FontWeight.w500,
@@ -180,7 +182,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
                       const SizedBox(height: 8),
                       if (_isRunning)
                         Text(
-                          '${_steps[_currentStep]}',
+                          _stepsKeys[_currentStep].getString(context),
                           style: GoogleFonts.poppins(
                             color: getIconColor(),
                             fontWeight: FontWeight.w600,
@@ -202,7 +204,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
               ),
               const SizedBox(height: 28),
               Text(
-                'Breathe in for 4 seconds, hold for 4, exhale for 4, hold for 4',
+                LocalData.boxBreathingInstruction.getString(context),
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                   color: getSubtitleColor(),
@@ -218,7 +220,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
                   child: ElevatedButton.icon(
                     icon: Icon(Icons.play_arrow, color: Colors.white),
                     label: Text(
-                      'Start Breathing',
+                      LocalData.boxBreathingStart.getString(context),
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -242,7 +244,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen> {
                   child: ElevatedButton.icon(
                     icon: Icon(Icons.stop, color: Colors.white),
                     label: Text(
-                      'Reset',
+                      LocalData.boxBreathingReset.getString(context),
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,

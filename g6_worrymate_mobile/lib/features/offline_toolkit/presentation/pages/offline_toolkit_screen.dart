@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import '../../../../core/localization/locales.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/theme/theme_manager.dart';
@@ -125,7 +127,6 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
           isDarkMode
               ? const Color.fromARGB(255, 9, 43, 71)
               : Colors.white;
-      Color getTextColor() => isDarkMode ? Colors.white : Colors.black;
       Color getSubtitleColor() => isDarkMode ? Colors.white70 : Colors.black54;
 
       return Scaffold(
@@ -139,7 +140,7 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Offline Toolkit',
+                LocalData.offlineToolkitTitle.getString(context),
                 style: GoogleFonts.poppins(
                   color: getPrimaryColor(),
                   fontSize: 20,
@@ -148,7 +149,7 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
                 ),
               ),
               Text(
-                'Wellness tools that work without internet',
+                LocalData.offlineToolkitSubtitle.getString(context),
                 style: GoogleFonts.poppins(
                   color: getSubtitleColor(),
                   fontSize: 13,
@@ -166,7 +167,7 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
-                'Works Offline',
+                LocalData.offlineToolkitWorksOffline.getString(context),
                 style: GoogleFonts.poppins(
                   color: getPrimaryColor(),
                   fontSize: 12,
@@ -184,8 +185,8 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
               _buildToolCard(
                 color: const Color.fromARGB(255, 9, 43, 71),
                 icon: Icons.favorite_border,
-                title: 'Box Breathing',
-                description: '4-4-4-4 breathing pattern to calm your mind',
+                title: LocalData.boxBreathingTitle.getString(context),
+                description: LocalData.boxBreathingDescription.getString(context),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -198,8 +199,8 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
               _buildToolCard(
                 color: isDarkMode ? const Color(0xFF34C759) : Colors.green,
                 icon: Icons.camera_alt_outlined,
-                title: '5-4-3-2-1 Grounding',
-                description: 'Focus on your senses to stay present',
+                title: LocalData.fiveFourTitle.getString(context),
+                description: LocalData.fiveFourDescription.getString(context),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -213,8 +214,8 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
               _buildToolCard(
                 color: isDarkMode ? const Color(0xFFAF52DE) : Colors.purple,
                 icon: Icons.book_outlined,
-                title: 'Daily Journal',
-                description: 'Reflect on your thoughts and feelings',
+                title: LocalData.dailyJournalTitle.getString(context),
+                description: LocalData.dailyJournalDescription.getString(context),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -228,8 +229,8 @@ class _OfflineToolkitScreenState extends State<OfflineToolkitScreen> {
               _buildToolCard(
                 color: isDarkMode ? const Color(0xFFFF9500) : Colors.orange,
                 icon: Icons.trending_up,
-                title: 'Win Tracker',
-                description: 'Celebrate small victories and progress',
+                title: LocalData.winTrackerTitle.getString(context),
+                description: LocalData.winTrackerDescription.getString(context),
                 onTap: () {
                   Navigator.push(
                     context,

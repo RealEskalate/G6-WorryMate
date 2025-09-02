@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import '../../../../core/localization/locales.dart';
 
 import '../../domain/entities/action_card_entity.dart';
 
@@ -60,7 +62,7 @@ class ActionCardWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Panic Steps:",
+                      LocalData.actionCardPanicSteps.getString(context),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: sectionTitleColor,
@@ -102,7 +104,7 @@ class ActionCardWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "If Worse:",
+                      LocalData.actionCardIfWorse.getString(context),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: sectionTitleColor,
@@ -124,7 +126,7 @@ class ActionCardWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 12.0),
                 child: Text(
-                  'Disclaimer: ${actionCard.disclaimer}',
+                  '${LocalData.actionCardDisclaimerLabel.getString(context)}: ${actionCard.disclaimer}',
                   style: TextStyle(
                     color: Colors.amber.shade700,
                     fontStyle: FontStyle.italic,
@@ -139,7 +141,7 @@ class ActionCardWidget extends StatelessWidget {
                 children: [
                   const SizedBox(height: 12),
                   Text(
-                    "Tools:",
+                    LocalData.actionCardTools.getString(context),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: sectionTitleColor,
@@ -171,7 +173,7 @@ class ActionCardWidget extends StatelessWidget {
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Could not launch URL')),
+                            SnackBar(content: Text(LocalData.actionCardLaunchError.getString(context))),
                           );
                         }
                       },
@@ -199,7 +201,7 @@ class ActionCardWidget extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushNamed(context, '/offlinetoolkit');
                   },
-                  child: const Text('Win Tracker'),
+                  child: Text(LocalData.winTrackerTitle.getString(context)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -216,7 +218,7 @@ class ActionCardWidget extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushNamed(context, '/offlinetoolkit');
                   },
-                  child: const Text('Journaling'),
+                  child: Text(LocalData.dailyJournalTitle.getString(context)),
                 ),
               ],
             ),

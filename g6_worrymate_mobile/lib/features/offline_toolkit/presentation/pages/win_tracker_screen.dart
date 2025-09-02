@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import '../../../../core/localization/locales.dart';
 import 'package:provider/provider.dart';
 import 'package:g6_worrymate_mobile/core/theme/theme_manager.dart';
 
@@ -88,7 +90,7 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Win Tracker',
+          LocalData.winTrackerTitle.getString(context),
           style: GoogleFonts.poppins(
             color: getTextColor(),
             fontWeight: FontWeight.w600,
@@ -123,7 +125,7 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                   Icon(Icons.trending_up, color: getPrimaryColor()),
                   const SizedBox(width: 8),
                   Text(
-                    'Win Tracker',
+                    LocalData.winTrackerTitle.getString(context),
                     style: GoogleFonts.poppins(
                       color: getTextColor(),
                       fontWeight: FontWeight.w500,
@@ -134,7 +136,7 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
               ),
               const SizedBox(height: 18),
               Text(
-                'Add a new win:',
+                LocalData.winTrackerAddLabel.getString(context),
                 style: GoogleFonts.poppins(
                   color: getTextColor(),
                   fontWeight: FontWeight.w500,
@@ -153,7 +155,7 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                         fontWeight: FontWeight.w400,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'I completed my assignment...',
+                        hintText: LocalData.winTrackerHint.getString(context),
                         hintStyle: GoogleFonts.poppins(color: getHintColor()),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14,
@@ -189,7 +191,7 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                       ),
                     ),
                     child: Text(
-                      'Add',
+                      LocalData.winTrackerAddButton.getString(context),
                       style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -199,7 +201,7 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
               Row(
                 children: [
                   Text(
-                    'Your Wins:',
+                    LocalData.winTrackerYourWins.getString(context),
                     style: GoogleFonts.poppins(
                       color: getTextColor(),
                       fontWeight: FontWeight.w500,
@@ -239,7 +241,7 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Start tracking your wins, no matter how small!',
+                        LocalData.winTrackerEmptyState.getString(context),
                         style: GoogleFonts.poppins(
                           color: getSubtitleColor(),
                           fontSize: 14,
