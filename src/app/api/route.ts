@@ -42,13 +42,19 @@ export async function POST(request: NextRequest) {
     
   } catch (error) {
     console.error('API route error:', error);
-    
-    // Return a proper error response with details
+    let message = 'Unknown error';
+    let stack = undefined;
+    if (typeof error === 'object' && error !== null) {
+      message = (error as any).message || message;
+      stack = (error as any).stack;
+    } else if (typeof error === 'string') {
+      message = error;
+    }
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to fetch action card',
-        details: error.message,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        details: message,
+        stack: process.env.NODE_ENV === 'development' ? stack : undefined
       },
       { status: 500 }
     );
