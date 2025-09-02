@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -16,7 +17,7 @@ import (
 // 		log.Fatal("error while loading environment variables for database")
 // 	}
 
-// 	// Initialize options 
+// 	// Initialize options
 // 	DB_URL := os.Getenv("MONGO_URL")
 
 // 	clientOptions := options.Client().ApplyURI(DB_URL)
@@ -36,6 +37,8 @@ func InitializeDB() *mongo.Database {
     _ = godotenv.Load(".env")
 
     DB_URL := os.Getenv("MONGO_URL")
+    wd, _:= os.Getwd()
+    fmt.Println("Current working directory: ", wd)
     if DB_URL == "" {
         log.Fatal("MONGO_URL not set")
     }
