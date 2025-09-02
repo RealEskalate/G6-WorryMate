@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:g6_worrymate_mobile/core/widgets/custom_bottom_nav_bar.dart';
 import 'package:g6_worrymate_mobile/features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,6 +12,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:g6_worrymate_mobile/core/theme/theme_manager.dart';
 
+import '../core/localization/locales.dart';
 import 'data.dart';
 import 'scrollable_services_widget.dart';
 
@@ -26,7 +28,6 @@ class _HomePageState extends State<HomePage> {
   late double _deviceHeight;
   late double _deviceWidth;
 
-  // Hero (auto slideshow)
   late final PageController _heroPageController;
   Timer? _heroSlideTimer;
   final Duration _heroSlideInterval = const Duration(seconds: 5);
@@ -37,27 +38,24 @@ class _HomePageState extends State<HomePage> {
   int _selectedModule = 0;
   int _currentTab = 0;
 
-  // Prompt input
   final TextEditingController _promptCtrl = TextEditingController();
-
-  // Activity data (replace with persistence/backend)
   final Map<DateTime, int> _activityData = {DateTime.now(): 1};
 
-  // Affirmations (cache index for rebuilds)
-  final List<String> _affirmations = [
-    'You are making progress, one small step at a time.',
-    'Your feelings are valid.',
-    'Breathing space creates thinking space.',
-    'You deserve kindness—from yourself too.',
+  // Affirmation keys (localized)
+  final List<String> _affirmationKeys = [
+    LocalData.homeAffirmation1,
+    LocalData.homeAffirmation2,
+    LocalData.homeAffirmation3,
+    LocalData.homeAffirmation4,
   ];
   late final int _affirmationIndex;
 
-  // Quick AI prompts
-  final List<String> _quickPrompts = [
-    'Feeling anxious',
-    'Improve sleep',
-    'Low motivation',
-    'Overthinking',
+  // Quick AI prompt keys (localized)
+  final List<String> _quickPromptKeys = [
+    LocalData.homePromptFeelingAnxious,
+    LocalData.homePromptImproveSleep,
+    LocalData.homePromptLowMotivation,
+    LocalData.homePromptOverthinking,
   ];
 
   @override
@@ -67,12 +65,12 @@ class _HomePageState extends State<HomePage> {
     _heroImages = featuredAppServices
         .map(
           (m) => (m.coverImage.url.isNotEmpty)
-          ? AssetImage(m.coverImage.url)
-          : const AssetImage('assets/images/placeholder.png'),
-    )
+              ? AssetImage(m.coverImage.url)
+              : const AssetImage('assets/images/placeholder.png'),
+        )
         .toList();
-    _affirmationIndex = _affirmations.isNotEmpty
-        ? Random().nextInt(_affirmations.length)
+    _affirmationIndex = _affirmationKeys.isNotEmpty
+        ? Random().nextInt(_affirmationKeys.length)
         : 0;
     _startHeroAutoSlide();
   }
@@ -80,7 +78,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Pre-cache hero images for smoother first transition
     for (final img in _heroImages) {
       precacheImage(img, context);
     }
@@ -109,17 +106,15 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Tab routing
   Widget _pageFor(int index) {
     switch (index) {
       case 0:
         return _contentLayer();
       case 1:
-        return _stubPage('Journal (TODO)');
+        return _stubPage(LocalData.homeStubJournal.getString(context));
       case 2:
-        return _stubPage('Wins (TODO)');
+        return _stubPage(LocalData.homeStubWins.getString(context));
       case 3:
-      // Cancel the hero slide timer before navigating to chat
         _heroSlideTimer?.cancel();
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (ModalRoute.of(context)?.settings.name != '/chat') {
@@ -128,18 +123,18 @@ class _HomePageState extends State<HomePage> {
         });
         return Container();
       case 4:
-        return _stubPage('Profile (TODO)');
+        return _stubPage(LocalData.homeStubProfile.getString(context));
       default:
         return _contentLayer();
     }
   }
 
   Widget _stubPage(String label) => Center(
-    child: Text(
-      label,
-      style: const TextStyle(color: Colors.white70, fontSize: 18),
-    ),
-  );
+        child: Text(
+          label,
+          style: const TextStyle(color: Colors.white70, fontSize: 18),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -150,29 +145,8 @@ class _HomePageState extends State<HomePage> {
     _deviceHeight = MediaQuery.of(context).size.height;
     final bool showHero = _currentTab == 0;
 
-    Color getBackgroundColor() => isDarkMode
-        ? const Color.fromARGB(255, 9, 43, 71)
-        : Colors.white;
-
-    Color getTextColor() => isDarkMode
-        ? Colors.white
-        : Colors.black;
-
-    Color getPrimaryColor() => isDarkMode
-        ? Colors.greenAccent
-        : const Color.fromARGB(255, 9, 43, 71);
-
-    Color getSubtitleColor() => isDarkMode
-        ? Colors.white70
-        : Colors.black54;
-
-    Color getCardColor() => isDarkMode
-        ? Colors.white.withOpacity(0.08)
-        : Colors.grey[50]!;
-
-    Color getBorderColor() => isDarkMode
-        ? Colors.greenAccent.withOpacity(0.3)
-        : Colors.grey[300]!;
+    Color getBackgroundColor() =>
+        isDarkMode ? const Color.fromARGB(255, 9, 43, 71) : Colors.white;
 
     return Scaffold(
       backgroundColor: getBackgroundColor(),
@@ -180,7 +154,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           if (showHero) _heroModulesBackground(isDarkMode),
           if (showHero) _gradientOverlay(isDarkMode),
-          Positioned.fill(child: _pageFor(_currentTab)),
+            Positioned.fill(child: _pageFor(_currentTab)),
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
@@ -189,15 +163,12 @@ class _HomePageState extends State<HomePage> {
           if (i == _currentTab) return;
           switch (i) {
             case 0:
-            // Home
               setState(() => _currentTab = 0);
               break;
             case 1:
-            // Journal
               Navigator.pushReplacementNamed(context, '/journal');
               break;
             case 2:
-            // Wins (Offline Toolkit)
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -206,11 +177,9 @@ class _HomePageState extends State<HomePage> {
               );
               break;
             case 3:
-            // Chat
               Navigator.pushReplacementNamed(context, '/chat');
               break;
             case 4:
-            // Settings
               Navigator.pushReplacementNamed(context, '/settings');
               break;
           }
@@ -295,9 +264,12 @@ class _HomePageState extends State<HomePage> {
 
     Color getTextColor() => isDarkMode ? Colors.white : Colors.black;
     Color getSubtitleColor() => isDarkMode ? Colors.white70 : Colors.black54;
-    Color getPrimaryColor() => isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71);
-    Color getCardColor() => isDarkMode ? Colors.white.withOpacity(0.08) : Colors.grey[50]!;
-    Color getBorderColor() => isDarkMode ? Colors.greenAccent.withOpacity(0.3) : Colors.grey[300]!;
+    Color getPrimaryColor() =>
+        isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71);
+    Color getCardColor() =>
+        isDarkMode ? Colors.white.withOpacity(0.08) : Colors.grey[50]!;
+    Color getBorderColor() =>
+        isDarkMode ? Colors.greenAccent.withOpacity(0.3) : Colors.grey[300]!;
 
     return SingleChildScrollView(
       child: Padding(
@@ -353,7 +325,7 @@ class _HomePageState extends State<HomePage> {
             text: TextSpan(
               children: [
                 TextSpan(
-                  text: 'Worry ',
+                  text: LocalData.appBrandPart1.getString(context) + ' ',
                   style: GoogleFonts.poppins(
                     color: isDarkMode ? Colors.white : Colors.black,
                     fontSize: _deviceHeight * 0.035,
@@ -362,9 +334,11 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 TextSpan(
-                  text: 'Mate',
+                  text: LocalData.appBrandPart2.getString(context),
                   style: GoogleFonts.poppins(
-                    color: isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71),
+                    color: isDarkMode
+                        ? Colors.greenAccent
+                        : const Color.fromARGB(255, 9, 43, 71),
                     fontSize: _deviceHeight * 0.035,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.0,
@@ -397,13 +371,14 @@ class _HomePageState extends State<HomePage> {
 
   Widget _greeting(bool isDarkMode) {
     final hour = DateTime.now().hour;
-    final greeting = hour < 12
-        ? 'Good morning'
+    final key = hour < 12
+        ? LocalData.homeGreetingMorning
         : hour < 18
-        ? 'Good afternoon'
-        : 'Good evening';
+            ? LocalData.homeGreetingAfternoon
+            : LocalData.homeGreetingEvening;
+    final text = key.getString(context);
     return Text(
-      '$greeting 👋',
+      '$text 👋',
       style: TextStyle(
         color: isDarkMode ? Colors.white : Colors.black,
         fontSize: _deviceHeight * 0.04,
@@ -438,7 +413,9 @@ class _HomePageState extends State<HomePage> {
               width: active ? _deviceHeight * 0.035 : _deviceHeight * 0.015,
               decoration: BoxDecoration(
                 color: active
-                    ? (isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71))
+                    ? (isDarkMode
+                        ? Colors.greenAccent
+                        : const Color.fromARGB(255, 9, 43, 71))
                     : (isDarkMode ? Colors.white24 : Colors.grey[400]),
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -454,18 +431,25 @@ class _HomePageState extends State<HomePage> {
   Widget _progressRow(bool isDarkMode) {
     final now = DateTime.now();
     final todayKey = DateTime(now.year, now.month, now.day);
-    final weekCount = _activityData.keys
-        .where((d) => now.difference(d).inDays < 7)
-        .length;
+    final weekCount =
+        _activityData.keys.where((d) => now.difference(d).inDays < 7).length;
     final streak = _computeStreak();
     return Row(
       children: [
-        _miniStat('Streak', '${streak}d', Icons.local_fire_department, isDarkMode),
-        const SizedBox(width: 12),
-        _miniStat('This Week', '$weekCount', Icons.calendar_today, isDarkMode),
+        _miniStat(
+            LocalData.homeStatStreak.getString(context),
+            '${streak}d',
+            Icons.local_fire_department,
+            isDarkMode),
         const SizedBox(width: 12),
         _miniStat(
-          'Today',
+            LocalData.homeStatThisWeek.getString(context),
+            '$weekCount',
+            Icons.calendar_today,
+            isDarkMode),
+        const SizedBox(width: 12),
+        _miniStat(
+          LocalData.homeStatToday.getString(context),
           '${_activityData[todayKey] ?? 0}',
           Icons.bubble_chart,
           isDarkMode,
@@ -475,8 +459,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   int _computeStreak() {
-    final dates =
-    _activityData.keys
+    final dates = _activityData.keys
         .map((d) => DateTime(d.year, d.month, d.day))
         .toSet()
         .toList()
@@ -494,7 +477,8 @@ class _HomePageState extends State<HomePage> {
     return streak;
   }
 
-  Widget _miniStat(String label, String value, IconData icon, bool isDarkMode) {
+  Widget _miniStat(
+      String label, String value, IconData icon, bool isDarkMode) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -504,7 +488,11 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Row(
           children: [
-            Icon(icon, color: isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71), size: 20),
+            Icon(icon,
+                color: isDarkMode
+                    ? Colors.greenAccent
+                    : const Color.fromARGB(255, 9, 43, 71),
+                size: 20),
             const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,8 +509,7 @@ class _HomePageState extends State<HomePage> {
                   label,
                   style: TextStyle(
                       color: isDarkMode ? Colors.white70 : Colors.black54,
-                      fontSize: 11
-                  ),
+                      fontSize: 11),
                 ),
               ],
             ),
@@ -536,31 +523,33 @@ class _HomePageState extends State<HomePage> {
 
   Widget _quickActionsRow(bool isDarkMode) {
     final actions = [
-      (Icons.edit_note, 'Journal'),
-      (Icons.mood, 'Mood'),
-      (Icons.spa, 'Breathing'),
-      (Icons.chat_bubble, 'Chat AI'),
+      (Icons.edit_note, LocalData.homeQuickJournal.getString(context)),
+      (Icons.mood, LocalData.homeQuickMood.getString(context)),
+      (Icons.spa, LocalData.homeQuickBreathing.getString(context)),
+      (Icons.chat_bubble, LocalData.homeQuickChatAI.getString(context)),
     ];
     return SizedBox(
       height: _deviceHeight * 0.11,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: actions.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (_, i) {
-          final pair = actions[i];
-          final icon = pair.$1;
-          final label = pair.$2;
+            final icon = actions[i].$1;
+            final label = actions[i].$2;
           return GestureDetector(
             onTap: () {
-              if (label == 'Mood') _openMoodQuickPick(isDarkMode);
+              if (label == LocalData.homeQuickMood.getString(context)) {
+                _openMoodQuickPick(isDarkMode);
+              }
             },
             child: Container(
               width: _deviceWidth * 0.23,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: isDarkMode
-                      ? [const Color.fromARGB(255, 9, 43, 71), const Color(0xFF094470)]
+                      ? [const Color.fromARGB(255, 9, 43, 71),
+                          const Color(0xFF094470)]
                       : [Colors.white, Colors.grey[100]!],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -572,7 +561,11 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon, color: isDarkMode ? Colors.white : const Color.fromARGB(255, 9, 43, 71), size: 28),
+                  Icon(icon,
+                      color: isDarkMode
+                          ? Colors.white
+                          : const Color.fromARGB(255, 9, 43, 71),
+                      size: 28),
                   const SizedBox(height: 6),
                   Expanded(
                     child: Text(
@@ -597,7 +590,8 @@ class _HomePageState extends State<HomePage> {
   // ================= AFFIRMATION =================
 
   Widget _dailyAffirmationCard(bool isDarkMode) {
-    final affirmation = _affirmations[_affirmationIndex];
+    final affirmationKey = _affirmationKeys[_affirmationIndex];
+    final affirmation = affirmationKey.getString(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -607,7 +601,8 @@ class _HomePageState extends State<HomePage> {
       ),
       child: Row(
         children: [
-          Icon(Icons.lightbulb, color: isDarkMode ? Colors.amber[300] : Colors.amber, size: 28),
+          Icon(Icons.lightbulb,
+              color: isDarkMode ? Colors.amber[300] : Colors.amber, size: 28),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -627,11 +622,12 @@ class _HomePageState extends State<HomePage> {
   // ================= AI PROMPT SECTION =================
 
   Widget _aiPromptSection(bool isDarkMode) {
+    final prompts = _quickPromptKeys.map((k) => k.getString(context)).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Ask for support',
+          LocalData.homeAskSupportTitle.getString(context),
           style: TextStyle(
             color: isDarkMode ? Colors.white : Colors.black,
             fontSize: _deviceHeight * 0.022,
@@ -642,34 +638,30 @@ class _HomePageState extends State<HomePage> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: List.generate(_quickPrompts.length, (i) {
-            final p = _quickPrompts[i];
+          children: List.generate(prompts.length, (i) {
+            final p = prompts[i];
             final selected = _promptCtrl.text.trim() == p;
             return GestureDetector(
               onTap: () => setState(() => _promptCtrl.text = p),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: selected
-                      ? (isDarkMode ? Colors.greenAccent.withOpacity(0.25) : const Color.fromARGB(255, 9, 43, 71))
+                      ? (isDarkMode
+                          ? Colors.greenAccent.withOpacity(0.25)
+                          : const Color.fromARGB(255, 9, 43, 71))
                       : (isDarkMode ? Colors.white12 : Colors.grey[200]),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    // color: selected
-                    //     ? (isDarkMode ? Colors.greenAccent : Colors.blue)
-                    //     : (isDarkMode ? Colors.white24 : Colors.grey[400]),
-                    // width: 1,
-                  ),
                 ),
                 child: Text(
                   p,
                   style: TextStyle(
                     color: selected
-                        ? (isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71))
+                        ? (isDarkMode
+                            ? Colors.greenAccent
+                            : const Color.fromARGB(255, 9, 43, 71))
                         : (isDarkMode ? Colors.white70 : Colors.black54),
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -683,7 +675,9 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: isDarkMode ? Colors.white.withOpacity(0.08) : Colors.grey[100],
+            color: isDarkMode
+                ? Colors.white.withOpacity(0.08)
+                : Colors.grey[100],
             borderRadius: BorderRadius.circular(14),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -692,10 +686,12 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: TextField(
                   controller: _promptCtrl,
-                  style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                  style: TextStyle(
+                      color: isDarkMode ? Colors.white : Colors.black),
                   decoration: InputDecoration(
-                    hintText: 'Describe how you feel or ask a question...',
-                    hintStyle: TextStyle(color: isDarkMode ? Colors.white54 : Colors.grey[600]),
+                    hintText: LocalData.homePromptHint.getString(context),
+                    hintStyle: TextStyle(
+                        color: isDarkMode ? Colors.white54 : Colors.grey[600]),
                     border: InputBorder.none,
                   ),
                   minLines: 1,
@@ -704,7 +700,10 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.send, color: isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71)),
+                icon: Icon(Icons.send,
+                    color: isDarkMode
+                        ? Colors.greenAccent
+                        : const Color.fromARGB(255, 9, 43, 71)),
                 onPressed: _submitPrompt,
                 tooltip: 'Send',
               ),
@@ -723,9 +722,9 @@ class _HomePageState extends State<HomePage> {
       _incrementActivity(DateTime.now());
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Prompt sent'),
-        duration: Duration(seconds: 1),
+      SnackBar(
+        content: Text(LocalData.homePromptSent.getString(context)),
+        duration: const Duration(seconds: 1),
       ),
     );
   }
@@ -733,7 +732,6 @@ class _HomePageState extends State<HomePage> {
   // ================= SAFETY BANNER =================
 
   Widget _safetyBanner(bool isDarkMode) {
-    // fallback index safe
     final idx = featuredAppServices.length > 2 ? 2 : 0;
     final imgProvider = (featuredAppServices[idx].coverImage.url.isNotEmpty)
         ? AssetImage(featuredAppServices[idx].coverImage.url)
@@ -758,13 +756,15 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.symmetric(horizontal: _deviceWidth * 0.04),
             child: Icon(
               Icons.shield_rounded,
-              color: isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71),
+              color: isDarkMode
+                  ? Colors.greenAccent
+                  : const Color.fromARGB(255, 9, 43, 71),
               size: 42,
             ),
           ),
           Expanded(
             child: Text(
-              'Safety resources\nQuick help if needed',
+              LocalData.homeSafetyBannerText.getString(context),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: _deviceHeight * 0.02,
@@ -775,7 +775,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_forward_ios,
               color: Colors.white70,
               size: 18,
@@ -792,11 +792,11 @@ class _HomePageState extends State<HomePage> {
 
   Widget _moodCheckInCard(bool isDarkMode) {
     final moods = [
-      ('😞', 'Low'),
-      ('😐', 'Meh'),
-      ('🙂', 'Okay'),
-      ('😄', 'Good'),
-      ('🤩', 'Great'),
+      ('😞', LocalData.homeMoodLow.getString(context)),
+      ('😐', LocalData.homeMoodMeh.getString(context)),
+      ('🙂', LocalData.homeMoodOkay.getString(context)),
+      ('😄', LocalData.homeMoodGood.getString(context)),
+      ('🤩', LocalData.homeMoodGreat.getString(context)),
     ];
     return Container(
       padding: const EdgeInsets.all(14),
@@ -808,7 +808,7 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Mood check-in',
+            LocalData.homeMoodCheckInTitle.getString(context),
             style: TextStyle(
               color: isDarkMode ? Colors.white : Colors.black,
               fontSize: _deviceHeight * 0.02,
@@ -827,7 +827,12 @@ class _HomePageState extends State<HomePage> {
                     _incrementActivity(DateTime.now());
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Logged mood: $label'),
+                        content: Text(
+                          context.formatString(
+                            LocalData.homeMoodLoggedTemplate,
+                            [label],
+                          ),
+                        ),
                         duration: const Duration(seconds: 1),
                       ),
                     );
@@ -841,7 +846,9 @@ class _HomePageState extends State<HomePage> {
                         Text(
                           label,
                           style: TextStyle(
-                            color: isDarkMode ? Colors.white70 : Colors.black54,
+                            color: isDarkMode
+                                ? Colors.white70
+                                : Colors.black54,
                             fontSize: 11,
                           ),
                         ),
@@ -864,8 +871,9 @@ class _HomePageState extends State<HomePage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
       ),
-      builder: (_) =>
-          Padding(padding: const EdgeInsets.all(24), child: _moodCheckInCard(isDarkMode)),
+      builder: (_) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: _moodCheckInCard(isDarkMode)),
     );
   }
 
@@ -876,7 +884,7 @@ class _HomePageState extends State<HomePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Your activity',
+          LocalData.homeActivityTitle.getString(context),
           style: TextStyle(
             color: isDarkMode ? Colors.white : Colors.black,
             fontSize: _deviceHeight * 0.022,
@@ -893,7 +901,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Weekly bar (uses past 7 days)
   Widget _weeklyBarChart(bool isDarkMode) {
     final now = DateTime.now();
     final days = List.generate(7, (i) {
@@ -909,10 +916,12 @@ class _HomePageState extends State<HomePage> {
             toY: v,
             width: 14,
             borderRadius: BorderRadius.circular(4),
-            color: isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71),
+            color: isDarkMode
+                ? Colors.greenAccent
+                : const Color.fromARGB(255, 9, 43, 71),
             backDrawRodData: BackgroundBarChartRodData(
               show: true,
-              toY: 6, // expected max
+              toY: 6,
               color: isDarkMode ? Colors.white12 : Colors.grey[200]!,
             ),
           ),
@@ -952,8 +961,7 @@ class _HomePageState extends State<HomePage> {
                     w[idx],
                     style: TextStyle(
                         color: isDarkMode ? Colors.white60 : Colors.black54,
-                        fontSize: 11
-                    ),
+                        fontSize: 11),
                   );
                 },
               ),
@@ -965,9 +973,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Activity rings (example metrics – adapt)
   Widget _activityRingsRow(bool isDarkMode) {
-    // Derive pseudo metrics
     final today = DateTime.now();
     final key = DateTime(today.year, today.month, today.day);
     final todayCount = (_activityData[key] ?? 0).clamp(0, 6);
@@ -980,17 +986,34 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _ring('Today', todayCount / 6, '$todayCount',
-            isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71), isDarkMode),
-        _ring('7 Days', weekTotal / 40, '$weekTotal',
-            isDarkMode ? Colors.tealAccent : Colors.teal, isDarkMode),
-        _ring('Streak', streak / 30, '${streak}d',
-            isDarkMode ? Colors.lightBlueAccent : Colors.lightBlue, isDarkMode),
+        _ring(
+            LocalData.homeRingToday.getString(context),
+            todayCount / 6,
+            '$todayCount',
+            isDarkMode
+                ? Colors.greenAccent
+                : const Color.fromARGB(255, 9, 43, 71),
+            isDarkMode),
+        _ring(
+            LocalData.homeRing7Days.getString(context),
+            weekTotal / 40,
+            '$weekTotal',
+            isDarkMode ? Colors.tealAccent : Colors.teal,
+            isDarkMode),
+        _ring(
+            LocalData.homeRingStreak.getString(context),
+            streak / 30,
+            '${streak}d',
+            isDarkMode
+                ? Colors.lightBlueAccent
+                : Colors.lightBlue,
+            isDarkMode),
       ],
     );
   }
 
-  Widget _ring(String label, double pct, String center, Color color, bool isDarkMode) {
+  Widget _ring(String label, double pct, String center, Color color,
+      bool isDarkMode) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -1009,7 +1032,8 @@ class _HomePageState extends State<HomePage> {
                 percent: pct.clamp(0, 1),
                 animation: true,
                 circularStrokeCap: CircularStrokeCap.round,
-                backgroundColor: isDarkMode ? Colors.white24 : Colors.grey[300]!,
+                backgroundColor:
+                    isDarkMode ? Colors.white24 : Colors.grey[300]!,
                 progressColor: color,
                 center: Text(
                   center,
@@ -1036,11 +1060,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Streak bar
   Widget _streakBar(bool isDarkMode) {
     final streak = _computeStreak();
     final maxVisual = 30;
     final fill = (streak / maxVisual).clamp(0, 1.0);
+    final label = context.formatString(
+      LocalData.homeStreakBarTemplate,
+      [streak.toString()],
+    );
     return Container(
       height: 20,
       decoration: BoxDecoration(
@@ -1065,7 +1092,7 @@ class _HomePageState extends State<HomePage> {
           Align(
             alignment: Alignment.center,
             child: Text(
-              'Streak: $streak',
+              label,
               style: TextStyle(
                 color: isDarkMode ? Colors.white : Colors.black,
                 fontSize: 11,
@@ -1078,8 +1105,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  // ================= ACTIVITY / HEATMAP =================
 
   void _incrementActivity(DateTime day) {
     final key = DateTime(day.year, day.month, day.day);
