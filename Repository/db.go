@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
@@ -37,8 +36,7 @@ func InitializeDB() *mongo.Database {
     _ = godotenv.Load(".env")
 
     DB_URL := os.Getenv("MONGO_URL")
-    wd, _:= os.Getwd()
-    fmt.Println("Current working directory: ", wd)
+    // fmt.Println("Current working directory: ", wd)
     if DB_URL == "" {
         log.Fatal("MONGO_URL not set")
     }

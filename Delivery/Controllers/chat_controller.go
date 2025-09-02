@@ -31,6 +31,10 @@ func (cc *ChatController) ComposeCardController(c *gin.Context) {
 
 	result, err := cc.ChatUc.ComposeCardUsecase(ChangeToDomain(actBlk))
 	if err != nil {
+		if err.Error() == "quota/rate limit exceeded, please retry later" {
+			c.JSON(http.StatusTooManyRequests, gin.H{"error" : err.Error()})
+			return 
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -49,6 +53,10 @@ func (cc *ChatController) RiskCheckController(c *gin.Context) {
 
 	risk, tags, err := cc.ChatUc.RiskCheckUsecase(req.Content)
 	if err != nil {
+		if err.Error() == "quota/rate limit exceeded, please retry later" {
+			c.JSON(http.StatusTooManyRequests, gin.H{"error" : err.Error()})
+			return 
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -65,6 +73,10 @@ func (cc *ChatController) IntentMappingController(c *gin.Context) {
 	}
 	key, err := cc.ChatUc.IntentMappingUsecase(req.Content)
 	if err != nil {
+		if err.Error() == "quota/rate limit exceeded, please retry later" {
+			c.JSON(http.StatusTooManyRequests, gin.H{"error" : err.Error()})
+			return 
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

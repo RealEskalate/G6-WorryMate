@@ -118,10 +118,11 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	)
 
 	if err != nil {
-        var apiErr *genai.APIError 
-
+        var apiErr genai.APIError 
+        // log.Printf("err concrete type = %T, value = %#v\n", err, err)
         if errors.As(err, &apiErr) {
-            if apiErr.Status == "429" {
+            // log.Print("err : ", err.Error(), "api err : ", apiErr )
+            if apiErr.Code == 429 {
                 return nil, errors.New("quota/rate limit exceeded, please retry later")
             }
         }
@@ -175,8 +176,16 @@ IMPORTANT: Your entire response should be exactly one line in the specified form
     )
 
     if err != nil {
-        return "", err
-    }
+        var apiErr genai.APIError 
+        // log.Printf("err concrete type = %T, value = %#v\n", err, err)
+        if errors.As(err, &apiErr) {
+            // log.Print("err : ", err.Error(), "api err : ", apiErr )
+            if apiErr.Code == 429 {
+                return "", errors.New("quota/rate limit exceeded, please retry later")
+            }
+        }
+		return "", err
+	}
     
     response := result.Text()
     response = strings.ReplaceAll(response, "```json", "")
@@ -256,8 +265,16 @@ IMPORTANT: Be consistent. Same content should always produce the same risk level
     )
 
     if err != nil {
-        return 0, nil, err
-    }
+        var apiErr genai.APIError 
+        // log.Printf("err concrete type = %T, value = %#v\n", err, err)
+        if errors.As(err, &apiErr) {
+            // log.Print("err : ", err.Error(), "api err : ", apiErr )
+            if apiErr.Code == 429 {
+                return 0, nil, errors.New("quota/rate limit exceeded, please retry later")
+            }
+        }
+		return 0, nil, err
+	}
 
     var risk int
     var tags []string
