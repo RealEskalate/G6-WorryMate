@@ -90,7 +90,7 @@ func (cc *ChatController) ActionBlockController(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"action-block": actBlk})
+	c.JSON(http.StatusOK, gin.H{"action_block": actBlk})
 }
 
 func (cc *ChatController) OfflinePackController(c *gin.Context) {
@@ -105,12 +105,13 @@ func (cc *ChatController) OfflinePackController(c *gin.Context) {
 
 func (cc *ChatController) CrisisCardController(c *gin.Context) {
 	region := strings.ToUpper(c.Query("region"))
+	lang := strings.ToUpper(c.Query("lang"))
 	var tags Tag
 	if err := c.ShouldBindJSON(&tags); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
 		return
 	}
-	resp, err := cc.ChatUc.GenerateCrisisCard(region, tags.Tags)
+	resp, err := cc.ChatUc.GenerateCrisisCard(lang, region, tags.Tags)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return

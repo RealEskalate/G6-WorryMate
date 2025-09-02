@@ -57,3 +57,27 @@ func ChangeToDomain(dtoObj ActionBlockDTO) *domain.ActionBlock {
 type Tag struct {
 	Tags []string `json:"tags"`
 }
+
+type ContactDto struct {
+	Phone        string `json:"phone"`
+	Availability string `json:"availability"`
+	Website      string `json:"website"`
+	Email        string `json:"email"`
+}
+
+type ResourceDto struct {
+	Type     string     `json:"type"`
+	Name     string     `json:"name"`
+	Contacts ContactDto `json:"contact"`
+}
+
+type PlansDto struct {
+	Step        int    `json:"step"`
+	Instruction string `json:"instruction"`
+}
+
+type CrisisDto struct {
+	Region      string        `json:"region"`
+	Resources   []ResourceDto `json:"resources"`
+	SafteyPlans []PlansDto    `json:"safety_plan"`
+}

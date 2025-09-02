@@ -53,6 +53,6 @@ func (cu *ChatUsecase) GetOffLinePackUseCase(lang string) ([]*domain.ActionBlock
 	return res, nil
 }
 
-func (cu *ChatUsecase) GenerateCrisisCard(region string, tags []string) (*string, error) {
-	return cu.aiServ.GenerateCrisisCard(region, tags)
+func (cu *ChatUsecase) GenerateCrisisCard(lang, region string, tags []string) (*string, error) {
+	return cu.aiServ.GenerateCrisisCard(lang, region, tags)
 }

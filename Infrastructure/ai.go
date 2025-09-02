@@ -9,6 +9,7 @@ import (
 	"os"
 	domain "sema/Domain"
 	repository "sema/Repository"
+	"strconv"
 	"strings"
 
 	"google.golang.org/genai"
@@ -18,6 +19,10 @@ type AI struct {
 	model_name string
 	Ai_client  *genai.Client
 	config     *genai.GenerateContentConfig
+}
+
+func ptrFloat32(f float32) *float32 {
+	return &f
 }
 
 func InitAIClient() *AI {
@@ -35,19 +40,20 @@ func InitAIClient() *AI {
 
 	config := &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(`
-	You are a supportive wellbeing assistant. 
-	Your job is to assemble JSON action cards for users. 
-
-	Rules:
-	- Always return valid JSON (no markdown, no prose).
-	- Use ONLY the provided steps and miniTools — do not invent new ones.
-	- Each card must include: title, description, steps[], miniTools[], ifWorse, disclaimer.
-	- Keep the tone empathetic and safe.
-	- Translate into the requested language if specified.
-	- If context is high-risk, always include the disclaimer and ifWorse guidance.
+	You are a supportive wellbeing assistant.
+	Your job is to generate wellbeing JSON cards for users across different contexts (e.g., action cards, crisis cards).
+	General Rules:
+	- Always return valid JSON (no markdown, no extra prose).
+	- Use the schema provided by the specific method (different card types may have different schemas).
+	- Never invent new fields outside of the given schema.
+	- Content must always be empathetic, safe, and supportive.
+	- If translation is requested, translate all fields into the target language.
+	- If the context is high-risk or crisis-related, always include safety disclaimers according to the schema.
+	- Keep tone clear, non-judgmental, and kind." 
 
 	Output must strictly follow the given JSON schema.
 `, genai.RoleUser),
+		Temperature: ptrFloat32(0.0), // Use pointer to float32
 	}
 
 	model_name := os.Getenv("GEMINI_MODEL")
@@ -81,6 +87,10 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	- Always include "ifWorse" and "disclaimer".
 	- Return JSON ONLY. No explanations.
 	- Use the same language as in the action cards.
+    - The ui tools section is for the frontend to use for displaying appropriate ui elements along with the card.
+    - You can use ui tools only if they are in this list : ["box_breathing", "daily_journal", "grounding", "tracker"].
+    - always return two relevant ui tools for the topic based on the action block.
+    - The mini tools should have the same format as the one in the action block.
 
 	Steps:
 	%s
@@ -94,7 +104,8 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 			"title": "Exam Stress Relief",
 			"description": "Let's break this down into manageable steps.",
 			"steps": [...],
-			"miniTools": [...],
+			"miniTools": [{"title" : "minitool title", "url" : "mini tool title"}, ...],
+            "uiTools" : ["box_breathing", "daily_journal"],
 			"ifWorse": "If panic sets in, try the grounding exercise or reach out to a trusted friend.",
 			"disclaimer": "This is general wellbeing information, not medical or mental health advice."
 		}
@@ -109,6 +120,13 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	)
 
 	if err != nil {
+		var apiErr *genai.APIError
+
+		if errors.As(err, &apiErr) {
+			if apiErr.Status == "429" {
+				return nil, errors.New("quota/rate limit exceeded, please retry later")
+			}
+		}
 		return nil, err
 	}
 
@@ -120,20 +138,35 @@ func (ai *AI) GenerateTopicKey(content string) (string, error) {
 	ctx := context.Background()
 
 	userPrompt := genai.Text(fmt.Sprintf(`
-	Extract one topic key from the following content that is close to %s:
-	1. Study Stress
-	2. Money Stress
-	3. Family conflict
-	4. Workload 
-	5. sleep
-	6. Motivation
-	7. Loneliness
-	8. Procrastination
-	9. Time management
-	10. Exam Panic
-	11. New City anxiety
-	12. Self confidence
-	`, content))
+STRICT INSTRUCTIONS: Analyze the user's content and select exactly ONE topic key from the predefined list below.
+
+USER CONTENT: "%s"
+
+TOPIC KEYS (choose exactly one if related):
+- study_stress
+- money_stress
+- family_conflict
+- workload
+- sleep
+- motivation
+- loneliness
+- procrastination
+- time_management
+- exam_panic
+- new_city_anxiety
+- self_confidence
+- other
+
+RULES:
+1. You MUST choose exactly one key ONLY if there's a clear match to the user's content
+2. If no clear match exists, respond with "topic_key: other"
+3. Your response MUST begin with "topic_key: "
+4. Output ONLY the required format: "topic_key: <selected_key>" or "topic_key: other"
+5. DO NOT include any other text, explanations, or conversational phrases
+6. DO NOT create new topic keys - use only from the provided list
+
+IMPORTANT: Your entire response should be exactly one line in the specified format.
+`, content))
 
 	result, err := ai.Ai_client.Models.GenerateContent(
 		ctx,
@@ -146,24 +179,75 @@ func (ai *AI) GenerateTopicKey(content string) (string, error) {
 		return "", err
 	}
 
-	return result.Text(), nil
+	response := result.Text()
+	response = strings.ReplaceAll(response, "```json", "")
+	response = strings.ReplaceAll(response, "```", "")
+	response = strings.TrimSpace(response)
+
+	// Extract the topic key from the response
+	if strings.HasPrefix(response, "topic_key: ") {
+		return strings.TrimPrefix(response, "topic_key: "), nil
+	}
+
+	// If the response doesn't start with the expected prefix, check if it's one of the valid keys
+	validKeys := []string{
+		"Study Stress", "Money Stress", "Family conflict", "Workload",
+		"Sleep", "Motivation", "Loneliness", "Procrastination",
+		"Time management", "Exam Panic", "New City anxiety", "Self confidence",
+	}
+
+	for _, key := range validKeys {
+		if response == key {
+			return key, nil
+		}
+	}
+
+	// If response contains "No related topic found" but without the prefix
+	if strings.Contains(strings.ToLower(response), "no related topic") {
+		return "No related topic found", nil
+	}
+
+	// If we get an unexpected response, return the error case
+	return "No related topic found", nil
 }
 
 func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
 	ctx := context.Background()
 
 	userPrompt := genai.Text(fmt.Sprintf(`
-	Analyze the following content for risk factors:
-	Please assess the risk level of the following situation. 
-    There are three risk levels:
-    1 - Low risk (e.g., minor inconvenience, unlikely to cause harm)
-    2 - Medium risk (e.g., possible negative outcome, moderate concern)
-    3 - High risk (e.g., serious consequences, urgent attention needed)
-    Based on this context, what is the risk level for the user's input?
-	and generate a list of relevant tags.
-	Give me your response in the format: Risk Level: <number>\nTags: tag1, tag2, tag3
-	%s
-	`, content))
+STRICT RISK ASSESSMENT INSTRUCTIONS:
+
+Analyze the following user content for risk factors and provide EXACTLY the requested output format.
+
+USER CONTENT: "%s"
+
+RISK LEVEL DEFINITIONS (choose exactly ONE):
+
+1 - Low Risk: Minor inconvenience or frustration, unlikely to result in significant harm or long-term negative consequences.
+
+2 - Medium Risk: Possible negative outcome or moderate concern that could lead to emotional distress or relationship damage if not addressed.
+
+3 - High Risk: Serious consequences requiring immediate attention, including threats to physical safety, mental health, or legal well-being.
+
+TAGS REQUIREMENT:
+- Generate 3-5 relevant tags describing the main themes
+- Tags must be concise, lowercase, hyphen-separated (e.g., "academic-stress")
+- Tags must reflect the specific content
+- Tags cannot be empty
+
+OUTPUT FORMAT RULES:
+1. Response MUST begin with "Risk Level: " followed by exactly 1, 2, or 3
+2. Next line MUST begin with "Tags: " followed by comma-separated tags
+3. NO other text, explanations, or conversational phrases
+4. NO markdown formatting
+5. NO deviations from this format
+
+EXAMPLE OUTPUT:
+Risk Level: 2
+Tags: academic-pressure, time-management, exam-anxiety
+
+IMPORTANT: Be consistent. Same content should always produce the same risk level and similar tags.
+`, content))
 
 	result, err := ai.Ai_client.Models.GenerateContent(
 		ctx,
@@ -179,31 +263,62 @@ func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
 	var risk int
 	var tags []string
 
-	// Parse the result to extract risk and tags
+	// Parse the result
 	response := result.Text()
-	// Example response: "Risk Level: 2\nTags: stress, anxiety, workload"
+	response = strings.ReplaceAll(response, "```", "")
+	response = strings.TrimSpace(response)
+
 	lines := strings.Split(response, "\n")
+
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
+
+		// Parse risk level
 		if strings.HasPrefix(line, "Risk Level:") {
-			fmt.Sscanf(line, "Risk Level: %d", &risk)
+			riskStr := strings.TrimSpace(strings.TrimPrefix(line, "Risk Level:"))
+			if parsed, err := strconv.Atoi(riskStr); err == nil && parsed >= 1 && parsed <= 3 {
+				risk = parsed
+			}
 		}
+
+		// Parse tags
 		if strings.HasPrefix(line, "Tags:") {
-			tagsStr := strings.TrimPrefix(line, "Tags:")
-			tagsStr = strings.TrimSpace(tagsStr)
+			tagsStr := strings.TrimSpace(strings.TrimPrefix(line, "Tags:"))
 			if tagsStr != "" {
-				tags = strings.Split(tagsStr, ",")
-				for i := range tags {
-					tags[i] = strings.TrimSpace(tags[i])
+				rawTags := strings.Split(tagsStr, ",")
+				for _, tag := range rawTags {
+					cleanTag := strings.TrimSpace(tag)
+					cleanTag = strings.ToLower(cleanTag)
+					cleanTag = strings.ReplaceAll(cleanTag, " ", "-")
+					if cleanTag != "" {
+						tags = append(tags, cleanTag)
+					}
 				}
 			}
+		}
+	}
+
+	// Validation and fallbacks
+	if risk < 1 || risk > 3 {
+		risk = 1 // Default to low risk if parsing fails
+	}
+
+	if len(tags) == 0 {
+		// Generate fallback tags based on risk level
+		switch risk {
+		case 1:
+			tags = []string{"minor-issue", "everyday-concern", "low-priority"}
+		case 2:
+			tags = []string{"moderate-concern", "emotional-strain", "needs-attention"}
+		case 3:
+			tags = []string{"urgent-matter", "serious-concern", "immediate-help-needed"}
 		}
 	}
 
 	return risk, tags, nil
 }
 
-func (ai *AI) GenerateCrisisCard(region string, tags []string) (*string, error) {
+func (ai *AI) GenerateCrisisCard(lang, region string, tags []string) (*string, error) {
 	ctx := context.Background()
 
 	// Read region resources
@@ -243,13 +358,14 @@ Generate a JSON crisis card for the region "%s".
 - Tags (user feelings): %s
 - Use the tags to decide which resources and safety plan steps are most relevant.
 - Use ONLY the provided resources and safety plan steps below.
-- Use the same language as in the crisis cards.
+- Use language "%s".
 - Return JSON ONLY. No explanations.
 
 Rules:
 - "resources" must be tailored to both the region and the tags.
 - "safety_plan" must give practical steps based on the tags.
 - If multiple tags apply, combine the relevant steps and resources.
+- Don't include tags and langauage in the JSON response.
 
 Resources:
 %s
@@ -288,7 +404,7 @@ JSON Structure Example:
 		{ "step": 3, "instruction": "Keep emergency numbers nearby." }
 	]
 }
-`, region, tagString, string(resourcesJSON), string(safetyPlansJSON), region))
+`, region, tagString, lang, string(resourcesJSON), string(safetyPlansJSON), region))
 
 	// Call AI
 	resp, err := ai.Ai_client.Models.GenerateContent(
