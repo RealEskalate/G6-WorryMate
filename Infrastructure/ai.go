@@ -87,6 +87,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
     - The ui tools section is for the frontend to use for displaying appropriate ui elements along with the card.
     - You can use ui tools only if they are in this list : ["box_breathing", "daily_journal", "grounding", "tracker"].
     - always return two relevant ui tools for the topic based on the action block.
+    - The mini tools should have the same format as the one in the action block.
 
 	Steps:
 	%s
@@ -100,7 +101,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 			"title": "Exam Stress Relief",
 			"description": "Let's break this down into manageable steps.",
 			"steps": [...],
-			"miniTools": [...],
+			"miniTools": [{"title" : "minitool title", "url" : "mini tool title"}, ...],
             "uiTools" : ["box_breathing", "daily_journal"],
 			"ifWorse": "If panic sets in, try the grounding exercise or reach out to a trusted friend.",
 			"disclaimer": "This is general wellbeing information, not medical or mental health advice."
@@ -133,24 +134,25 @@ STRICT INSTRUCTIONS: Analyze the user's content and select exactly ONE topic key
 USER CONTENT: "%s"
 
 TOPIC KEYS (choose exactly one if related):
-- Study_Stress
-- Money_Stress
-- Family_Conflict
-- Workload
-- Sleep
-- Motivation
-- Loneliness
-- Procrastination
-- Time_management
-- Exam_Panic
-- New_City_anxiety
-- Self_confidence
+- study_stress
+- money_stress
+- family_conflict
+- workload
+- sleep
+- motivation
+- loneliness
+- procrastination
+- time_management
+- exam_panic
+- new_city_anxiety
+- self_confidence
+- other
 
 RULES:
 1. You MUST choose exactly one key ONLY if there's a clear match to the user's content
-2. If no clear match exists, respond with "topic_key: No related topic found"
+2. If no clear match exists, respond with "topic_key: other"
 3. Your response MUST begin with "topic_key: "
-4. Output ONLY the required format: "topic_key: <selected_key>" or "topic_key: No related topic found"
+4. Output ONLY the required format: "topic_key: <selected_key>" or "topic_key: other"
 5. DO NOT include any other text, explanations, or conversational phrases
 6. DO NOT create new topic keys - use only from the provided list
 
