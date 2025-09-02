@@ -37,8 +37,9 @@ dependencies:
   dartz: ^0.10.1
   http: ^1.5.0
   shared_preferences: ^2.5.3
-  hive:
-  hive_flutter:
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.1
 
 
   flutter_gen_ai_chat_ui: ^2.3.6

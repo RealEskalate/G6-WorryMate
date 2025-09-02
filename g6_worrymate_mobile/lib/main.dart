@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:provider/provider.dart';
 
 import 'core/localization/locales.dart';
@@ -16,7 +21,12 @@ import 'injection_container.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterLocalization.instance.ensureInitialized();
+
+  await Hive.initFlutter();
+  await Hive.openBox('journalBox');
+
   init();
+
   runApp(const MyApp());
 }
 
