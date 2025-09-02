@@ -436,7 +436,7 @@
     },
 
     {
-        "topic_key": "loneliness_amharic",
+        "topic_key": "loneliness",
         "block": {
             "empathy_openers": [
                 "የብቸኝነት ስሜት ከባድ እና አድካሚ ሊሆን እንደሚችል እረዳለሁ።",
@@ -508,7 +508,7 @@
     },
 
     {
-        "topic_key": "procrastination_amharic",
+        "topic_key": "procrastination",
         "block": {
             "empathy_openers": [
                 "አንድን ሥራ ለመጀመር ሲከብድዎና ሲያዘገዩት መቸገርዎ የተለመደ ነው።",
