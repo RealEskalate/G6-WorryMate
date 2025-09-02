@@ -133,18 +133,18 @@ STRICT INSTRUCTIONS: Analyze the user's content and select exactly ONE topic key
 USER CONTENT: "%s"
 
 TOPIC KEYS (choose exactly one if related):
-- Study Stress
-- Money Stress
-- Family conflict
+- Study_Stress
+- Money_Stress
+- Family_Conflict
 - Workload
 - Sleep
 - Motivation
 - Loneliness
 - Procrastination
-- Time management
-- Exam Panic
-- New City anxiety
-- Self confidence
+- Time_management
+- Exam_Panic
+- New_City_anxiety
+- Self_confidence
 
 RULES:
 1. You MUST choose exactly one key ONLY if there's a clear match to the user's content
