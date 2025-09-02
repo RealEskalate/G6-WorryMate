@@ -5,6 +5,7 @@ import { Mic, Send, Menu, ToggleLeft, ToggleRight } from 'lucide-react'
 import React, { useState } from 'react'
 import CrisisCard from '@/components/CrisisCard'
 
+
 const Workspace = () => {
     type ChatMessage = { role: 'user' | 'assistant', content: string }
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -164,7 +165,7 @@ const Workspace = () => {
                 )}
 
                 {(messages.length > 0 || actionCards.length > 0) && (
-                    <div className='w-full flex-1 overflow-y-auto px-2 md:px-4 pt-8 self-stretch'>
+                     <div className ='w-full flex-1 overflow-y-auto px-2 md:px-4 pt-8 self-stretch'>
                         <div className='mx-auto w-full max-w-[700px]'>
                             {messages.map((msg, idx) => {
                                 const isUser = msg.role === 'user'
