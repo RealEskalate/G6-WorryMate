@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:g6_worrymate_mobile/core/theme/theme_manager.dart';
 
 class WinTrackerScreen extends StatefulWidget {
   const WinTrackerScreen({super.key});
@@ -18,29 +20,77 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
     super.dispose();
   }
 
+  void _addWin() {
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
+    setState(() {
+      _wins.insert(0, text);
+      _controller.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Chat screen colors
-    const background = Color.fromARGB(255, 9, 43, 71);
-    const cardColor = Colors.white;
-    const accent = Colors.greenAccent;
-    const borderColor = Color(0xFFE0E6ED);
-    const inputFill = Color(0xFFF7F9FB);
-    const addBtnColor = Color(0xFF22314A);
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+    final isDarkMode = themeManager.isDarkMode;
+
+    Color getBackgroundColor() => isDarkMode
+        ? const Color.fromARGB(255, 9, 43, 71)
+        : const Color(0xFFF7F9FB);
+
+    Color getCardColor() => isDarkMode
+        ? Colors.white.withOpacity(0.08)
+        : Colors.white;
+
+    Color getPrimaryColor() => isDarkMode
+        ? Colors.greenAccent
+        : const Color.fromARGB(255, 9, 43, 71);
+
+    Color getTextColor() => isDarkMode
+        ? Colors.white
+        : const Color(0xFF22314A);
+
+    Color getSubtitleColor() => isDarkMode
+        ? Colors.white70
+        : Colors.grey[600]!;
+
+    Color getBorderColor() => isDarkMode
+        ? Colors.greenAccent.withOpacity(0.3)
+        : const Color(0xFFE0E6ED);
+
+    Color getInputFillColor() => isDarkMode
+        ? Colors.white.withOpacity(0.05)
+        : const Color(0xFFF7F9FB);
+
+    Color getHintColor() => isDarkMode
+        ? Colors.white60
+        : Colors.grey[500]!;
+
+    Color getButtonColor() => isDarkMode
+        ? Colors.white.withOpacity(0.1)
+        : const Color(0xFF22314A);
+
+    Color getButtonTextColor() => isDarkMode
+        ? Colors.white
+        : Colors.white;
+
+    Color getAccentColor() => isDarkMode
+        ? Colors.greenAccent
+        : const Color.fromARGB(255, 9, 43, 71);
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: getBackgroundColor(),
       appBar: AppBar(
-        backgroundColor: background,
+        backgroundColor: getBackgroundColor(),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: getTextColor()),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Win Tracker',
           style: GoogleFonts.poppins(
-            color: Colors.white,
+            color: getTextColor(),
             fontWeight: FontWeight.w600,
             fontSize: 20,
           ),
@@ -53,12 +103,12 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
           padding: const EdgeInsets.all(24),
           margin: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: cardColor,
+            color: getCardColor(),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: borderColor),
+            border: Border.all(color: getBorderColor()),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withOpacity(isDarkMode ? 0.04 : 0.02),
                 blurRadius: 12,
                 offset: const Offset(0, 2),
               ),
@@ -70,12 +120,12 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.trending_up, color: addBtnColor),
+                  Icon(Icons.trending_up, color: getPrimaryColor()),
                   const SizedBox(width: 8),
                   Text(
                     'Win Tracker',
                     style: GoogleFonts.poppins(
-                      color: addBtnColor,
+                      color: getTextColor(),
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
                     ),
@@ -86,7 +136,7 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
               Text(
                 'Add a new win:',
                 style: GoogleFonts.poppins(
-                  color: addBtnColor,
+                  color: getTextColor(),
                   fontWeight: FontWeight.w500,
                   fontSize: 15,
                 ),
@@ -98,27 +148,27 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                     child: TextField(
                       controller: _controller,
                       style: GoogleFonts.poppins(
-                        color: addBtnColor,
+                        color: getTextColor(),
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
                       ),
                       decoration: InputDecoration(
                         hintText: 'I completed my assignment...',
-                        hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
+                        hintStyle: GoogleFonts.poppins(color: getHintColor()),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14,
                           vertical: 10,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: borderColor),
+                          borderSide: BorderSide(color: getBorderColor()),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: borderColor),
+                          borderSide: BorderSide(color: getBorderColor()),
                         ),
                         filled: true,
-                        fillColor: inputFill,
+                        fillColor: getInputFillColor(),
                       ),
                       onSubmitted: (_) => _addWin(),
                     ),
@@ -127,8 +177,8 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                   ElevatedButton(
                     onPressed: _addWin,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: addBtnColor,
-                      foregroundColor: Colors.white,
+                      backgroundColor: getButtonColor(),
+                      foregroundColor: getButtonTextColor(),
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 18,
@@ -151,7 +201,7 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                   Text(
                     'Your Wins:',
                     style: GoogleFonts.poppins(
-                      color: addBtnColor,
+                      color: getTextColor(),
                       fontWeight: FontWeight.w500,
                       fontSize: 15,
                     ),
@@ -163,13 +213,13 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: accent,
+                      color: getAccentColor(),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       _wins.length.toString(),
                       style: GoogleFonts.poppins(
-                        color: Colors.black87,
+                        color: isDarkMode ? Colors.black87 : Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -184,14 +234,14 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                     children: [
                       Icon(
                         Icons.trending_up,
-                        color: Colors.grey[400],
+                        color: getSubtitleColor(),
                         size: 48,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Start tracking your wins, no matter how small!',
                         style: GoogleFonts.poppins(
-                          color: Colors.grey[600],
+                          color: getSubtitleColor(),
                           fontSize: 14,
                         ),
                         textAlign: TextAlign.center,
@@ -205,11 +255,11 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                   child: ListView.builder(
                     itemCount: _wins.length,
                     itemBuilder: (context, i) => ListTile(
-                      leading: Icon(Icons.check_circle, color: accent),
+                      leading: Icon(Icons.check_circle, color: getAccentColor()),
                       title: Text(
                         _wins[i],
                         style: GoogleFonts.poppins(
-                          color: addBtnColor,
+                          color: getTextColor(),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -222,14 +272,5 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
         ),
       ),
     );
-  }
-
-  void _addWin() {
-    final text = _controller.text.trim();
-    if (text.isEmpty) return;
-    setState(() {
-      _wins.insert(0, text);
-      _controller.clear();
-    });
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CrisisCard extends StatelessWidget {
@@ -6,28 +7,38 @@ class CrisisCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1A1A1A) : Colors.red.shade50;
+    final textColor = isDark ? Colors.white : const Color(0xFF22314A);
+    final subTextColor = isDark ? Colors.white70 : Colors.black87;
+    final sectionTitleColor = isDark
+        ? Colors.red.shade200
+        : Colors.red.shade700;
+    final badgeBg = isDark ? Colors.red.shade700 : Colors.red;
+    final badgeText = Colors.white;
+    final dividerColor = isDark ? Colors.white24 : Colors.red.shade100;
+
     return Card(
       margin: const EdgeInsets.all(16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.red.shade50,
+      color: cardBg,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 🔴 Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.warning, color: Colors.red),
+                      Icon(Icons.warning, color: sectionTitleColor),
                       const SizedBox(width: 8),
                       Text(
                         "Crisis Support",
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Colors.red.shade700,
+                          color: sectionTitleColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -35,9 +46,9 @@ class CrisisCard extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/home');
+                      Navigator.pushNamed(context, '/');
                     },
-                    icon: const Icon(Icons.close),
+                    icon: Icon(Icons.close, color: textColor),
                   ),
                 ],
               ),
@@ -50,13 +61,13 @@ class CrisisCard extends StatelessWidget {
                   horizontal: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.red,
+                  color: badgeBg,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
+                child: Text(
                   "Immediate Help Available",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: badgeText,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -68,32 +79,39 @@ class CrisisCard extends StatelessWidget {
               Text(
                 "Immediate Steps:",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.red.shade700,
+                  color: sectionTitleColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 12),
               _buildStep(
+                context,
                 1,
                 "If you're in immediate danger, call 911 or go to the nearest emergency room",
               ),
               _buildStep(
+                context,
                 2,
                 "Reach out to a trusted friend, family member, or mental health professional",
               ),
               _buildStep(
+                context,
                 3,
                 "Remove any means of self-harm from your immediate environment",
               ),
-              _buildStep(4, "Stay with someone you trust until you feel safer"),
+              _buildStep(
+                context,
+                4,
+                "Stay with someone you trust until you feel safer",
+              ),
 
-              const Divider(height: 32),
+              Divider(height: 32, color: dividerColor),
 
               // 📞 Emergency Contacts Section
               Text(
                 "Emergency Contacts:",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.red.shade700,
+                  color: sectionTitleColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -159,7 +177,10 @@ class CrisisCard extends StatelessWidget {
   }
 
   // 🔹 Helper for numbered steps
-  Widget _buildStep(int number, String text) {
+  Widget _buildStep(BuildContext context, int number, String text) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final stepTextColor = isDark ? Colors.white : const Color(0xFF22314A);
+    final avatarBg = isDark ? Colors.red.shade700 : Colors.red.shade200;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -167,7 +188,7 @@ class CrisisCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 14,
-            backgroundColor: Colors.red.shade200,
+            backgroundColor: avatarBg,
             child: Text(
               "$number",
               style: const TextStyle(
@@ -177,7 +198,17 @@ class CrisisCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Expanded(child: Text(text)),
+          Expanded(
+            child: Text(
+              text,
+              style: GoogleFonts.poppins(
+                color: stepTextColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                height: 1.4,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -199,7 +230,6 @@ class CrisisCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Contact title + availability
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -223,13 +253,17 @@ class CrisisCard extends StatelessWidget {
                   ),
                   child: Text(
                     availability,
-                    style: const TextStyle(fontSize: 12),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 4),
-            Text(subtitle, style: const TextStyle(color: Colors.black54)),
+            Text(subtitle, style: const TextStyle(color: Colors.white)),
             const SizedBox(height: 8),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(

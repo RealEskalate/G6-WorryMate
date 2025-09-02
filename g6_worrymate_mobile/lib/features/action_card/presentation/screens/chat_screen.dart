@@ -11,7 +11,18 @@ import '../bloc/chat_event.dart';
 import '../bloc/chat_state.dart';
 import 'action_card_screen.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
+  ChatScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  final TextEditingController _textController = TextEditingController();
+  int _currentTab = 3;
+  String _selectedLang = 'EN';
+
   Widget _exampleQuestion(BuildContext context, String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
@@ -41,10 +52,6 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
-  ChatScreen({Key? key}) : super(key: key);
-  final TextEditingController _textController = TextEditingController();
-  final int _currentTab = 3;
-  String _selectedLang = 'EN';
   @override
   Widget build(BuildContext context) {
     return BlocListener<ChatBloc, ChatState>(
@@ -54,9 +61,9 @@ class ChatScreen extends StatelessWidget {
             context: context,
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
-            builder: (ctx) => SafeArea(
+            builder: (ctx) => const SafeArea(
               child: Padding(
-                padding: const EdgeInsets.only(top: 32.0),
+                padding: EdgeInsets.only(top: 32.0),
                 child: CrisisCard(),
               ),
             ),
@@ -65,7 +72,7 @@ class ChatScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0xFFF8FAFC), // light background
+          backgroundColor: const Color(0xFFF8FAFC),
           elevation: 0,
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -73,14 +80,14 @@ class ChatScreen extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: Color(0xFF22314A), // primary color
+                color: const Color(0xFF22314A),
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(width: 1, color: Color(0xFF22314A)),
+                border: Border.all(width: 1, color: const Color(0xFF22314A)),
               ),
-              child: Icon(Icons.favorite_border_rounded, color: Colors.white),
+              child: const Icon(Icons.favorite_border_rounded, color: Colors.white),
             ),
           ),
-          title: Column(
+          title: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -88,15 +95,12 @@ class ChatScreen extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Color(0xFF22314A), // text color
+                  color: Color(0xFF22314A),
                 ),
               ),
               Text(
                 "Your AI worry buddy",
-                style: TextStyle(
-                  color: Color(0xFF6B7280), // subtitle color
-                  fontSize: 13,
-                ),
+                style: TextStyle(color: Color(0xFF6B7280), fontSize: 13),
               ),
             ],
           ),
@@ -107,19 +111,21 @@ class ChatScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: TextButton(
                     onPressed: () {
-                      // No setState in StatelessWidget, so just ignore for now
+                      setState(() {
+                        _selectedLang = 'EN';
+                      });
                     },
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      side: BorderSide(width: 1, color: Color(0xFF22314A)),
+                      side: const BorderSide(width: 1, color: Color(0xFF22314A)),
                       backgroundColor: _selectedLang == 'EN'
-                          ? Color(0xFF22314A)
+                          ? const Color(0xFF22314A)
                           : Colors.transparent,
                       foregroundColor: _selectedLang == 'EN'
                           ? Colors.white
-                          : Color(0xFF22314A),
+                          : const Color(0xFF22314A),
                     ),
                     child: const Text('EN'),
                   ),
@@ -128,19 +134,21 @@ class ChatScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: TextButton(
                     onPressed: () {
-                      // No setState in StatelessWidget, so just ignore for now
+                      setState(() {
+                        _selectedLang = 'AM';
+                      });
                     },
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      side: BorderSide(width: 1, color: Color(0xFF22314A)),
+                      side: const BorderSide(width: 1, color: Color(0xFF22314A)),
                       backgroundColor: _selectedLang == 'AM'
-                          ? Color(0xFF22314A)
+                          ? const Color(0xFF22314A)
                           : Colors.transparent,
                       foregroundColor: _selectedLang == 'AM'
                           ? Colors.white
-                          : Color(0xFF22314A),
+                          : const Color(0xFF22314A),
                     ),
                     child: const Text('አማ'),
                   ),
@@ -149,10 +157,8 @@ class ChatScreen extends StatelessWidget {
             ),
           ],
         ),
-
         body: Column(
           children: [
-            // Example questions section
             Padding(
               padding: const EdgeInsets.only(
                 top: 16,
@@ -254,7 +260,6 @@ class ChatScreen extends StatelessWidget {
                 },
               ),
             ),
-            // Input box at the bottom
             Container(
               color: Colors.white,
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -327,20 +332,22 @@ class ChatScreen extends StatelessWidget {
         bottomNavigationBar: CustomBottomNavBar(
           currentIndex: _currentTab,
           onTap: (index) {
-            // Handle navigation to different tabs
+            setState(() {
+              _currentTab = index;
+            });
             switch (index) {
-              case 0: // Home
+              case 0:
                 Navigator.pushReplacementNamed(context, '/');
                 break;
-              case 1: // Journal
+              case 1:
                 Navigator.pushReplacementNamed(context, '/journal');
                 break;
-              case 2: // Offline pack
+              case 2:
                 Navigator.pushReplacementNamed(context, '/offlinetoolkit');
                 break;
               case 3:
                 break;
-              case 4: // Settings
+              case 4:
                 Navigator.pushReplacementNamed(context, '/settings');
                 break;
             }

@@ -11,12 +11,22 @@ class ActionCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF092B47) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF092B47);
+    final subTextColor = isDark ? Colors.white70 : Colors.black87;
+    final stepNumColor = isDark ? Colors.greenAccent : Colors.green.shade700;
+    final sectionTitleColor = isDark ? Colors.white : const Color(0xFF092B47);
+    final toolTileColor = isDark
+        ? const Color(0xFF0E3A5B)
+        : Colors.grey.shade100;
+
     return SingleChildScrollView(
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: const Color(0xFF092B47),
+          color: cardBg,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -32,14 +42,14 @@ class ActionCardWidget extends StatelessWidget {
             Text(
               actionCard.title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.white,
+                color: textColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               actionCard.description,
-              style: const TextStyle(color: Colors.white, fontSize: 15),
+              style: TextStyle(color: subTextColor, fontSize: 15),
             ),
 
             // Micro Steps as numbered steps
@@ -49,11 +59,11 @@ class ActionCardWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Panic Steps:",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: sectionTitleColor,
                       ),
                     ),
                     ...List.generate(
@@ -65,15 +75,15 @@ class ActionCardWidget extends StatelessWidget {
                           children: [
                             Text(
                               '${i + 1}. ',
-                              style: const TextStyle(
-                                color: Colors.greenAccent, // greenish
+                              style: TextStyle(
+                                color: stepNumColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Expanded(
                               child: Text(
                                 actionCard.steps[i],
-                                style: const TextStyle(color: Colors.white70),
+                                style: TextStyle(color: subTextColor),
                               ),
                             ),
                           ],
@@ -91,18 +101,18 @@ class ActionCardWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "If Worse:",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: sectionTitleColor,
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2.0),
                       child: Text(
                         '• ${actionCard.ifWorse}',
-                        style: const TextStyle(color: Colors.white70),
+                        style: TextStyle(color: subTextColor),
                       ),
                     ),
                   ],
@@ -115,8 +125,8 @@ class ActionCardWidget extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 12.0),
                 child: Text(
                   'Disclaimer: ${actionCard.disclaimer}',
-                  style: const TextStyle(
-                    color: Colors.amber,
+                  style: TextStyle(
+                    color: Colors.amber.shade700,
                     fontStyle: FontStyle.italic,
                     fontSize: 13,
                   ),
@@ -128,27 +138,27 @@ class ActionCardWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     "Tools:",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: sectionTitleColor,
                     ),
                   ),
                   ...actionCard.miniTools.map(
                     (tool) => ListTile(
                       title: Text(
                         tool.title,
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: textColor),
                       ),
                       subtitle: Text(
                         tool.url,
-                        style: const TextStyle(
-                          color: Colors.white70,
+                        style: TextStyle(
+                          color: subTextColor,
                           decoration: TextDecoration.underline,
                         ),
                       ),
-                      tileColor: const Color(0xFF0E3A5B),
+                      tileColor: toolTileColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -187,7 +197,7 @@ class ActionCardWidget extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context,'/offlinetoolkit');
+                    Navigator.pushNamed(context, '/offlinetoolkit');
                   },
                   child: const Text('Win Tracker'),
                 ),
@@ -204,7 +214,7 @@ class ActionCardWidget extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context,'/offlinetoolkit');
+                    Navigator.pushNamed(context, '/offlinetoolkit');
                   },
                   child: const Text('Journaling'),
                 ),
