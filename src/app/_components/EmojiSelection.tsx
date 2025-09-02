@@ -5,7 +5,7 @@ import { db } from '../lib/db';
 
 function EmojiSelection() {
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
-  const [emojiname, setEmojiname] = useState<string | null>(null);
+  
 
 
   useEffect(() => {
@@ -14,7 +14,7 @@ function EmojiSelection() {
       const entry = await db.dailyemoji.get(today);
       if (entry) {
         setSelectedEmoji(entry.emoji);
-        setEmojiname(entry.emoji); 
+      
       }
     }
     getEmoji();
@@ -22,7 +22,7 @@ function EmojiSelection() {
 
   const handleSelect = async (em: string, description?: string) => {
     setSelectedEmoji(em);
-    setEmojiname(description ?? null);
+  
 
     const today = new Date().toISOString().split('T')[0];
     const existing = await db.dailyemoji.get(today);
@@ -35,15 +35,15 @@ function EmojiSelection() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Emoji Selection</h1>
+    <div className="p-4 text-[#0D2A4B]">
+      <h1 className="text-2xl font-bold mb-4">Select your mood</h1>
       <div className="grid grid-cols-6 sm:grid-cols-8 gap-4">
         {emoji.map((item, i) => (
           <div key={i} className="flex flex-col items-center">
             <div
               onClick={() => handleSelect(item.emoji, item.description)}
-              className={`flex items-center justify-center cursor-pointer w-14 h-14 text-2xl rounded-full border transition 
-                ${selectedEmoji === item.emoji ? 'bg-blue-500 text-white scale-110' : 'bg-white hover:bg-gray-100'}
+              className={`flex items-center justify-center cursor-pointer w-14 h-14 text-2xl m-2 rounded-full transition 
+                ${selectedEmoji === item.emoji ? 'bg-[#0D2A4B] text-white scale-110' : 'bg-[#F7F9FB] hover:bg-gray-100'}
               `}
             >
               {item.emoji}
@@ -53,11 +53,6 @@ function EmojiSelection() {
         ))}
       </div>
 
-      {selectedEmoji && (
-        <p className="mt-4 text-lg">
-          Selected Emoji: <span className="text-2xl">{selectedEmoji}</span>
-        </p>
-      )}
     </div>
   );
 }

@@ -11,15 +11,21 @@ export interface DailyEmoji {
   emoji: string;
 }
 
+export interface CheckIn{
+  date:string;
+}
 
 export class WorryMateDB extends Dexie {
   journals!: Table<JournalEntry, number>; 
   dailyemoji!:Table<DailyEmoji,string>;
+  checkin!:Table<CheckIn,string>;
+
   constructor() {
     super("WorryMateDB");
-    this.version(2).stores({
+    this.version(3).stores({
       journals: "++id, title, content, date",
       dailyemoji:"date, emoji",
+      checkin:"date"
     });
   }
 }

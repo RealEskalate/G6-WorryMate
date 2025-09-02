@@ -60,7 +60,7 @@ export default function JournalEditor() {
     };
   }, [editor]);
 
-  // Save journal entry
+  
   const saveEntry = async () => {
     if (!editor) return;
     const content = editor.getText();
