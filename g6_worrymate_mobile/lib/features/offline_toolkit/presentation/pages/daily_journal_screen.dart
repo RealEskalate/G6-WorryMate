@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/theme/theme_manager.dart';
 import '../../../../core/widgets/custom_bottom_nav_bar.dart';
@@ -24,22 +25,55 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
 
   final TextEditingController _controller = TextEditingController();
   int? _selectedPromptIdx;
-  final List<Map<String, String>> _entries = [];
+
+  late Box _journalBox;
+  List<Map<String, String>> _entries = [];
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _journalBox = Hive.box('journalBox');
+    _loadEntries();
+  }
+
+  void _loadEntries() {
+    final stored = _journalBox.values.toList();
+    setState(() {
+      _entries = stored.map((e) => Map<String, String>.from(e)).toList();
+    });
+  }
+
+  void _removeEntry(int index) {
+    setState(() {
+      _entries.removeAt(index);
+    });
+    _journalBox.deleteAt(index).then((_) {
+      // Optional: you can add any post-deletion logic here
+    }).catchError((error) {
+      // Handle error and potentially restore the entry
+      if (mounted) {
+        setState(() {
+          _entries.insert(index, _journalBox.getAt(index));
+        });
+      }
+    });
+  }
+
+
+  void _saveEntry(Map<String, String> entry) {
+    _journalBox.add(entry);
+    _loadEntries();
   }
 
   void _sendEntry() {
     final text = _controller.text.trim();
     if (text.isEmpty || _selectedPromptIdx == null) return;
+    final entry = {
+      'promptKey': _promptKeys[_selectedPromptIdx!],
+      'response': text,
+    };
+    _saveEntry(entry);
     setState(() {
-      _entries.insert(0, {
-        'promptKey': _promptKeys[_selectedPromptIdx!],
-        'response': text,
-      });
       _controller.clear();
       _selectedPromptIdx = null;
     });
@@ -58,33 +92,24 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
         ? Colors.white.withOpacity(0.08)
         : Colors.white;
 
-    Color getTextColor() => isDarkMode
-        ? Colors.white
-        : Colors.black87;
+    Color getTextColor() => isDarkMode ? Colors.white : Colors.black87;
 
-    Color getSubtitleColor() => isDarkMode
-        ? Colors.white70
-        : Colors.black54;
+    Color getSubtitleColor() => isDarkMode ? Colors.white70 : Colors.black54;
 
-    Color getPrimaryColor() => isDarkMode
-        ? Colors.greenAccent
-        : const Color.fromARGB(255, 9, 43, 71);
+    Color getPrimaryColor() =>
+        isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71);
 
-    Color getBorderColor() => isDarkMode
-        ? Colors.greenAccent.withOpacity(0.3)
-        : const Color(0xFFE0E6ED);
+    Color getBorderColor() =>
+        isDarkMode ? Colors.greenAccent.withOpacity(0.3) : const Color(0xFFE0E6ED);
 
-    Color getInputBackgroundColor() => isDarkMode
-        ? Colors.white.withOpacity(0.05)
-        : const Color(0xFFF7F9FB);
+    Color getInputBackgroundColor() =>
+        isDarkMode ? Colors.white.withOpacity(0.05) : const Color(0xFFF7F9FB);
 
-    Color getHintColor() => isDarkMode
-        ? Colors.white60
-        : Colors.grey[500]!;
+    Color getHintColor() =>
+        isDarkMode ? Colors.white60 : Colors.grey[500]!;
 
-    Color getEntryBackgroundColor() => isDarkMode
-        ? Colors.white.withOpacity(0.05)
-        : const Color(0xFFF7F9FB);
+    Color getEntryBackgroundColor() =>
+        isDarkMode ? Colors.white.withOpacity(0.05) : const Color(0xFFF7F9FB);
 
     return Scaffold(
       backgroundColor: getBackgroundColor(),
@@ -104,22 +129,22 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
         child: Container(
           width: 420,
           constraints: const BoxConstraints(maxWidth: 480),
-            padding: const EdgeInsets.all(24),
-            margin: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: getCardColor(),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: getBorderColor()),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(isDarkMode ? 0.04 : 0.02),
-                  blurRadius: 12,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: SingleChildScrollView(
-              child: Column(
+          padding: const EdgeInsets.all(24),
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: getCardColor(),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: getBorderColor()),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDarkMode ? 0.04 : 0.02),
+                blurRadius: 12,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: SingleChildScrollView(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -241,24 +266,32 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                         onSubmitted: (_) => _sendEntry(),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: _sendEntry,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: getPrimaryColor(),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 18,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Icon(Icons.send),
-                    ),
+
+
                   ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+
+                    onPressed: _sendEntry,
+
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: getPrimaryColor(),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Icon(Icons.send, size: 30.0, ),
+                  ),
                 ),
                 const SizedBox(height: 18),
                 if (_entries.isNotEmpty) ...[
@@ -278,34 +311,45 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                     itemBuilder: (context, i) {
                       final entry = _entries[i];
                       final promptKey = entry['promptKey'] ?? '';
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: getEntryBackgroundColor(),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: getBorderColor()),
+                      return Dismissible(
+                        key: ValueKey(i),
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: const Icon(Icons.delete, color: Colors.white),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              promptKey.getString(context),
-                              style: GoogleFonts.poppins(
-                                color: getPrimaryColor(),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (_) => _removeEntry(i),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: getEntryBackgroundColor(),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: getBorderColor()),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                promptKey.getString(context),
+                                style: GoogleFonts.poppins(
+                                  color: getPrimaryColor(),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              entry['response'] ?? '',
-                              style: GoogleFonts.poppins(
-                                color: getTextColor(),
-                                fontSize: 15,
+                              const SizedBox(height: 6),
+                              Text(
+                                entry['response'] ?? '',
+                                style: GoogleFonts.poppins(
+                                  color: getTextColor(),
+                                  fontSize: 15,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },
