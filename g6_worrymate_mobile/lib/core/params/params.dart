@@ -1,6 +1,7 @@
-class TemplateParams {
-  final String id;
-  TemplateParams({required this.id});
+class ChatParams {
+  final String content;
+  ChatParams({required this.content});
+
 }
 
 class UserParams {

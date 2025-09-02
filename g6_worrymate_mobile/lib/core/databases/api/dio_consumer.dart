@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-import '../../errors/expentions.dart';
+import '../../errors/exceptions.dart';
 import 'api_consumer.dart';
 import 'end_points.dart';
 

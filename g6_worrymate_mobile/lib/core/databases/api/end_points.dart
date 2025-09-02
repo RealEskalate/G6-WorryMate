@@ -1,6 +1,6 @@
 class EndPoints {
-  static const String baserUrl = "https://jsonplaceholder.typicode.com/";
-  static const String template = "template/";
+  static const String baserUrl = "https://g6-worrymate-zt0r.onrender.com";
+  static const String chat = "chat/";
   static const String user = "users/";
   static const String post = "posts/";
 }
