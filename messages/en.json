@@ -39,6 +39,12 @@
     },
     "HomePage": {
       "title": "Worry Mate"
-    }
+    },
+    "Header": {
+        "home": "Home",
+        "settings": "Settings",
+        "about": "About"
+      }
+    
 }
 

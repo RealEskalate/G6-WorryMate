@@ -2,6 +2,7 @@ import {NextIntlClientProvider, hasLocale} from 'next-intl';
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import { Metadata } from 'next';
+import Header from '@/components/Header';
 import '@/app/globals.css';
 
 type Props = {
@@ -27,6 +28,7 @@ export default async function RootLayout({
     <html>
       <body>
         <NextIntlClientProvider>
+          <Header />
           {children}
         </NextIntlClientProvider>
       </body>
