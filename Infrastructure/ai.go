@@ -142,24 +142,25 @@ STRICT INSTRUCTIONS: Analyze the user's content and select exactly ONE topic key
 USER CONTENT: "%s"
 
 TOPIC KEYS (choose exactly one if related):
-- Study Stress
-- Money Stress
-- Family conflict
-- Workload
-- Sleep
-- Motivation
-- Loneliness
-- Procrastination
-- Time management
-- Exam Panic
-- New City anxiety
-- Self confidence
+- study_stress
+- money_stress
+- family_conflict
+- workload
+- sleep
+- motivation
+- loneliness
+- procrastination
+- time_management
+- exam_panic
+- new_city_anxiety
+- self_confidence
+- other
 
 RULES:
 1. You MUST choose exactly one key ONLY if there's a clear match to the user's content
-2. If no clear match exists, respond with "topic_key: No related topic found"
+2. If no clear match exists, respond with "topic_key: other"
 3. Your response MUST begin with "topic_key: "
-4. Output ONLY the required format: "topic_key: <selected_key>" or "topic_key: No related topic found"
+4. Output ONLY the required format: "topic_key: <selected_key>" or "topic_key: other"
 5. DO NOT include any other text, explanations, or conversational phrases
 6. DO NOT create new topic keys - use only from the provided list
 
