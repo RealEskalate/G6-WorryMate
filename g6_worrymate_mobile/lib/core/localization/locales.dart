@@ -55,6 +55,7 @@ mixin LocalData {
   static const String homeQuickMood = 'home_quick_mood';
   static const String homeQuickBreathing = 'home_quick_breathing';
   static const String homeQuickChatAI = 'home_quick_chat_ai';
+  static const String homeQuickTrackWins = 'home_quick_wins';
 
   static const String homeAffirmation1 = 'home_affirmation_1';
   static const String homeAffirmation2 = 'home_affirmation_2';
@@ -78,12 +79,15 @@ mixin LocalData {
   static const String homeMoodGood = 'home_mood_good';
   static const String homeMoodGreat = 'home_mood_great';
   static const String homeMoodLoggedTemplate = 'home_mood_logged_template';
+  static const String homeActivityLoggedTemplate = 'home_activity_logged_template'; 
 
   static const String homeActivityTitle = 'home_activity_title';
   static const String homeRingToday = 'home_ring_today';
   static const String homeRing7Days = 'home_ring_7days';
   static const String homeRingStreak = 'home_ring_streak';
   static const String homeStreakBarTemplate = 'home_streak_bar_template';
+
+
 
   // (Optional legacy keys)
   static const String title = 'title';
@@ -135,6 +139,7 @@ mixin LocalData {
     homeQuickMood: 'Mood',
     homeQuickBreathing: 'Breathing',
     homeQuickChatAI: 'Chat AI',
+    homeQuickTrackWins: 'Wins',
     homeAffirmation1: 'You are making progress, one small step at a time.',
     homeAffirmation2: 'Your feelings are valid.',
     homeAffirmation3: 'Breathing space creates thinking space.',
@@ -153,13 +158,13 @@ mixin LocalData {
     homeMoodOkay: 'Okay',
     homeMoodGood: 'Good',
     homeMoodGreat: 'Great',
-    homeMoodLoggedTemplate: 'Logged mood: {}',
+    homeMoodLoggedTemplate: 'Logged mood: %a',
     homeActivityTitle: 'Your activity',
     homeRingToday: 'Today',
     homeRing7Days: '7 Days',
     homeRingStreak: 'Streak',
-    homeStreakBarTemplate: 'Streak: {}',
-
+    homeStreakBarTemplate: 'Streak: %a',
+    homeActivityLoggedTemplate: 'Activity logged: %a',
     // Legacy
     title: 'Settings',
     body: 'Manage your preferences'
@@ -211,6 +216,7 @@ mixin LocalData {
     homeQuickMood: 'ስሜት',
     homeQuickBreathing: 'መተንፈሻ',
     homeQuickChatAI: 'AI ውይይት',
+    homeQuickTrackWins: 'ድሎች',
     homeAffirmation1: 'በትንሽ ደረጃ በየቀኑ እየተመጣጠንህ ነህ።',
     homeAffirmation2: 'ስሜቶችህ ትክክለኛ ናቸው።',
     homeAffirmation3: 'የመተንፈስ እረፍት የሐሳብ ቦታ ይፈጥራል።',
@@ -229,12 +235,13 @@ mixin LocalData {
     homeMoodOkay: 'እሺ',
     homeMoodGood: 'ጥሩ',
     homeMoodGreat: 'በጣም ጥሩ',
-    homeMoodLoggedTemplate: 'የተመዘገበ ስሜት: {}',
+    homeMoodLoggedTemplate: 'የተመዘገበ ስሜት: %a',
     homeActivityTitle: 'እንቅስቃሴህ',
     homeRingToday: 'ዛሬ',
     homeRing7Days: '7 ቀን',
     homeRingStreak: 'ቀጥታ',
-    homeStreakBarTemplate: 'ቀጥታ: {}',
+    homeStreakBarTemplate: 'ቀጥታ: %a',
+    homeActivityLoggedTemplate: 'እንቅስቃሴ ተመዝግቧል: %a',
 
     // Legacy
     title: 'ቅንብሮች',
