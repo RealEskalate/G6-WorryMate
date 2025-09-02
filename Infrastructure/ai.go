@@ -2,11 +2,13 @@ package infrastructure
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"os"
 	domain "sema/Domain"
+	repository "sema/Repository"
 	"strconv"
 	"strings"
 
@@ -38,16 +40,16 @@ func InitAIClient() *AI {
 
 	config := &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(`
-	You are a supportive wellbeing assistant. 
-	Your job is to assemble JSON action cards for users. 
-
-	Rules:
-	- Always return valid JSON (no markdown, no prose).
-	- Use ONLY the provided steps and miniTools — do not invent new ones.
-	- Each card must include: title, description, steps[], miniTools[], ifWorse, disclaimer.
-	- Keep the tone empathetic and safe.
-	- Translate into the requested language if specified.
-	- If context is high-risk, always include the disclaimer and ifWorse guidance.
+	You are a supportive wellbeing assistant.
+	Your job is to generate wellbeing JSON cards for users across different contexts (e.g., action cards, crisis cards).
+	General Rules:
+	- Always return valid JSON (no markdown, no extra prose).
+	- Use the schema provided by the specific method (different card types may have different schemas).
+	- Never invent new fields outside of the given schema.
+	- Content must always be empathetic, safe, and supportive.
+	- If translation is requested, translate all fields into the target language.
+	- If the context is high-risk or crisis-related, always include safety disclaimers according to the schema.
+	- Keep tone clear, non-judgmental, and kind." 
 
 	Output must strictly follow the given JSON schema.
 `, genai.RoleUser),
@@ -118,14 +120,14 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	)
 
 	if err != nil {
-        var apiErr genai.APIError 
-        // log.Printf("err concrete type = %T, value = %#v\n", err, err)
-        if errors.As(err, &apiErr) {
-            // log.Print("err : ", err.Error(), "api err : ", apiErr )
-            if apiErr.Code == 429 {
-                return nil, errors.New("quota/rate limit exceeded, please retry later")
-            }
-        }
+		var apiErr genai.APIError
+		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
+		if errors.As(err, &apiErr) {
+			// log.Print("err : ", err.Error(), "api err : ", apiErr )
+			if apiErr.Code == 429 {
+				return nil, errors.New("quota/rate limit exceeded, please retry later")
+			}
+		}
 		return nil, err
 	}
 
@@ -133,11 +135,10 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	return &resultMessage, nil
 }
 
-
 func (ai *AI) GenerateTopicKey(content string) (string, error) {
-    ctx := context.Background()
+	ctx := context.Background()
 
-    userPrompt := genai.Text(fmt.Sprintf(`
+	userPrompt := genai.Text(fmt.Sprintf(`
 STRICT INSTRUCTIONS: Analyze the user's content and select exactly ONE topic key from the predefined list below.
 
 USER CONTENT: "%s"
@@ -168,61 +169,61 @@ RULES:
 IMPORTANT: Your entire response should be exactly one line in the specified format.
 `, content))
 
-    result, err := ai.Ai_client.Models.GenerateContent(
-        ctx,
-        ai.model_name,
-        userPrompt,
-        ai.config,
-    )
+	result, err := ai.Ai_client.Models.GenerateContent(
+		ctx,
+		ai.model_name,
+		userPrompt,
+		ai.config,
+	)
 
-    if err != nil {
-        var apiErr genai.APIError 
-        // log.Printf("err concrete type = %T, value = %#v\n", err, err)
-        if errors.As(err, &apiErr) {
-            // log.Print("err : ", err.Error(), "api err : ", apiErr )
-            if apiErr.Code == 429 {
-                return "", errors.New("quota/rate limit exceeded, please retry later")
-            }
-        }
+	if err != nil {
+		var apiErr genai.APIError
+		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
+		if errors.As(err, &apiErr) {
+			// log.Print("err : ", err.Error(), "api err : ", apiErr )
+			if apiErr.Code == 429 {
+				return "", errors.New("quota/rate limit exceeded, please retry later")
+			}
+		}
 		return "", err
 	}
-    
-    response := result.Text()
-    response = strings.ReplaceAll(response, "```json", "")
-    response = strings.ReplaceAll(response, "```", "")
-    response = strings.TrimSpace(response)
 
-    // Extract the topic key from the response
-    if strings.HasPrefix(response, "topic_key: ") {
-        return strings.TrimPrefix(response, "topic_key: "), nil
-    }
-    
-    // If the response doesn't start with the expected prefix, check if it's one of the valid keys
-    validKeys := []string{
-        "Study Stress", "Money Stress", "Family conflict", "Workload", 
-        "Sleep", "Motivation", "Loneliness", "Procrastination", 
-        "Time management", "Exam Panic", "New City anxiety", "Self confidence",
-    }
-    
-    for _, key := range validKeys {
-        if response == key {
-            return key, nil
-        }
-    }
-    
-    // If response contains "No related topic found" but without the prefix
-    if strings.Contains(strings.ToLower(response), "no related topic") {
-        return "No related topic found", nil
-    }
-    
-    // If we get an unexpected response, return the error case
-    return "No related topic found", nil
+	response := result.Text()
+	response = strings.ReplaceAll(response, "```json", "")
+	response = strings.ReplaceAll(response, "```", "")
+	response = strings.TrimSpace(response)
+
+	// Extract the topic key from the response
+	if strings.HasPrefix(response, "topic_key: ") {
+		return strings.TrimPrefix(response, "topic_key: "), nil
+	}
+
+	// If the response doesn't start with the expected prefix, check if it's one of the valid keys
+	validKeys := []string{
+		"Study Stress", "Money Stress", "Family conflict", "Workload",
+		"Sleep", "Motivation", "Loneliness", "Procrastination",
+		"Time management", "Exam Panic", "New City anxiety", "Self confidence",
+	}
+
+	for _, key := range validKeys {
+		if response == key {
+			return key, nil
+		}
+	}
+
+	// If response contains "No related topic found" but without the prefix
+	if strings.Contains(strings.ToLower(response), "no related topic") {
+		return "No related topic found", nil
+	}
+
+	// If we get an unexpected response, return the error case
+	return "No related topic found", nil
 }
 
 func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
-    ctx := context.Background()
+	ctx := context.Background()
 
-    userPrompt := genai.Text(fmt.Sprintf(`
+	userPrompt := genai.Text(fmt.Sprintf(`
 STRICT RISK ASSESSMENT INSTRUCTIONS:
 
 Analyze the following user content for risk factors and provide EXACTLY the requested output format.
@@ -257,79 +258,182 @@ Tags: academic-pressure, time-management, exam-anxiety
 IMPORTANT: Be consistent. Same content should always produce the same risk level and similar tags.
 `, content))
 
-    result, err := ai.Ai_client.Models.GenerateContent(
-        ctx,
-        ai.model_name,
-        userPrompt,
-        ai.config,
-    )
+	result, err := ai.Ai_client.Models.GenerateContent(
+		ctx,
+		ai.model_name,
+		userPrompt,
+		ai.config,
+	)
 
-    if err != nil {
-        var apiErr genai.APIError 
-        // log.Printf("err concrete type = %T, value = %#v\n", err, err)
-        if errors.As(err, &apiErr) {
-            // log.Print("err : ", err.Error(), "api err : ", apiErr )
-            if apiErr.Code == 429 {
-                return 0, nil, errors.New("quota/rate limit exceeded, please retry later")
-            }
-        }
+	if err != nil {
+		var apiErr genai.APIError
+		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
+		if errors.As(err, &apiErr) {
+			// log.Print("err : ", err.Error(), "api err : ", apiErr )
+			if apiErr.Code == 429 {
+				return 0, nil, errors.New("quota/rate limit exceeded, please retry later")
+			}
+		}
 		return 0, nil, err
 	}
 
-    var risk int
-    var tags []string
+	var risk int
+	var tags []string
 
-    // Parse the result
-    response := result.Text()
-    response = strings.ReplaceAll(response, "```", "")
-    response = strings.TrimSpace(response)
-    
-    lines := strings.Split(response, "\n")
-    
-    for _, line := range lines {
-        line = strings.TrimSpace(line)
-        
-        // Parse risk level
-        if strings.HasPrefix(line, "Risk Level:") {
-            riskStr := strings.TrimSpace(strings.TrimPrefix(line, "Risk Level:"))
-            if parsed, err := strconv.Atoi(riskStr); err == nil && parsed >= 1 && parsed <= 3 {
-                risk = parsed
-            }
-        }
-        
-        // Parse tags
-        if strings.HasPrefix(line, "Tags:") {
-            tagsStr := strings.TrimSpace(strings.TrimPrefix(line, "Tags:"))
-            if tagsStr != "" {
-                rawTags := strings.Split(tagsStr, ",")
-                for _, tag := range rawTags {
-                    cleanTag := strings.TrimSpace(tag)
-                    cleanTag = strings.ToLower(cleanTag)
-                    cleanTag = strings.ReplaceAll(cleanTag, " ", "-")
-                    if cleanTag != "" {
-                        tags = append(tags, cleanTag)
-                    }
-                }
-            }
-        }
-    }
+	// Parse the result
+	response := result.Text()
+	response = strings.ReplaceAll(response, "```", "")
+	response = strings.TrimSpace(response)
 
-    // Validation and fallbacks
-    if risk < 1 || risk > 3 {
-        risk = 1 // Default to low risk if parsing fails
-    }
-    
-    if len(tags) == 0 {
-        // Generate fallback tags based on risk level
-        switch risk {
-        case 1:
-            tags = []string{"minor-issue", "everyday-concern", "low-priority"}
-        case 2:
-            tags = []string{"moderate-concern", "emotional-strain", "needs-attention"}
-        case 3:
-            tags = []string{"urgent-matter", "serious-concern", "immediate-help-needed"}
-        }
-    }
+	lines := strings.Split(response, "\n")
 
-    return risk, tags, nil
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+
+		// Parse risk level
+		if strings.HasPrefix(line, "Risk Level:") {
+			riskStr := strings.TrimSpace(strings.TrimPrefix(line, "Risk Level:"))
+			if parsed, err := strconv.Atoi(riskStr); err == nil && parsed >= 1 && parsed <= 3 {
+				risk = parsed
+			}
+		}
+
+		// Parse tags
+		if strings.HasPrefix(line, "Tags:") {
+			tagsStr := strings.TrimSpace(strings.TrimPrefix(line, "Tags:"))
+			if tagsStr != "" {
+				rawTags := strings.Split(tagsStr, ",")
+				for _, tag := range rawTags {
+					cleanTag := strings.TrimSpace(tag)
+					cleanTag = strings.ToLower(cleanTag)
+					cleanTag = strings.ReplaceAll(cleanTag, " ", "-")
+					if cleanTag != "" {
+						tags = append(tags, cleanTag)
+					}
+				}
+			}
+		}
+	}
+
+	// Validation and fallbacks
+	if risk < 1 || risk > 3 {
+		risk = 1 // Default to low risk if parsing fails
+	}
+
+	if len(tags) == 0 {
+		// Generate fallback tags based on risk level
+		switch risk {
+		case 1:
+			tags = []string{"minor-issue", "everyday-concern", "low-priority"}
+		case 2:
+			tags = []string{"moderate-concern", "emotional-strain", "needs-attention"}
+		case 3:
+			tags = []string{"urgent-matter", "serious-concern", "immediate-help-needed"}
+		}
+	}
+
+	return risk, tags, nil
+}
+
+func (ai *AI) GenerateCrisisCard(lang, region string, tags []string) (*string, error) {
+	ctx := context.Background()
+
+	// Read region resources
+	fileData, err := os.ReadFile("assets/resources/region.json")
+	if err != nil {
+		return nil, errors.New("cannot read from file region.json")
+	}
+
+	var crisis []repository.CrisisDto
+	if err = json.Unmarshal(fileData, &crisis); err != nil {
+		return nil, errors.New("invalid json in region.json")
+	}
+
+	// Format tags nicely (comma-separated string)
+	tagString := strings.Join(tags, ", ")
+
+	var allResources []interface{}
+	var allSafetyPlans []interface{}
+
+	for _, c := range crisis {
+		allResources = append(allResources, c.Resources)
+		allSafetyPlans = append(allSafetyPlans, c.SafteyPlans)
+	}
+
+	resourcesJSON, err := json.MarshalIndent(allResources, "", "  ")
+	if err != nil {
+		return nil, errors.New("failed to marshal all resources")
+	}
+
+	safetyPlansJSON, err := json.MarshalIndent(allSafetyPlans, "", "  ")
+	if err != nil {
+		return nil, errors.New("failed to marshal all safety plans")
+	}
+
+	userPrompt := genai.Text(fmt.Sprintf(`
+Generate a JSON crisis card for the region "%s".
+- Tags (user feelings): %s
+- Use the tags to decide which resources and safety plan steps are most relevant.
+- Use ONLY the provided resources and safety plan steps below.
+- Use language "%s".
+- Return JSON ONLY. No explanations.
+
+Rules:
+- "resources" must be tailored to both the region and the tags.
+- "safety_plan" must give practical steps based on the tags.
+- If multiple tags apply, combine the relevant steps and resources.
+- Don't include tags and langauage in the JSON response.
+
+Resources:
+%s
+
+Safety Plan:
+%s
+
+JSON Structure Example:
+{
+	"region": "%s",
+	"resources": [
+		{
+			"type": "hotline",
+			"name": "Ethiopian Lifeline",
+			"contact": {
+				"phone": "+251-800-123-456",
+				"availability": "24/7",
+				"website": null,
+				"email": null
+			}
+		},
+		{
+			"type": "ngo",
+			"name": "Mental Health Support Ethiopia",
+			"contact": {
+				"phone": null,
+				"availability": null,
+				"website": "https://mhs-et.org",
+				"email": "info@mhs-et.org"
+			}
+		}
+	],
+	"safety_plan": [
+		{ "step": 1, "instruction": "Identify a safe place." },
+		{ "step": 2, "instruction": "List 3 trusted contacts." },
+		{ "step": 3, "instruction": "Keep emergency numbers nearby." }
+	]
+}
+`, region, tagString, lang, string(resourcesJSON), string(safetyPlansJSON), region))
+
+	// Call AI
+	resp, err := ai.Ai_client.Models.GenerateContent(
+		ctx,
+		ai.model_name,
+		userPrompt,
+		ai.config,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	resultMessage := resp.Text()
+	return &resultMessage, nil
 }

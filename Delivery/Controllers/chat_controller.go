@@ -1,10 +1,7 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
-	"os"
-	"path/filepath"
 	domain "sema/Domain"
 	"strings"
 
@@ -88,21 +85,13 @@ func (cc *ChatController) ResourceController(c *gin.Context) {
 	if region == "" {
 		region = "ET"
 	}
-
 	region = strings.ToUpper(region)
-	path := filepath.Join("assets", "resources/region", region+".json")
-	data, err := os.ReadFile(path)
+	data, err := cc.ChatUc.GetResourcesUseCase(region)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error: ": "resources for region " + region + " not found"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}
-
-	var jsonData interface{}
-	if err := json.Unmarshal(data, &jsonData); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error: ": "Invalid JSON format"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"resources: ": jsonData})
+	c.JSON(http.StatusOK, gin.H{"resources: ": data})
 }
 
 func (cc *ChatController) ActionBlockController(c *gin.Context) {
@@ -110,24 +99,34 @@ func (cc *ChatController) ActionBlockController(c *gin.Context) {
 	lang := c.Param("lang")
 	actBlk, err := cc.ChatUc.GetActionBlockUsecase(topic_key, lang)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error" : err.Error()})
-		return 
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
-	c.JSON(http.StatusOK, gin.H{"action_block" : actBlk})
+	c.JSON(http.StatusOK, gin.H{"action_block": actBlk})
 }
 
 func (cc *ChatController) OfflinePackController(c *gin.Context) {
-	path := filepath.Join("assets", "offline-pack", "offline_pack.json")
-	data, err := os.ReadFile(path)
+	lang := strings.ToLower(c.Query("lang"))
+	offpack, err := cc.ChatUc.GetOffLinePackUseCase(lang)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error: ": "can not find offline pack in assets."})
 		return
 	}
+	c.JSON(http.StatusOK, gin.H{"action-block: ": offpack})
+}
 
-	var jsonData interface{}
-	if err := json.Unmarshal(data, &jsonData); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error: ": "Invalid JSON format"})
+func (cc *ChatController) CrisisCardController(c *gin.Context) {
+	region := strings.ToUpper(c.Query("region"))
+	lang := strings.ToUpper(c.Query("lang"))
+	var tags Tag
+	if err := c.ShouldBindJSON(&tags); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"action-block: ": jsonData})
+	resp, err := cc.ChatUc.GenerateCrisisCard(lang, region, tags.Tags)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"Crisis-card: ": resp})
 }
