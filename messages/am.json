@@ -39,5 +39,11 @@
     },
     "HomePage": {
       "title": "የጭንቀት"
-    }
+    },
+    "Header": {
+        "home": "መነሻ",
+        "settings": "ቅንብሮች",
+        "about": "ስለ"
+      }
+    
 }

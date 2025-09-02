@@ -18,22 +18,6 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-[#0D2A4B] text-white p-6 shadow-lg">
-        <div className="max-w-4xl mx-auto flex items-center">
-          <button 
-            onClick={() => router.push(`/${locale}`)}
-            className="mr-4 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold">Worrymate</h1>
-            <p className="text-sm opacity-90">Your AI worry buddy</p>
-          </div>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="max-w-4xl mx-auto p-6">
         <h2 className="text-3xl font-bold text-[#0D2A4B] mb-8 text-center">{t('title')}</h2>
@@ -46,34 +30,23 @@ export default function SettingsPage() {
               <span className="font-medium text-lg">{t('header')}</span>
             </div>
             <div className="p-6 space-y-6">
-              {/* Language Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">{t('language')}</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() => changeLanguage('en')}
-                    className={`p-4 rounded-lg text-left transition-all duration-200 ${
-                      locale === 'en' 
-                        ? 'bg-[#0D2A4B] text-white shadow-md' 
-                        : 'bg-gray-50 border-2 border-gray-200 text-gray-700 hover:border-[#0D2A4B] hover:bg-blue-50'
-                    }`}
-                  >
-                    <div className="text-lg font-semibold">English</div>
-                    <div className="text-sm opacity-75">En</div>
-                  </button>
-                  <button
-                    onClick={() => changeLanguage('am')}
-                    className={`p-4 rounded-lg text-left transition-all duration-200 ${
-                      locale === 'am' 
-                        ? 'bg-[#0D2A4B] text-white shadow-md' 
-                        : 'bg-gray-50 border-2 border-gray-200 text-gray-700 hover:border-[#0D2A4B] hover:bg-blue-50'
-                    }`}
-                  >
-                    <div className="text-lg font-semibold">አማርኛ</div>
-                    <div className="text-sm opacity-75">Am</div>
-                  </button>
-                </div>
+             {/* Language Selection */}
+            <div className="w-40 space-y-6">
+              <label className="font-semibold text-gray-900 text-lg mb-2">
+                {t("language")}
+              </label>
+              <div className="relative">
+                <select
+                  value={locale}
+                  onChange={(e) => changeLanguage(e.target.value)}
+                  className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm focus:border-[#0D2A4B] focus:outline-none focus:ring-1 focus:ring-[#0D2A4B]"
+                >
+                  <option value="en">English (En)</option>
+                  <option value="am">አማርኛ (Am)</option>
+                </select>
               </div>
+            </div>
+
 
             </div>
           </div>
