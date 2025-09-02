@@ -146,7 +146,7 @@ const Workspace = () => {
             <div className='flex flex-col flex-1 relative items-stretch h-screen min-h-0'>
                 {!hasStarted && messages.length === 0 && (
                     <div className='flex flex-col gap-3 justify-center items-center flex-1 pt-16 px-4'>
-                        <h1 className='font-bold text-xl md:text-2xl text-center'>Hey Mate, How can i Help you today?</h1>
+                        <h1 className='font-bold text-xl md:text-2xl text-center'>Hey Mate, How can i <span className='text-[#0752a8]'>Help you today?</span></h1>
                         <div className='w-full max-w-md'>
                             {sampleQuestions.map((question, index) => (
                                 <div className='flex flex-col gap-y-3' key={index}>
@@ -257,24 +257,35 @@ const Workspace = () => {
                 {!isCrisisMode ? (
                     <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6 px-2 md:px-0">
                         <h1 className='mx-auto text-blue font-bold mb-2 text-center text-sm md:text-base'>General wellbeing advice, not medical advice.</h1>
-                        <div className="border rounded-lg overflow-hidden mt-2 flex w-full max-w-[700px] h-28 bg-white sticky bottom-0">
+                        <div
+                            className="relative rounded-lg overflow-hidden mt-2 flex w-full max-w-[700px] h-28 sticky bottom-0
+  [border:2px_solid_transparent]
+  [background:linear-gradient(white,white)_padding-box,linear-gradient(90deg,#0752a8,#a259e6)_border-box]"
+                        >
                             <div className="flex items-stretch gap-3 p-4 w-full">
                                 <div className="flex-1">
                                     <textarea
                                         value={prompt}
                                         onChange={(e) => setPrompt(e.target.value)}
                                         placeholder="Tell me what's worrying you so i can help.."
-                                        className="w-full h-full border-secondary-blue bg-transparent text-left resize-none outline-none"
+                                        className="w-full h-full bg-transparent text-left resize-none outline-none"
                                     />
                                 </div>
-                                <button className="text-blue cursor-pointer  p-2 rounded-lg transition-colors" onClick={() => setIsListening(true)}>
+                                <button
+                                    className="text-blue cursor-pointer p-2 rounded-lg transition-colors"
+                                    onClick={() => setIsListening(true)}
+                                >
                                     <Mic className="w-5 h-5" />
                                 </button>
-                                <button className=" p-2 rounded-lg  transition-colors cursor-pointer" onClick={handleSend}>
+                                <button
+                                    className="p-2 rounded-lg transition-colors cursor-pointer"
+                                    onClick={handleSend}
+                                >
                                     <Send className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
+
                     </div>
                 ) : (
                     <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6 px-2 md:px-0">
