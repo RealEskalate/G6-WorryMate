@@ -87,6 +87,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
     - The ui tools section is for the frontend to use for displaying appropriate ui elements along with the card.
     - You can use ui tools only if they are in this list : ["box_breathing", "daily_journal", "grounding", "tracker"].
     - always return two relevant ui tools for the topic based on the action block.
+    - The mini tools should have the same format as the one in the action block.
 
 	Steps:
 	%s
@@ -100,7 +101,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 			"title": "Exam Stress Relief",
 			"description": "Let's break this down into manageable steps.",
 			"steps": [...],
-			"miniTools": [...],
+			"miniTools": [{"title" : "minitool title", "url" : "mini tool title"}, ...],
             "uiTools" : ["box_breathing", "daily_journal"],
 			"ifWorse": "If panic sets in, try the grounding exercise or reach out to a trusted friend.",
 			"disclaimer": "This is general wellbeing information, not medical or mental health advice."
