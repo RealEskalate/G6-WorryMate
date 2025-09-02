@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -117,6 +118,13 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	)
 
 	if err != nil {
+        var apiErr *genai.APIError 
+
+        if errors.As(err, &apiErr) {
+            if apiErr.Status == "429" {
+                return nil, errors.New("quota/rate limit exceeded, please retry later")
+            }
+        }
 		return nil, err
 	}
 
