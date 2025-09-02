@@ -21,6 +21,7 @@ func NewChatController(uc domain.ChatUsecaseI) *ChatController {
 func (cc *ChatController) ComposeCardController(c *gin.Context) {
 	var actBlk ActionBlockDTO
 	err := c.ShouldBindJSON(&actBlk)
+	// log.Print("first: ", actBlk)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON format. unable to bind!"})
 		return
@@ -102,7 +103,7 @@ func (cc *ChatController) ActionBlockController(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"action_block": actBlk})
+	c.JSON(http.StatusOK, ChangeToChatDTO(actBlk))
 }
 
 func (cc *ChatController) OfflinePackController(c *gin.Context) {

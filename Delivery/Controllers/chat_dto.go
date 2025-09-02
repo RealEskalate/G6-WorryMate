@@ -81,3 +81,27 @@ type CrisisDto struct {
 	Resources   []ResourceDto `json:"resources"`
 	SafteyPlans []PlansDto    `json:"safety_plan"`
 }
+
+func ChangeToChatDTO(ac *domain.ActionBlock) (*ActionBlockDTO) {
+	toolLks := []ToolLinkDTO{}
+	for _, content := range(ac.Block.ToolLinks) {
+		tmp := ToolLinkDTO{
+			Title: content.Title,
+			URL: content.URL,
+		}
+		toolLks = append(toolLks, tmp)
+	}
+	
+	block := BlockDTO{
+		EmpathyOpeners: ac.Block.EmpathyOpeners,
+		MicroSteps: ac.Block.MicroSteps,
+		Scripts: ac.Block.Scripts,
+		ToolLinks: toolLks,
+	}
+
+	return &ActionBlockDTO{
+		TopicKey: ac.TopicKey,
+		Block: block,
+		Language: ac.Language,
+	}
+}
