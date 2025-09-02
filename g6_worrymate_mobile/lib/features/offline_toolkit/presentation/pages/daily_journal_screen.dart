@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../core/theme/theme_manager.dart';
 import '../../../../core/widgets/custom_bottom_nav_bar.dart';
+import '../../../../core/localization/locales.dart';
 
 class DailyJournalScreen extends StatefulWidget {
   const DailyJournalScreen({super.key});
@@ -13,13 +14,14 @@ class DailyJournalScreen extends StatefulWidget {
 }
 
 class _DailyJournalScreenState extends State<DailyJournalScreen> {
-  final List<String> _prompts = [
-    'How am I feeling right now?',
-    'What made me smile today?',
-    'What is one thing I\'m grateful for?',
-    'What challenge did I overcome recently?',
-    'What do I hope for tomorrow?',
+  final List<String> _promptKeys = [
+    LocalData.journalPromptFeelingNow,
+    LocalData.journalPromptSmileToday,
+    LocalData.journalPromptGrateful,
+    LocalData.journalPromptChallengeOvercome,
+    LocalData.journalPromptHopeTomorrow,
   ];
+
   final TextEditingController _controller = TextEditingController();
   int? _selectedPromptIdx;
   final List<Map<String, String>> _entries = [];
@@ -35,7 +37,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
     if (text.isEmpty || _selectedPromptIdx == null) return;
     setState(() {
       _entries.insert(0, {
-        'prompt': _prompts[_selectedPromptIdx!],
+        'promptKey': _promptKeys[_selectedPromptIdx!],
         'response': text,
       });
       _controller.clear();
@@ -90,7 +92,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
         backgroundColor: getBackgroundColor(),
         elevation: 0,
         title: Text(
-          'Daily Journal',
+          LocalData.dailyJournalTitle.getString(context),
           style: GoogleFonts.poppins(
             color: getTextColor(),
             fontWeight: FontWeight.w600,
@@ -102,34 +104,31 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
         child: Container(
           width: 420,
           constraints: const BoxConstraints(maxWidth: 480),
-          padding: const EdgeInsets.all(24),
-          margin: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: getCardColor(),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: getBorderColor()),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(isDarkMode ? 0.04 : 0.02),
-                blurRadius: 12,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: SingleChildScrollView(
-            child: Column(
+            padding: const EdgeInsets.all(24),
+            margin: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: getCardColor(),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: getBorderColor()),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDarkMode ? 0.04 : 0.02),
+                  blurRadius: 12,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.library_books_outlined,
-                      color: getPrimaryColor(),
-                    ),
+                    Icon(Icons.library_books_outlined, color: getPrimaryColor()),
                     const SizedBox(width: 8),
                     Text(
-                      'Daily Journal',
+                      LocalData.dailyJournalTitle.getString(context),
                       style: GoogleFonts.poppins(
                         color: getTextColor(),
                         fontWeight: FontWeight.w500,
@@ -140,7 +139,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Journal Prompts:',
+                  LocalData.journalPromptsHeading.getString(context),
                   style: GoogleFonts.poppins(
                     color: getTextColor(),
                     fontWeight: FontWeight.w500,
@@ -148,9 +147,9 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                ..._prompts.asMap().entries.map((entry) {
+                ..._promptKeys.asMap().entries.map((entry) {
                   final idx = entry.key;
-                  final prompt = entry.value;
+                  final key = entry.value;
                   final isSelected = _selectedPromptIdx == idx;
                   return GestureDetector(
                     onTap: () => setState(() => _selectedPromptIdx = idx),
@@ -186,7 +185,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              prompt,
+                              key.getString(context),
                               style: GoogleFonts.poppins(
                                 color: getTextColor(),
                                 fontSize: 15,
@@ -201,7 +200,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                 }),
                 const SizedBox(height: 18),
                 Text(
-                  'Your thoughts:',
+                  LocalData.journalYourThoughtsLabel.getString(context),
                   style: GoogleFonts.poppins(
                     color: getTextColor(),
                     fontWeight: FontWeight.w500,
@@ -223,23 +222,18 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                           fontWeight: FontWeight.w400,
                         ),
                         decoration: InputDecoration(
-                          hintText:
-                          'Write about your day, feelings, or anything on your mind...',
+                          hintText: LocalData.journalInputHint.getString(context),
                           hintStyle: GoogleFonts.poppins(
                             color: getHintColor(),
                           ),
                           contentPadding: const EdgeInsets.all(16),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: getBorderColor(),
-                            ),
+                            borderSide: BorderSide(color: getBorderColor()),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: getBorderColor(),
-                            ),
+                            borderSide: BorderSide(color: getBorderColor()),
                           ),
                           filled: true,
                           fillColor: getInputBackgroundColor(),
@@ -269,7 +263,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                 const SizedBox(height: 18),
                 if (_entries.isNotEmpty) ...[
                   Text(
-                    'Your Journal Entries:',
+                    LocalData.journalEntriesHeading.getString(context),
                     style: GoogleFonts.poppins(
                       color: getTextColor(),
                       fontWeight: FontWeight.w500,
@@ -283,6 +277,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                     itemCount: _entries.length,
                     itemBuilder: (context, i) {
                       final entry = _entries[i];
+                      final promptKey = entry['promptKey'] ?? '';
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(14),
@@ -295,7 +290,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              entry['prompt'] ?? '',
+                              promptKey.getString(context),
                               style: GoogleFonts.poppins(
                                 color: getPrimaryColor(),
                                 fontWeight: FontWeight.w500,
@@ -318,7 +313,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                 ],
                 const SizedBox(height: 10),
                 Text(
-                  'Your journal entries are saved locally and private to you.',
+                  LocalData.journalEntriesPrivacyNote.getString(context),
                   style: GoogleFonts.poppins(
                     color: getSubtitleColor(),
                     fontSize: 12,
@@ -347,7 +342,6 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
               Navigator.pushReplacementNamed(context, '/chat');
               break;
             case 4:
-            // Already on settings
               break;
           }
         },

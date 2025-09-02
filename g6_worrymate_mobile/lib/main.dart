@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:provider/provider.dart';
 
+import 'core/localization/locales.dart';
 import 'core/theme/theme_manager.dart';
 import 'features/action_card/presentation/screens/action_card_screen.dart';
 import 'features/action_card/presentation/screens/chat_screen.dart';
@@ -9,12 +11,38 @@ import 'features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart'
 import 'features/setting/settings.dart';
 import 'home_page/home_page.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlutterLocalization.instance.ensureInitialized();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+  
+  @override
+  State<StatefulWidget> createState() => _MyAppState();
+
+}
+class _MyAppState extends State<MyApp>{
+  final FlutterLocalization localization = FlutterLocalization.instance;
+  
+  @override
+  void initState() {
+    configureLocalization();
+    super.initState();
+  }
+
+  void configureLocalization(){
+    localization.init(mapLocales: LOCALES, initLanguageCode: 'am');
+    localization.onTranslatedLanguage = onTranslatedLanguage;
+  }
+
+    void onTranslatedLanguage(Locale? locale){
+      setState(() {
+        
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +56,8 @@ class MyApp extends StatelessWidget {
             theme: _buildLightTheme(),
             darkTheme: _buildDarkTheme(),
             themeMode: themeManager.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            supportedLocales: localization.supportedLocales,
+            localizationsDelegates: localization.localizationsDelegates,
             initialRoute: '/',
             routes: {
               '/action_card': (context) => const ActionCardScreen(),
