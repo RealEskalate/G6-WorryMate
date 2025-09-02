@@ -1,10 +1,7 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
-	"os"
-	"path/filepath"
 	domain "sema/Domain"
 	"strings"
 
@@ -77,8 +74,7 @@ func (cc *ChatController) ResourceController(c *gin.Context) {
 		region = "ET"
 	}
 	region = strings.ToUpper(region)
-	path := "assets/resources/region.json"
-	data, err := cc.ChatUc.ReadResourcesUseCase(path, region)
+	data, err := cc.ChatUc.GetResourcesUseCase(region)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
@@ -86,23 +82,38 @@ func (cc *ChatController) ResourceController(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"resources: ": data})
 }
 
-func (cc *ChatController) OfflinePackController(c *gin.Context) {
-	lang := c.Query("lang")
-	if lang == "" {
-		lang = "en"
-	}
-	lang = strings.ToLower(lang)
-	path := filepath.Join("assets", "offline-pack", "offline-pack."+lang+".json")
-	data, err := os.ReadFile(path)
+func (cc *ChatController) ActionBlockController(c *gin.Context) {
+	topic_key := c.Param("topic_key")
+	lang := c.Param("lang")
+	actBlk, err := cc.ChatUc.GetActionBlockUsecase(topic_key, lang)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error: ": "offline-pack not found for language " + lang})
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
+	c.JSON(http.StatusOK, gin.H{"action-block": actBlk})
+}
 
-	var jsonData interface{}
-	if err := json.Unmarshal(data, &jsonData); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error: ": "Invalid JSON format"})
+func (cc *ChatController) OfflinePackController(c *gin.Context) {
+	lang := strings.ToLower(c.Query("lang"))
+	offpack, err := cc.ChatUc.GetOffLinePackUseCase(lang)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": "can not find offline pack in assets."})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"action-block: ": jsonData})
+	c.JSON(http.StatusOK, gin.H{"action-block: ": offpack})
+}
+
+func (cc *ChatController) CrisisCardController(c *gin.Context) {
+	region := strings.ToUpper(c.Query("region"))
+	var tags Tag
+	if err := c.ShouldBindJSON(&tags); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error: ": err.Error()})
+		return
+	}
+	resp, err := cc.ChatUc.GenerateCrisisCard(region, tags.Tags)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"Crisis-card: ": resp})
 }

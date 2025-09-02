@@ -2,10 +2,13 @@ package infrastructure
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	domain "sema/Domain"
+	repository "sema/Repository"
 	"strings"
 
 	"google.golang.org/genai"
@@ -200,85 +203,104 @@ func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
 	return risk, tags, nil
 }
 
-func (ai *AI) GenerateCrisisCard(content *domain.Crisis, lang string, tags []string) (*string, error) {
+func (ai *AI) GenerateCrisisCard(region string, tags []string) (*string, error) {
 	ctx := context.Background()
 
-	resources := ""
-	for _, s := range content.Resources {
-		contacts := fmt.Sprintf("- phone: %s, website: %s, Email: %s, availability: %s\n", s.Contacts.Phone, s.Contacts.Website, s.Contacts.Email, s.Contacts.Availability)
-		resources += fmt.Sprintf("- name: %s, type: %s, contact: %s\n", s.Name, s.Type, contacts)
+	// Read region resources
+	fileData, err := os.ReadFile("assets/resources/region.json")
+	if err != nil {
+		return nil, errors.New("cannot read from file region.json")
 	}
 
-	plans := ""
-	for _, t := range content.SafteyPlans {
-		plans += fmt.Sprintf("- step : %d, instruction: %s\n", t.Step, t.Instruction)
+	var crisis []repository.CrisisDto
+	if err = json.Unmarshal(fileData, &crisis); err != nil {
+		return nil, errors.New("invalid json in region.json")
 	}
 
-	userFeelings := fmt.Sprintf("Tags: %v\n", tags)
+	// Format tags nicely (comma-separated string)
+	tagString := strings.Join(tags, ", ")
+
+	var allResources []interface{}
+	var allSafetyPlans []interface{}
+
+	for _, c := range crisis {
+		allResources = append(allResources, c.Resources)
+		allSafetyPlans = append(allSafetyPlans, c.SafteyPlans)
+	}
+
+	resourcesJSON, err := json.MarshalIndent(allResources, "", "  ")
+	if err != nil {
+		return nil, errors.New("failed to marshal all resources")
+	}
+
+	safetyPlansJSON, err := json.MarshalIndent(allSafetyPlans, "", "  ")
+	if err != nil {
+		return nil, errors.New("failed to marshal all safety plans")
+	}
 
 	userPrompt := genai.Text(fmt.Sprintf(`
-	Generate a JSON crisis card for the region "%s".
-	- Language: %s
-	- Tags (user feelings): %s
-	- Use the tags to decide which resources and safety plan steps are most relevant.
-	- Use ONLY the provided resources and safety plan steps below.
-	- Return JSON ONLY. No explanations.
+Generate a JSON crisis card for the region "%s".
+- Tags (user feelings): %s
+- Use the tags to decide which resources and safety plan steps are most relevant.
+- Use ONLY the provided resources and safety plan steps below.
+- Use the same language as in the crisis cards.
+- Return JSON ONLY. No explanations.
 
-	Rules:
-	- "resources" must be tailored to both the region and the tags.
-	- "safety_plan" must give practical steps based on the tags.
-	- If multiple tags apply, combine the relevant steps and resources.
+Rules:
+- "resources" must be tailored to both the region and the tags.
+- "safety_plan" must give practical steps based on the tags.
+- If multiple tags apply, combine the relevant steps and resources.
 
-	Resources:
-	%s
+Resources:
+%s
 
-	Safety Plan:
-	%s
+Safety Plan:
+%s
 
-	JSON Structure Example:
-	{
-	"region": ET
+JSON Structure Example:
+{
+	"region": "%s",
 	"resources": [
 		{
-		"type": "hotline",
-		"name": "Ethiopian Lifeline",
-		"contact": {
-			"phone": "+251-800-123-456",
-			"availability": "24/7",
-			"website": null,
-			"email": null
-		}
+			"type": "hotline",
+			"name": "Ethiopian Lifeline",
+			"contact": {
+				"phone": "+251-800-123-456",
+				"availability": "24/7",
+				"website": null,
+				"email": null
+			}
 		},
 		{
-		"type": "ngo",
-		"name": "Mental Health Support Ethiopia",
-		"contact": {
-			"phone": null,
-			"availability": null,
-			"website": "https://mhs-et.org",
-			"email": "info@mhs-et.org"
-		}
+			"type": "ngo",
+			"name": "Mental Health Support Ethiopia",
+			"contact": {
+				"phone": null,
+				"availability": null,
+				"website": "https://mhs-et.org",
+				"email": "info@mhs-et.org"
+			}
 		}
 	],
 	"safety_plan": [
 		{ "step": 1, "instruction": "Identify a safe place." },
 		{ "step": 2, "instruction": "List 3 trusted contacts." },
 		{ "step": 3, "instruction": "Keep emergency numbers nearby." }
-	],
-	}
-`, content.Region, lang, userFeelings, resources, plans))
+	]
+}
+`, region, tagString, string(resourcesJSON), string(safetyPlansJSON), region))
 
-	result, err := ai.Ai_client.Models.GenerateContent(
+	// Call AI
+	resp, err := ai.Ai_client.Models.GenerateContent(
 		ctx,
 		ai.model_name,
 		userPrompt,
 		ai.config,
 	)
-
 	if err != nil {
 		return nil, err
 	}
 
-	resultMessage := result.Text()
+	resultMessage := resp.Text()
 	return &resultMessage, nil
 }

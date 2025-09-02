@@ -35,25 +35,25 @@ type ActionBlock struct {
 }
 
 type Contact struct {
-	Phone        string `json:"phone"`
-	Availability string `json:"availability"`
-	Website      string `json:"website"`
-	Email        string `json:"email"`
+	Phone        string
+	Availability string
+	Website      string
+	Email        string
 }
 
 type Resource struct {
-	Type     string  `json:"type"`
-	Name     string  `json:"name"`
-	Contacts Contact `json:"contact"`
+	Type     string
+	Name     string
+	Contacts Contact
 }
 
 type Plans struct {
-	Step        int    `json:"step"`
-	Instruction string `json:"instruction"`
+	Step        int
+	Instruction string
 }
 
 type Crisis struct {
-	Region      string     `json:"region"`
-	Resources   []Resource `json:"resources"`
-	SafteyPlans []Plans    `json:"safety_plan"`
+	Region      string
+	Resources   []Resource
+	SafteyPlans []Plans
 }

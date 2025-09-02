@@ -1,9 +1,7 @@
 package usecase
 
 import (
-	"encoding/json"
 	"errors"
-	"os"
 	domain "sema/Domain"
 )
 
@@ -31,24 +29,30 @@ func (cu *ChatUsecase) IntentMappingUsecase(content string) (string, error) {
 	return cu.aiServ.GenerateTopicKey(content)
 }
 
-func (cu *ChatUsecase) ReadResourcesUseCase(respath, region string) ([]domain.Crisis, error) {
-	var response []domain.Crisis
-	data, err := os.ReadFile(respath)
-	if err != nil {
-		return response, errors.New("resource not found")
+func (cu *ChatUsecase) GetActionBlockUsecase(topic_key, lang string) (*domain.ActionBlock, error) {
+	res, ok := cu.ChatRepo.GetActionBlock(topic_key, lang)
+	if !ok {
+		return &domain.ActionBlock{}, errors.New("can not find action block with this topic item")
 	}
-	var temp []domain.Crisis
-	if err := json.Unmarshal(data, &temp); err != nil {
-		return response, errors.New("invalid json format")
-	}
-
-	var responses []domain.Crisis
-	for _, r := range temp {
-		if r.Region == region {
-			responses = append(responses, r)
-		}
-	}
-	return responses, nil
+	return res, nil
 }
 
-func (cu *ChatUsecase) CrisisCardUseCase(topic string)
+func (cu *ChatUsecase) GetResourcesUseCase(region string) ([]*domain.Crisis, error) {
+	res, ok := cu.ChatRepo.GetResource(region)
+	if !ok {
+		return nil, errors.New("can not find resources for region: " + region)
+	}
+	return res, nil
+}
+
+func (cu *ChatUsecase) GetOffLinePackUseCase(lang string) ([]*domain.ActionBlock, error) {
+	res, ok := cu.ChatRepo.GetoffPack(lang)
+	if !ok {
+		return nil, errors.New("can not find action blocks with language " + lang)
+	}
+	return res, nil
+}
+
+func (cu *ChatUsecase) GenerateCrisisCard(region string, tags []string) (*string, error) {
+	return cu.aiServ.GenerateCrisisCard(region, tags)
+}
