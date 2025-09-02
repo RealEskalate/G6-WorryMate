@@ -37,11 +37,6 @@ export async function fetchActionCard(cardKey = "study_stress") {
     const cardData = JSON.parse(cleanedResponse);
     const usefulData = cardData["Relaxation Techniques"];
     console.log(usefulData.description)
-    // console.log(usefulData.)
-
-    // Extract the action card data from the parsed JSON
-    // const actionCardData = cardData[cardKey] || cardData.study_stress;
-    // console.log(actionCardData)
     return usefulData;
   } catch (error) {
     console.error("Failed to fetch action card:", error);
