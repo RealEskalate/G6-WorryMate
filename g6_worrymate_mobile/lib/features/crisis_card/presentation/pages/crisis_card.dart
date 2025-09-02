@@ -35,7 +35,7 @@ class CrisisCard extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      // Navigator.of(context).pop();
+                      Navigator.pushNamed(context, '/home');
                     },
                     icon: const Icon(Icons.close),
                   ),

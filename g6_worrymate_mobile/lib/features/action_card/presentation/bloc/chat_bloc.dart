@@ -40,13 +40,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         },
         (risk) async {
           if (risk == 3) {
-            currentMessages.add(
-              ChatMessage(
-                text: 'Crisis detected. Please seek help immediately.',
-                sender: ChatSender.bot,
-              ),
-            );
             emit(ChatCrisis(messages: currentMessages));
+            return;
           } else if (risk == 2 || risk == 1) {
             final topicKeyResult = await getTopicKeyUsecase.call(event.params);
             await topicKeyResult.fold(
