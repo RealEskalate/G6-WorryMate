@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import 'core/localization/locales.dart';
 import 'core/theme/theme_manager.dart';
-import 'features/action_card/presentation/screens/action_card_screen.dart';
+import 'features/action_card/presentation/bloc/chat_bloc.dart';
 import 'features/action_card/presentation/screens/chat_screen.dart';
 import 'features/offline_toolkit/presentation/pages/daily_journal_screen.dart';
 import 'features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
 import 'features/setting/settings.dart';
 import 'home_page/home_page.dart';
+import 'injection_container.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterLocalization.instance.ensureInitialized();
+  init();
   runApp(const MyApp());
 }
 
@@ -60,9 +63,12 @@ class _MyAppState extends State<MyApp>{
             localizationsDelegates: localization.localizationsDelegates,
             initialRoute: '/',
             routes: {
-              '/action_card': (context) => const ActionCardScreen(),
+              // '/action_card': (context) => const ActionCardWidget(),
               '/': (context) => const HomePage(),
-              '/chat': (context) => ChatScreen(),
+              '/chat': (_) => BlocProvider(
+                create: (_) => sl<ChatBloc>(),
+                child: ChatScreen(),
+              ),
               '/settings': (context) => const SettingsPage(),
               '/offlinetoolkit': (context) => const OfflineToolkitScreen(),
               '/journal': (context) => const DailyJournalScreen(),
@@ -85,7 +91,6 @@ class _MyAppState extends State<MyApp>{
         foregroundColor: Colors.black,
         elevation: 1,
       ),
-
     );
   }
 
@@ -100,7 +105,6 @@ class _MyAppState extends State<MyApp>{
         backgroundColor: Color.fromARGB(255, 9, 43, 71),
         elevation: 0,
       ),
-
     );
   }
 }

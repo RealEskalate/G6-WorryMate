@@ -1,260 +1,224 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import '../../../offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
+import '../../domain/entities/action_card_entity.dart';
 
-class ActionCardScreen extends StatefulWidget {
-  const ActionCardScreen({super.key});
+class ActionCardWidget extends StatelessWidget {
+  final ActionCardEntity actionCard;
 
-  @override
-  State<ActionCardScreen> createState() => _ActionCardScreenState();
-}
-
-class _ActionCardScreenState extends State<ActionCardScreen> {
-  List<String> steps = [
-    "Take a deep breath",
-    "Try a 25-minute focused study session (Pomodoro technique)",
-    "Block social media apps during study time",
-    "Write down your top 3 priorities for tomorrow",
-    "Write down your top 3 priorities for tomorrow",
-    "Write down your top 3 priorities for tomorrow",
-  ];
-
-  Widget _buildStepItem({required int index, required String text}) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 28,
-          height: 28,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: Colors.greenAccent,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.greenAccent.withOpacity(0.2),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Text(
-            index.toString(),
-            style: GoogleFonts.poppins(
-              color: Colors.blueGrey[900],
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-            ),
-          ),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Text(
-            text,
-            style: GoogleFonts.poppins(
-              fontSize: 15,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-              height: 1.3,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildQuickTool({
-    required IconData icon,
-    required String label,
-    VoidCallback? onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color.fromARGB(255, 9, 43, 71), Color(0xFF094470)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.greenAccent, width: 1.2),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: Colors.greenAccent, size: 20),
-            const SizedBox(width: 10),
-            Text(
-              label,
-              style: GoogleFonts.poppins(
-                color: Colors.greenAccent,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  const ActionCardWidget({Key? key, required this.actionCard})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 9, 43, 71),
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(18.0),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF092B47) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF092B47);
+    final subTextColor = isDark ? Colors.white70 : Colors.black87;
+    final stepNumColor = isDark ? Colors.greenAccent : Colors.green.shade700;
+    final sectionTitleColor = isDark ? Colors.white : const Color(0xFF092B47);
+    final toolTileColor = isDark
+        ? const Color(0xFF0E3A5B)
+        : Colors.grey.shade100;
+
+    return SingleChildScrollView(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    'Action Plan',
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.greenAccent,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
-                Icon(Icons.bolt_rounded, color: Colors.greenAccent, size: 28),
-              ],
+            Text(
+              actionCard.title,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: textColor,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
-              "Let's break this down into manageable steps.",
-              style: GoogleFonts.poppins(
-                color: Colors.white70,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
+              actionCard.description,
+              style: TextStyle(color: subTextColor, fontSize: 15),
             ),
-            const SizedBox(height: 18),
-            Text(
-              "You can try now:",
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                fontSize: 15,
-              ),
-            ),
-            const SizedBox(height: 14),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: steps.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: _buildStepItem(index: index + 1, text: steps[index]),
-                );
-              },
-            ),
-            const SizedBox(height: 18),
-            Divider(color: Colors.white24, thickness: 1.1),
-            const SizedBox(height: 10),
-            Text(
-              "Quick tools:",
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                fontSize: 15,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                _buildQuickTool(
-                  icon: Icons.favorite_border,
-                  label: "Breathing Exercise",
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const OfflineToolkitScreen(),
+
+            // Micro Steps as numbered steps
+            if (actionCard.steps.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Panic Steps:",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: sectionTitleColor,
                       ),
-                    );
-                  },
-                ),
-                _buildQuickTool(
-                  icon: Icons.camera,
-                  label: "5-4-3-2-1 Grounding",
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const OfflineToolkitScreen(),
+                    ),
+                    ...List.generate(
+                      actionCard.steps.length,
+                      (i) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${i + 1}. ',
+                              style: TextStyle(
+                                color: stepNumColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                actionCard.steps[i],
+                                style: TextStyle(color: subTextColor),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.white10,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.greenAccent.withOpacity(0.2)),
               ),
-              child: Row(
+
+            // If Worse
+            if (actionCard.ifWorse.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "If Worse:",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: sectionTitleColor,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2.0),
+                      child: Text(
+                        '• ${actionCard.ifWorse}',
+                        style: TextStyle(color: subTextColor),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            // Disclaimer
+            if (actionCard.disclaimer.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Text(
+                  'Disclaimer: ${actionCard.disclaimer}',
+                  style: TextStyle(
+                    color: Colors.amber.shade700,
+                    fontStyle: FontStyle.italic,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            // Tools
+            if (actionCard.miniTools.isNotEmpty)
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.warning_amber_rounded,
-                    color: Color(0xFFF6A800),
+                  const SizedBox(height: 12),
+                  Text(
+                    "Tools:",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: sectionTitleColor,
+                    ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "If it gets worse: If panic sets in, try the grounding exercise or reach out to a trusted friend.",
-                      style: GoogleFonts.poppins(
-                        color: Colors.amber[900],
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                  ...actionCard.miniTools.map(
+                    (tool) => ListTile(
+                      title: Text(
+                        tool.title,
+                        style: TextStyle(color: textColor),
                       ),
+                      subtitle: Text(
+                        tool.url,
+                        style: TextStyle(
+                          color: subTextColor,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      tileColor: toolTileColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      onTap: () async {
+                        final url = Uri.parse(tool.url);
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Could not launch URL')),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(13),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                "This is general wellbeing information, not medical or mental health advice.",
-                style: GoogleFonts.poppins(
-                  color: Colors.white70,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
+            // Buttons below the card content
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.greenAccent, // greenish
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/offlinetoolkit');
+                  },
+                  child: const Text('Win Tracker'),
                 ),
-              ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.greenAccent, // greenish
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/offlinetoolkit');
+                  },
+                  child: const Text('Journaling'),
+                ),
+              ],
             ),
           ],
         ),
