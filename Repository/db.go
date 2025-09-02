@@ -10,21 +10,41 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func InitializeDB() (*mongo.Database) {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("error while loading environment variables for database")
-	}
+// func InitializeDB() (*mongo.Database) {
+// 	err := godotenv.Load(".env")
+// 	if err != nil {
+// 		log.Fatal("error while loading environment variables for database")
+// 	}
 
-	// Initialize options 
-	DB_URL := os.Getenv("MONGO_URL")
+// 	// Initialize options 
+// 	DB_URL := os.Getenv("MONGO_URL")
 
-	clientOptions := options.Client().ApplyURI(DB_URL)
-	client, err := mongo.Connect(context.TODO(), clientOptions)
+// 	clientOptions := options.Client().ApplyURI(DB_URL)
+// 	client, err := mongo.Connect(context.TODO(), clientOptions)
 
-	if err != nil {
-		log.Fatal("Unable to connect to mongo database.")
-	}
+// 	if err != nil {
+// 		log.Fatal("Unable to connect to mongo database.")
+// 	}
 
-	return client.Database("Sema_db");
+// 	return client.Database("Sema_db");
+// }
+
+
+
+func InitializeDB() *mongo.Database {
+    // Only load .env locally
+    _ = godotenv.Load(".env")
+
+    DB_URL := os.Getenv("MONGO_URL")
+    if DB_URL == "" {
+        log.Fatal("MONGO_URL not set")
+    }
+
+    clientOptions := options.Client().ApplyURI(DB_URL)
+    client, err := mongo.Connect(context.TODO(), clientOptions)
+    if err != nil {
+        log.Fatal("Unable to connect to mongo database:", err)
+    }
+
+    return client.Database("Sema_db")
 }
