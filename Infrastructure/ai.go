@@ -73,7 +73,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	for _, s := range actionBlock.Block.MicroSteps {
 		stepsList += fmt.Sprintf("- %s\n", s)
 	}
-
+	// log.Print(actionBlock)
 	toolsList := ""
 	for _, t := range actionBlock.Block.ToolLinks {
 		toolsList += fmt.Sprintf("- title : %s, url: %s\n", t.Title, t.URL)
@@ -91,6 +91,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
     - You can use ui tools only if they are in this list : ["box_breathing", "daily_journal", "grounding", "tracker"].
     - always return two relevant ui tools for the topic based on the action block.
     - The mini tools should have the same format as the one in the action block.
+	- If the topic is other,return the same json format but with only title : "other" (in lower case) and the description the steps in a coherent format. The other fields should be empty.
 
 	Steps:
 	%s
@@ -111,7 +112,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 		}
 	}
 	`, actionBlock.TopicKey, actionBlock.Language, stepsList, toolsList, actionBlock.TopicKey))
-
+	// log.Print(actionBlock.Block.MicroSteps)
 	result, err := ai.Ai_client.Models.GenerateContent(
 		ctx,
 		ai.model_name,
