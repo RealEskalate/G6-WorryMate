@@ -2,7 +2,7 @@ export interface ActionCardData {
   title: string;
   description: string;
   steps: string[];
-  miniTools: string[];
+  miniTools: Array<{ title: string; url: string }>;
   ifWorse: string;
   disclaimer: string;
 }

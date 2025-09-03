@@ -2,16 +2,13 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
-    console.log("map intent Url hit");
-    // const url = new URL(request.url);
-    // const search = url.search;
-    // const upstreamUrl = `${
-    //   search || ""
-    // }`;
-    const body = await request.text();
+    const bodyText = await request.text();
+    const body = bodyText ? bodyText : JSON.stringify({});
+    console.log("request body", body);
 
+    // Post tags to upstream; adjust endpoint if backend differs
     const upstream = await fetch(
-      "https://g6-worrymate-8osd.onrender.com/chat/intent_mapping",
+      "https://g6-worrymate-8osd.onrender.com/chat/crisis_card?region=ET&lang=en",
       {
         method: "POST",
         headers: {
@@ -19,21 +16,21 @@ export async function POST(request: Request) {
           accept: "application/json",
         },
         cache: "no-store",
-        body: body || JSON.stringify({}),
+        body,
       }
     );
 
-    // const contentType = upstream.headers.get("content-type") || "";
-    // const isJson = contentType.includes("application/json");
-    // const upstreamBody = isJson ? await upstream.json() : await upstream.text();
-    const upstreamBody = await upstream.json();
+    const contentType = upstream.headers.get("content-type") || "";
+    const isJson = contentType.includes("application/json");
+    const upstreamBody = isJson ? await upstream.json() : await upstream.text();
     console.log(upstreamBody);
+
     if (!upstream.ok) {
       return new Response(
         JSON.stringify({
           ok: false,
           status: upstream.status,
-          message: "Upstream map-intent error",
+          message: "Upstream crisis-card error",
           body: upstreamBody,
         }),
         {
@@ -42,14 +39,16 @@ export async function POST(request: Request) {
         }
       );
     }
-    return new Response(JSON.stringify(upstreamBody), {
+
+    const payload = isJson ? upstreamBody : { raw: String(upstreamBody ?? "") };
+    return new Response(JSON.stringify(payload), {
       status: 200,
       headers: { "content-type": "application/json" },
     });
   } catch (e: unknown) {
     return new Response(
       JSON.stringify({
-        error: "Failed to fetch map-intent",
+        error: "Failed to fetch crisis-card",
         detail:
           typeof e === "object" && e !== null && "message" in e
             ? String((e as { message?: unknown }).message)

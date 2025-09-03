@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     console.log(body);
 
     const upstream = await fetch(
-      "https://g6-worrymate-zt0r.onrender.com/chat/risk_check",
+      "https://g6-worrymate-8osd.onrender.com/chat/risk_check",
       {
         method: "POST",
         headers: {

@@ -1,8 +1,9 @@
 "use client"
 import Sidebar from '@/components/Sidebar'
-import { Mic, Send, Menu, ToggleLeft, ToggleRight } from 'lucide-react'
+import OtherCard from '@/components/OtherCard'
+import ActionCard from '@/components/ActionCard'
+import { Mic, Send, Menu } from 'lucide-react'
 import React, { useState } from 'react'
-import CrisisCard from '@/components/CrisisCard'
 
 const Workspace = () => {
     type ChatMessage = { role: 'user' | 'assistant', content: string }
@@ -11,19 +12,11 @@ const Workspace = () => {
     const [isListening, setIsListening] = useState(false)
     const [isMuted, setIsMuted] = useState(false)
     const [messages, setMessages] = useState<ChatMessage[]>([])
-    interface ActionCard {
-        title?: string;
-        description?: string;
-        steps?: string[];
-        miniTools?: { title: string; url: string }[];
-        ifWorse?: string;
-        disclaimer?: string;
-        __crisis?: boolean;
-        [key: string]: unknown;
-    }
-    const [actionCards, setActionCards] = useState<ActionCard[]>([])
+    const [actionCards, setActionCards] = useState<any[]>([])
     const [isCrisisMode, setIsCrisisMode] = useState(false)
+    const [crisisCard, setCrisisCard] = useState<any | null>(null)
     const [hasStarted, setHasStarted] = useState(false)
+    const [showRateLimit, setShowRateLimit] = useState(false)
     const toggleSidebar = () => {
         setSidebarCollapsed(!sidebarCollapsed)
     }
@@ -33,8 +26,9 @@ const Workspace = () => {
         setMessages(prev => [...prev, { role: 'user', content: trimmed }])
         setPrompt('')
         if (!hasStarted) setHasStarted(true)
+        // Reset rate limit state when user sends a new message
+        setShowRateLimit(false)
 
-        // Pipeline: POST /risk-check → POST /map-intent → GET/POST /compose
         try {
             // 1. risk-check
             const riskRes = await fetch('/api/risk-check', {
@@ -42,31 +36,51 @@ const Workspace = () => {
                 headers: { 'content-type': 'application/json' },
                 body: JSON.stringify({ content: trimmed })
             })
-            console.log(riskRes.headers.get('content-type'))
-
             const riskData = await riskRes.json()
-            console.log(riskData)
             if (!riskRes.ok) {
                 console.log('risk-check error', riskData)
             }
 
             const risk = Number(riskData?.risk)
+            const riskTags: string[] = Array.isArray(riskData?.tags) ? riskData.tags : []
 
             if (risk === 3) {
-                // Crisis: enter crisis mode and show crisis card modal
+                // Crisis: enter crisis mode and fetch crisis card using tags
                 setIsCrisisMode(true)
+                try {
+                    const resp = await fetch('/api/crisis-card', {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify({ tags: riskTags })
+                    })
+                    const data = await resp.json().catch(() => ({}))
+                    if (!resp.ok) {
+                        console.log('crisis-card error', data)
+                        return
+                    }
+                    let payload: any = data?.["Crisis-card: "] ?? data?.card ?? data
+                    if (typeof payload === 'string') {
+                        const stripped = payload
+                            .replace(/^```json\n?/i, '')
+                            .replace(/\n?```\s*$/i, '')
+                            .trim()
+                        payload = JSON.parse(stripped)
+                    }
+                    setCrisisCard(payload)
+                } catch (e) {
+                    console.log('Failed fetching crisis card', e)
+                }
                 return
             }
 
             // 2. map - intent
-            const mapRes = await fetch('/api/map_intent', {
+            let mapRes = await fetch('/api/map_intent', {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
                 body: JSON.stringify({ content: trimmed })
             })
 
             const mapData = await mapRes.json()
-            console.log(mapData)
             if (!mapRes.ok) {
                 console.log('map-intent error', mapData)
                 setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I could not understand the topic right now.' }])
@@ -77,7 +91,6 @@ const Workspace = () => {
                 setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I could not find a helpful topic yet.' }])
                 return
             }
-            console.log(topicKey)
 
             // 3. action-block by topic
             const actionBlockRes = await fetch(`/api/action-block?topic=${encodeURIComponent(String(topicKey))}`, { method: 'GET' })
@@ -95,26 +108,64 @@ const Workspace = () => {
                 headers: { 'content-type': 'application/json' },
                 body: JSON.stringify({ topic: topicKey, action_block: block })
             })
-            const composeData = await composeRes.json().catch(() => ({}))
+            console.log('composeRes status:', composeRes)
+            const composeData = await composeRes.json()
+            console.log('composeData:', composeData)
             if (!composeRes.ok) {
                 console.log('compose error', composeData)
+                // Check if it's a rate limit error (429)
+                if (composeRes.status === 429) {
+                    setShowRateLimit(true)
+                    setMessages(prev => [...prev, { role: 'assistant', content: 'Rate limit reached. Please try again later or upgrade to premium.' }])
+                    return
+                }
                 return
             }
 
-            const cardPayload = composeData?.card ?? composeData
-            let parsedObj: Record<string, unknown>
-            if (typeof cardPayload === 'string') {
+            console.log('composeData:', composeData)
+
+            // The compose API returns data in a 'card' field as a JSON string
+            let cardPayload: any = composeData?.card ?? composeData?.action_block ?? composeData
+            console.log('cardPayload:', cardPayload)
+
+            // Only parse if it's a string
+            if (typeof cardPayload === "string") {
                 const stripped = cardPayload
-                    .replace(/^```json\n?/i, '')
-                    .replace(/\n?```\s*$/i, '')
+                    .replace(/^```json\n?/i, "")
+                    .replace(/\n?```\s*$/i, "")
                     .trim()
-                parsedObj = JSON.parse(stripped)
-            } else {
-                parsedObj = cardPayload as Record<string, unknown>
+
+                try {
+                    cardPayload = JSON.parse(stripped)
+                } catch (e) {
+                    console.error("Failed to parse card string:", e, stripped)
+                }
             }
-            const firstKey = Object.keys(parsedObj)[0]
-            const cardObj = parsedObj[firstKey] ?? parsedObj
-            setActionCards(prev => [...prev, { ...cardObj, __crisis: false }])
+
+            // Handle the weird `""` root key case
+            if (cardPayload[""]) {
+                cardPayload = cardPayload[""]
+            }
+
+            console.log("final cardPayload:", cardPayload)
+
+            // Now normalize to UI format
+            const transformedCard = {
+                title:
+                    cardPayload.title ??
+                    `Action Plan for ${topicKey?.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) || "Your Concern"}`,
+                description: cardPayload.description ?? "Here's a plan to help you with your concern.",
+                steps: cardPayload.micro_steps ?? cardPayload.steps ?? [],
+                miniTools: cardPayload.tool_links ?? cardPayload.miniTools ?? [],
+                ifWorse: cardPayload.if_worse ?? cardPayload.ifWorse ?? "",
+                disclaimer: cardPayload.disclaimer ?? "",
+                empathyOpeners: cardPayload.empathy_openers ?? [],
+                scripts: cardPayload.scripts ?? [],
+                __crisis: false,
+            }
+
+            console.log('transformedCard:', transformedCard)
+            setActionCards(prev => [...prev, transformedCard])
         } catch (e) {
             console.log('Pipeline failed', e)
         }
@@ -123,21 +174,18 @@ const Workspace = () => {
         "I'm really stressed about my exams",
         "I lost my job and I'm worried about money",
         "My family and I keep fighting"
-        // "ስለ ፈተናዬ በጣም ተጨንቄያለሁ",
-        // "እኔና ቤተሰቤ እንከራከራለን"
     ];
     return (
         <div className='h-screen flex flex-row min-h-screen text-[#2a4461] bg-[#ffffff]'>
-            {/* Mobile Menu Button */}
+            {/* Collapse Button - always visible */}
             <button
                 onClick={toggleSidebar}
-                className="fixed top-4 left-2 z-50  rounded-lg border"
+                className="fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg border"
             >
-                {sidebarCollapsed ? (<ToggleLeft className="w-5 h-5" />) : (<ToggleRight className="w-5 h-5" />)}
+                {/* <Menu className="w-5 h-5" /> */}
             </button>
-            {/* {!sidebarCollapsed && <span className="text-lg font-medium">WorryMate</span>} */}
 
-            {/* Sidebar - Hidden on mobile when collapsed, visible on desktop */}
+            {/* Sidebar */}
             <div className={`${sidebarCollapsed ? 'hidden lg:block' : 'block'} lg:relative lg:items-start`}>
                 <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
             </div>
@@ -146,7 +194,7 @@ const Workspace = () => {
             <div className='flex flex-col flex-1 relative items-stretch h-screen min-h-0'>
                 {!hasStarted && messages.length === 0 && (
                     <div className='flex flex-col gap-3 justify-center items-center flex-1 pt-16 px-4'>
-                        <h1 className='font-bold text-xl md:text-2xl text-center'>Hey Mate, How can i <span className='text-[#0752a8]'>Help you today?</span></h1>
+                        <h1 className='font-bold text-xl md:text-2xl text-center'>Hey Mate, How can i Help you today?</h1>
                         <div className='w-full max-w-md'>
                             {sampleQuestions.map((question, index) => (
                                 <div className='flex flex-col gap-y-3' key={index}>
@@ -177,45 +225,82 @@ const Workspace = () => {
                             })}
                             {actionCards.map((card, idx) => (
                                 <div key={`card-${idx}`} className='w-full flex justify-start mb-4'>
-                                    <div className={`w-full max-w-[85%] border rounded-lg p-4 ${card.__crisis ? 'bg-red-50 border-red-300 text-red-800' : 'bg-white text-[#2a4461]'}`}>
-                                        <h2 className='text-lg font-semibold mb-1'>{card.title}</h2>
-                                        {card.description && (
-                                            <p className='text-sm text-gray-700 mb-3'>{card.description}</p>
-                                        )}
-                                        {Array.isArray(card.steps) && card.steps.length > 0 && (
-                                            <div className='mb-3'>
-                                                <h3 className='font-medium mb-1'>Steps</h3>
-                                                <ul className='list-disc pl-5 space-y-1'>
-                                                    {card.steps.map((s: string, i: number) => (
-                                                        <li key={i} className='text-sm'>{s}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-                                        {Array.isArray(card.miniTools) && card.miniTools.length > 0 && (
-                                            <div className='mb-3'>
-                                                <h3 className='font-medium mb-1'>Mini Tools</h3>
-                                                <div className='flex flex-wrap gap-2'>
-                                                    {card.miniTools.map((t: { title: string; url: string }, i: number) => (
-                                                        <a key={i} href={t.url} target='_blank' rel='noreferrer' className='text-blue-600 underline text-sm'>
-                                                            {t.title}
-                                                        </a>
-                                                    ))}
+                                    {card.__crisis ? (
+                                        <div className={`w-full max-w-[85%] border rounded-lg p-4 bg-red-50 border-red-300 text-red-800`}>
+                                            <h2 className='text-lg font-semibold mb-1'>{card.title}</h2>
+                                            {card.description && (
+                                                <p className='text-sm text-gray-700 mb-3'>{card.description}</p>
+                                            )}
+                                            {Array.isArray(card.steps) && card.steps.length > 0 && (
+                                                <div className='mb-3'>
+                                                    <h3 className='font-medium mb-1'>Steps</h3>
+                                                    <ul className='list-disc pl-5 space-y-1'>
+                                                        {card.steps.map((s: string, i: number) => (
+                                                            <li key={i} className='text-sm'>{s}</li>
+                                                        ))}
+                                                    </ul>
                                                 </div>
-                                            </div>
-                                        )}
-                                        {card.ifWorse && (
-                                            <p className='text-sm text-gray-700 mb-2'><span className='font-medium'>If worse:</span> {card.ifWorse}</p>
-                                        )}
-                                        {card.disclaimer && (
-                                            <p className='text-xs text-gray-500 italic'>{card.disclaimer}</p>
-                                        )}
-                                    </div>
+                                            )}
+                                            {Array.isArray(card.empathyOpeners) && card.empathyOpeners.length > 0 && (
+                                                <div className='mb-3'>
+                                                    <h3 className='font-medium mb-1'>Supportive Messages</h3>
+                                                    <ul className='list-disc pl-5 space-y-1'>
+                                                        {card.empathyOpeners.map((opener: string, i: number) => (
+                                                            <li key={i} className='text-sm text-gray-600 italic'>{opener}</li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                            {Array.isArray(card.scripts) && card.scripts.length > 0 && (
+                                                <div className='mb-3'>
+                                                    <h3 className='font-medium mb-1'>Helpful Scripts</h3>
+                                                    <ul className='list-disc pl-5 space-y-1'>
+                                                        {card.scripts.map((script: string, i: number) => (
+                                                            <li key={i} className='text-sm text-gray-700'>{script}</li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                            {Array.isArray(card.miniTools) && card.miniTools.length > 0 && (
+                                                <div className='mb-3'>
+                                                    <h3 className='font-medium mb-1'>Mini Tools</h3>
+                                                    <div className='flex flex-wrap gap-2'>
+                                                        {card.miniTools.map((t: any, i: number) => (
+                                                            <a key={i} href={t.url} target='_blank' rel='noreferrer' className='text-blue-600 underline text-sm'>
+                                                                {t.title}
+                                                            </a>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {card.ifWorse && (
+                                                <p className='text-sm text-gray-700 mb-2'><span className='font-medium'>If worse:</span> {card.ifWorse}</p>
+                                            )}
+                                            {card.disclaimer && (
+                                                <p className='text-xs text-gray-500 italic'>{card.disclaimer}</p>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <ActionCard data={card} />
+                                    )}
                                 </div>
                             ))}
+
+                            {/* Rate Limit Card */}
+                            {showRateLimit && (
+                                <div className='w-full flex justify-start mb-4'>
+                                    <OtherCard
+                                        type="rate_limit"
+                                        title="Rate Limit Reached"
+                                        message="You've reached your usage limit for today. Please try again later or upgrade to premium for unlimited access."
+                                        showPremium={true}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
+
                 {/* Listening overlay */}
                 {isListening && (
                     <div className="fixed inset-0 z-80 flex items-center justify-center bg-white">
@@ -245,64 +330,95 @@ const Workspace = () => {
                         </div>
                     </div>
                 )}
+
                 {/* Crisis Card Modal */}
                 {isCrisisMode && (
                     <div className="fixed inset-0 z-90 flex items-center justify-center bg-black/50 animate-in fade-in duration-300">
                         <div className="animate-in slide-in-from-bottom-4 duration-300">
-                            <CrisisCard />
+                            <div className="w-full max-w-md lg:max-w-2xl xl:max-w-4xl bg-white rounded-2xl shadow-lg p-4 lg:p-6 border border-red-100 relative">
+                                <h2 className="text-lg lg:text-2xl font-extrabold text-red-700 mb-1 text-center drop-shadow">Crisis Support</h2>
+                                {crisisCard?.region && (
+                                    <p className="text-sm lg:text-base text-gray-600 text-center mb-3">Region: {crisisCard.region}</p>
+                                )}
+                                <h3 className="text-base lg:text-lg font-bold text-red-600 mb-2 mt-2">Immediate Steps</h3>
+                                <div className="space-y-2 mb-4 lg:grid lg:grid-cols-2 lg:gap-4">
+                                    {(crisisCard?.safety_plan || []).map((step: any) => (
+                                        <div key={step.step} className="p-2 lg:p-3 rounded-lg border border-red-100 bg-red-50 shadow-sm flex flex-col gap-0.5">
+                                            <p className="font-semibold text-red-700 text-sm lg:text-base">Step {step.step}</p>
+                                            <p className="text-gray-700 text-xs lg:text-sm">{step.instruction}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <h3 className="text-base lg:text-lg font-bold text-red-600 mb-2 mt-4">Resources</h3>
+                                <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:gap-4">
+                                    {(crisisCard?.resources || []).map((res: any, idx: number) => (
+                                        <div key={idx} className="p-3 rounded-lg border border-gray-200 bg-gray-50">
+                                            <p className="font-semibold text-sm text-gray-800">{res.name} <span className="text-gray-500">({res.type})</span></p>
+                                            {res.contact?.phone && (
+                                                <a className="text-blue-600 underline text-xs" href={`tel:${res.contact.phone}`}>{res.contact.phone}</a>
+                                            )}
+                                            {res.contact?.website && (
+                                                <a className="text-blue-600 underline text-xs block" target="_blank" rel="noreferrer" href={res.contact.website}>{res.contact.website}</a>
+                                            )}
+                                            {res.contact?.email && (
+                                                <a className="text-blue-600 underline text-xs block" href={`mailto:${res.contact.email}`}>{res.contact.email}</a>
+                                            )}
+                                            {res.contact?.availability && (
+                                                <p className="text-xs text-gray-600">Availability: {res.contact.availability}</p>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                                {crisisCard?.disclaimer && (
+                                    <p className="text-xs text-gray-500 italic mt-3">{crisisCard.disclaimer}</p>
+                                )}
+                                <button
+                                    onClick={() => {
+                                        setIsCrisisMode(false)
+                                        setMessages([])
+                                        setActionCards([])
+                                        setHasStarted(false)
+                                        setPrompt('')
+                                        setCrisisCard(null)
+                                        setShowRateLimit(false)
+                                    }}
+                                    className="flex justify-center items-center w-1/2 mx-auto mt-5 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-md shadow transition-colors text-sm"
+                                    aria-label="Exit"
+                                >
+                                    Exit
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
+
                 {/* Composer */}
                 {!isCrisisMode ? (
                     <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6 px-2 md:px-0">
                         <h1 className='mx-auto text-blue font-bold mb-2 text-center text-sm md:text-base'>General wellbeing advice, not medical advice.</h1>
-                        <div
-                            className="relative rounded-lg overflow-hidden mt-2 flex w-full max-w-[700px] h-28 sticky bottom-0
-  [border:2px_solid_transparent]
-  [background:linear-gradient(white,white)_padding-box,linear-gradient(90deg,#0752a8,#a259e6)_border-box]"
-                        >
+                        <div className="border rounded-lg overflow-hidden mt-2 flex w-full max-w-[700px] h-28 bg-white sticky bottom-0">
                             <div className="flex items-stretch gap-3 p-4 w-full">
                                 <div className="flex-1">
                                     <textarea
                                         value={prompt}
                                         onChange={(e) => setPrompt(e.target.value)}
                                         placeholder="Tell me what's worrying you so i can help.."
-                                        className="w-full h-full bg-transparent text-left resize-none outline-none"
+                                        className="w-full h-full border-secondary-blue bg-transparent text-left resize-none outline-none"
                                     />
                                 </div>
-                                <button
-                                    className="text-blue cursor-pointer p-2 rounded-lg transition-colors"
-                                    onClick={() => setIsListening(true)}
-                                >
+                                <button className="text-blue cursor-pointer  p-2 rounded-lg transition-colors" onClick={() => setIsListening(true)}>
                                     <Mic className="w-5 h-5" />
                                 </button>
-                                <button
-                                    className="p-2 rounded-lg transition-colors cursor-pointer"
-                                    onClick={handleSend}
-                                >
+                                <button className=" p-2 rounded-lg  transition-colors cursor-pointer" onClick={handleSend}>
                                     <Send className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
-
                     </div>
                 ) : (
                     <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6 px-2 md:px-0">
                         <div className="text-center">
                             <p className="text-red-600 font-medium mb-4 text-sm md:text-base">Crisis mode active - Chat disabled for your safety</p>
-                            <button
-                                onClick={() => {
-                                    setIsCrisisMode(false)
-                                    setMessages([])
-                                    setActionCards([])
-                                    setHasStarted(false)
-                                    setPrompt('')
-                                }}
-                                className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                            >
-                                Reset Chat & Start Fresh
-                            </button>
                         </div>
                     </div>
                 )}

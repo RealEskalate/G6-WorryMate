@@ -42,7 +42,7 @@ function useSafetyPlan() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/resources");
+        const res = await fetch("/api/crisis-card");
         if (!res.ok) throw new Error("Failed to fetch");
         const json = await res.json();
         setData(json);

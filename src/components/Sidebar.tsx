@@ -47,13 +47,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             }`}>
             {/* Sidebar Toggle Button */}
             <div className="p-4 border-b flex items-center justify-between">
-                <button
+                {/* <button
                     className="text-[#2a4461] px-3 py-2 rounded-lg flex items-center gap-2 transition-colors hover:bg-[#0D2A4B] hover:text-white"
                     onClick={typeof onToggle === 'function' ? onToggle : undefined}
                     aria-label="Toggle Sidebar"
                 >
-                    {/* <MessageSquarePlus className="w-4 h-4" /> */}
-                </button>
+                </button> */}
             </div>
 
             {/* Navigation */}

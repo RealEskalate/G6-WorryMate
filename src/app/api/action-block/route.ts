@@ -12,7 +12,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const upstreamUrl = `https://g6-worrymate-zt0r.onrender.com/chat/action-block/${encodeURIComponent(
+    const upstreamUrl = `https://g6-worrymate-8osd.onrender.com/chat/action_block/${encodeURIComponent(
       topic
     )}/en`;
     const upstream = await fetch(upstreamUrl, {
@@ -39,6 +39,7 @@ export async function GET(request: Request) {
         }
       );
     }
+    console.log("actionblock:", body);
 
     const payload = isJson ? body : { actionBlock: String(body ?? "") };
     return new Response(JSON.stringify(payload), {
