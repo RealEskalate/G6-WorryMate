@@ -144,8 +144,8 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 		"%s": {
 			"title": "Exam Stress Relief",
 			"description": "Let's break this down into manageable steps.",
-			"steps": [...],
-			"miniTools": [{"title" : "minitool title", "url" : "mini tool title"}, ...],
+			"steps": [{"title" : "step title", "description" : "step description"}...],
+			"miniTools": [{"title" : "minitool title", "url" : "mini tool url"}, ...],
             "uiTools" : ["box_breathing", "daily_journal"],
 			"ifWorse": "If panic sets in, try the grounding exercise or reach out to a trusted friend.",
 			"disclaimer": "This is general wellbeing information, not medical or mental health advice."
