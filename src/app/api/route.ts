@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-  const targetUrl = 'https://g6-worrymate-zt0r.onrender.com/chat/compose';
+  const targetUrl = 'https://g6-worrymate-8osd.onrender.com/chat/compose';
   
   try {
     const body = await request.json();
