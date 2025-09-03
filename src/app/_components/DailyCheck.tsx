@@ -30,8 +30,8 @@ function DailyCheck() {
           setCheckedIn(prev => [...prev, todayStr])
         }
       } catch (err) {
-       
-        setError('Failed to load check-in data.')
+        
+        setError(`Error checking in: ${err}`)
       } finally {
         setIsLoading(false)
       }
