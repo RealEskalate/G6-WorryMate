@@ -20,3 +20,15 @@
 .react-calendar__tile:hover.bg-gray-100 {
   background-color: #f3f4f6 !important; 
 }
+.container:hover .animate-scroll {
+  animation-play-state: paused;
+}
+.scroller {
+  pointer-events: auto;
+}
+.scroller * {
+  pointer-events: none; /* Prevent child elements from capturing hover */
+}
+.scroller a {
+  pointer-events: auto; /* Allow links to remain clickable */
+}
