@@ -9,37 +9,63 @@ import (
 	domain "sema/Domain"
 	"strconv"
 	"strings"
+	"sync" // NEW: Import the sync package for the mutex
 
 	"google.golang.org/genai"
 )
 
+// MODIFIED: The AI struct now holds multiple clients and state for round-robin
 type AI struct {
-	model_name string
-	Ai_client  *genai.Client
-	config     *genai.GenerateContentConfig
+	model_name   string
+	clients      []*genai.Client // MODIFIED: Changed from a single client to a slice of clients
+	config       *genai.GenerateContentConfig
+	currentIndex int        // NEW: To track which key to use next
+	mu           sync.Mutex // NEW: To make client selection safe for concurrent requests
 }
 
 func ptrFloat32(f float32) *float32 {
 	return &f
 }
 
+// MODIFIED: This function now initializes a pool of clients from multiple API keys
 func InitAIClient() *AI {
 	ctx := context.Background()
-	apiKey := os.Getenv("GEMINI_API_KEY")
-	if apiKey == "" {
-		log.Fatal("API key not found!")
+	// MODIFIED: Read a comma-separated list of keys
+	apiKeysStr := os.Getenv("GEMINI_API_KEYS")
+	if apiKeysStr == "" {
+		log.Fatal("GEMINI_API_KEYS environment variable not set or empty!")
 	}
-	client, err := genai.NewClient(ctx, &genai.ClientConfig{
-		APIKey: apiKey,
-	})
-	if err != nil {
-		log.Fatal(err)
+
+	apiKeys := strings.Split(apiKeysStr, ",")
+	var clients []*genai.Client
+
+	// MODIFIED: Loop through each key and create a client for it
+	for _, key := range apiKeys {
+		trimmedKey := strings.TrimSpace(key)
+		if trimmedKey == "" {
+			continue // Skip empty keys
+		}
+		client, err := genai.NewClient(ctx, &genai.ClientConfig{
+			APIKey: trimmedKey,
+		})
+		if err != nil {
+			// Log a warning but don't crash, so the app can run with the valid keys
+			log.Printf("Warning: Failed to create client with one of the API keys: %v", err)
+			continue
+		}
+		clients = append(clients, client)
 	}
+
+	if len(clients) == 0 {
+		log.Fatal("No valid Gemini clients could be initialized. Check your GEMINI_API_KEYS.")
+	}
+
+	log.Printf("Successfully initialized %d Gemini clients.", len(clients))
 
 	config := &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(`
-	You are a supportive wellbeing assistant. 
-	Your job is to assemble JSON action cards for users. 
+	You are a supportive wellbeing assistant.
+	Your job is to assemble JSON action cards for users.
 
 	Rules:
 	- Always return valid JSON (no markdown, no prose).
@@ -51,32 +77,45 @@ func InitAIClient() *AI {
 
 	Output must strictly follow the given JSON schema.
 `, genai.RoleUser),
-		Temperature: ptrFloat32(0.0), // Use pointer to float32
+		Temperature: ptrFloat32(0.0),
 	}
 
 	model_name := os.Getenv("GEMINI_MODEL")
 
+	// MODIFIED: Initialize the new AI struct
 	return &AI{
 		model_name: model_name,
 		config:     config,
-		Ai_client:  client,
+		clients:    clients,
 	}
+}
+
+// NEW: Helper method to get the next client in a thread-safe, round-robin fashion
+func (ai *AI) getClient() *genai.Client {
+	ai.mu.Lock()
+	defer ai.mu.Unlock()
+
+	// Get the client at the current index
+	client := ai.clients[ai.currentIndex]
+
+	// Move to the next index for the next request, wrapping around if needed
+	ai.currentIndex = (ai.currentIndex + 1) % len(ai.clients)
+
+	return client
 }
 
 func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, error) {
 	ctx := context.Background()
 
-	// Convert slices to a formatted string for the prompt
+	// ... (prompt building logic remains exactly the same) ...
 	stepsList := ""
 	for _, s := range actionBlock.Block.MicroSteps {
 		stepsList += fmt.Sprintf("- %s\n", s)
 	}
-
 	toolsList := ""
 	for _, t := range actionBlock.Block.ToolLinks {
 		toolsList += fmt.Sprintf("- title : %s, url: %s\n", t.Title, t.URL)
 	}
-
 	userPrompt := genai.Text(fmt.Sprintf(`
 	Generate a JSON action card for the topic "%s".
 	- Language: %s
@@ -110,21 +149,23 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	}
 	`, actionBlock.TopicKey, actionBlock.Language, stepsList, toolsList, actionBlock.TopicKey))
 
-	result, err := ai.Ai_client.Models.GenerateContent(
+	// MODIFIED: Use the getClient() helper to pick a client for this request
+	client := ai.getClient()
+	result, err := client.Models.GenerateContent(
 		ctx,
 		ai.model_name,
 		userPrompt,
 		ai.config,
 	)
 
+	// ... (error handling and result parsing remain exactly the same) ...
 	if err != nil {
-        var apiErr *genai.APIError 
-
-        if errors.As(err, &apiErr) {
-            if apiErr.Status == "429" {
-                return nil, errors.New("quota/rate limit exceeded, please retry later")
-            }
-        }
+		var apiErr *genai.APIError
+		if errors.As(err, &apiErr) {
+			if apiErr.Status == "429" {
+				return nil, errors.New("quota/rate limit exceeded, please retry later")
+			}
+		}
 		return nil, err
 	}
 
@@ -132,11 +173,10 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	return &resultMessage, nil
 }
 
-
 func (ai *AI) GenerateTopicKey(content string) (string, error) {
-    ctx := context.Background()
-
-    userPrompt := genai.Text(fmt.Sprintf(`
+	ctx := context.Background()
+	// ... (prompt building logic remains exactly the same) ...
+	userPrompt := genai.Text(fmt.Sprintf(`
 STRICT INSTRUCTIONS: Analyze the user's content and select exactly ONE topic key from the predefined list below.
 
 USER CONTENT: "%s"
@@ -167,53 +207,52 @@ RULES:
 IMPORTANT: Your entire response should be exactly one line in the specified format.
 `, content))
 
-    result, err := ai.Ai_client.Models.GenerateContent(
-        ctx,
-        ai.model_name,
-        userPrompt,
-        ai.config,
-    )
+	// MODIFIED: Use the getClient() helper to pick a client for this request
+	client := ai.getClient()
+	result, err := client.Models.GenerateContent(
+		ctx,
+		ai.model_name,
+		userPrompt,
+		ai.config,
+	)
 
-    if err != nil {
-        return "", err
-    }
-    
-    response := result.Text()
-    response = strings.ReplaceAll(response, "```json", "")
-    response = strings.ReplaceAll(response, "```", "")
-    response = strings.TrimSpace(response)
+	// ... (error handling and result parsing remain exactly the same) ...
+	if err != nil {
+		return "", err
+	}
 
-    // Extract the topic key from the response
-    if strings.HasPrefix(response, "topic_key: ") {
-        return strings.TrimPrefix(response, "topic_key: "), nil
-    }
-    
-    // If the response doesn't start with the expected prefix, check if it's one of the valid keys
-    validKeys := []string{
-        "Study Stress", "Money Stress", "Family conflict", "Workload", 
-        "Sleep", "Motivation", "Loneliness", "Procrastination", 
-        "Time management", "Exam Panic", "New City anxiety", "Self confidence",
-    }
-    
-    for _, key := range validKeys {
-        if response == key {
-            return key, nil
-        }
-    }
-    
-    // If response contains "No related topic found" but without the prefix
-    if strings.Contains(strings.ToLower(response), "no related topic") {
-        return "No related topic found", nil
-    }
-    
-    // If we get an unexpected response, return the error case
-    return "No related topic found", nil
+	response := result.Text()
+	response = strings.ReplaceAll(response, "```json", "")
+	response = strings.ReplaceAll(response, "```", "")
+	response = strings.TrimSpace(response)
+
+	if strings.HasPrefix(response, "topic_key: ") {
+		return strings.TrimPrefix(response, "topic_key: "), nil
+	}
+
+	validKeys := []string{
+		"Study Stress", "Money Stress", "Family conflict", "Workload",
+		"Sleep", "Motivation", "Loneliness", "Procrastination",
+		"Time management", "Exam Panic", "New City anxiety", "Self confidence",
+	}
+
+	for _, key := range validKeys {
+		if response == key {
+			return key, nil
+		}
+	}
+
+	if strings.Contains(strings.ToLower(response), "no related topic") {
+		return "No related topic found", nil
+	}
+
+	return "No related topic found", nil
 }
 
 func (ai *AI) GenerateRiskCheck(content string) (int, []string, error) {
-    ctx := context.Background()
-
-    userPrompt := genai.Text(fmt.Sprintf(`
+	ctx := context.Background()
+	// ... (prompt building logic remains exactly the same) ...
+	userPrompt := genai.Text(fmt.Sprintf(`
 STRICT RISK ASSESSMENT INSTRUCTIONS:
 
 Analyze the following user content for risk factors and provide EXACTLY the requested output format.
@@ -247,72 +286,69 @@ Tags: academic-pressure, time-management, exam-anxiety
 
 IMPORTANT: Be consistent. Same content should always produce the same risk level and similar tags.
 `, content))
+	// MODIFIED: Use the getClient() helper to pick a client for this request
+	client := ai.getClient()
+	result, err := client.Models.GenerateContent(
+		ctx,
+		ai.model_name,
+		userPrompt,
+		ai.config,
+	)
 
-    result, err := ai.Ai_client.Models.GenerateContent(
-        ctx,
-        ai.model_name,
-        userPrompt,
-        ai.config,
-    )
+	// ... (error handling and result parsing remain exactly the same) ...
+	if err != nil {
+		return 0, nil, err
+	}
 
-    if err != nil {
-        return 0, nil, err
-    }
+	var risk int
+	var tags []string
 
-    var risk int
-    var tags []string
+	response := result.Text()
+	response = strings.ReplaceAll(response, "```", "")
+	response = strings.TrimSpace(response)
 
-    // Parse the result
-    response := result.Text()
-    response = strings.ReplaceAll(response, "```", "")
-    response = strings.TrimSpace(response)
-    
-    lines := strings.Split(response, "\n")
-    
-    for _, line := range lines {
-        line = strings.TrimSpace(line)
-        
-        // Parse risk level
-        if strings.HasPrefix(line, "Risk Level:") {
-            riskStr := strings.TrimSpace(strings.TrimPrefix(line, "Risk Level:"))
-            if parsed, err := strconv.Atoi(riskStr); err == nil && parsed >= 1 && parsed <= 3 {
-                risk = parsed
-            }
-        }
-        
-        // Parse tags
-        if strings.HasPrefix(line, "Tags:") {
-            tagsStr := strings.TrimSpace(strings.TrimPrefix(line, "Tags:"))
-            if tagsStr != "" {
-                rawTags := strings.Split(tagsStr, ",")
-                for _, tag := range rawTags {
-                    cleanTag := strings.TrimSpace(tag)
-                    cleanTag = strings.ToLower(cleanTag)
-                    cleanTag = strings.ReplaceAll(cleanTag, " ", "-")
-                    if cleanTag != "" {
-                        tags = append(tags, cleanTag)
-                    }
-                }
-            }
-        }
-    }
+	lines := strings.Split(response, "\n")
 
-    // Validation and fallbacks
-    if risk < 1 || risk > 3 {
-        risk = 1 // Default to low risk if parsing fails
-    }
-    
-    if len(tags) == 0 {
-        // Generate fallback tags based on risk level
-        switch risk {
-        case 1:
-            tags = []string{"minor-issue", "everyday-concern", "low-priority"}
-        case 2:
-            tags = []string{"moderate-concern", "emotional-strain", "needs-attention"}
-        case 3:
-            tags = []string{"urgent-matter", "serious-concern", "immediate-help-needed"}
-        }
-    }
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
 
-    return risk, tags, nil
+		if strings.HasPrefix(line, "Risk Level:") {
+			riskStr := strings.TrimSpace(strings.TrimPrefix(line, "Risk Level:"))
+			if parsed, err := strconv.Atoi(riskStr); err == nil && parsed >= 1 && parsed <= 3 {
+				risk = parsed
+			}
+		}
+
+		if strings.HasPrefix(line, "Tags:") {
+			tagsStr := strings.TrimSpace(strings.TrimPrefix(line, "Tags:"))
+			if tagsStr != "" {
+				rawTags := strings.Split(tagsStr, ",")
+				for _, tag := range rawTags {
+					cleanTag := strings.TrimSpace(tag)
+					cleanTag = strings.ToLower(cleanTag)
+					cleanTag = strings.ReplaceAll(cleanTag, " ", "-")
+					if cleanTag != "" {
+						tags = append(tags, cleanTag)
+					}
+				}
+			}
+		}
+	}
+
+	if risk < 1 || risk > 3 {
+		risk = 1
+	}
+
+	if len(tags) == 0 {
+		switch risk {
+		case 1:
+			tags = []string{"minor-issue", "everyday-concern", "low-priority"}
+		case 2:
+			tags = []string{"moderate-concern", "emotional-strain", "needs-attention"}
+		case 3:
+			tags = []string{"urgent-matter", "serious-concern", "immediate-help-needed"}
+		}
+	}
+
+	return risk, tags, nil
 }
