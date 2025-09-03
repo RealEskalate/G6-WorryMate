@@ -27,7 +27,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     final currentMessages = List<ChatMessage>.from(state.messages);
-    // Add user message
     currentMessages.add(
       ChatMessage(text: event.params.content, sender: ChatSender.user),
     );
@@ -49,7 +48,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                 emit(ChatError(failure.toString(), messages: currentMessages));
               },
               (topicKey) async {
-                final lang = 'en';
+                final lang = 'am';
                 final actionBlockResult = await getActionBlockUsecase.call(
                   topicKey,
                   lang,

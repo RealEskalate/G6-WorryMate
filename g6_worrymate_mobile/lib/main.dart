@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localization/flutter_localization.dart';
-
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/adapters.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:flutter_localization/flutter_localization.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
 import 'core/localization/locales.dart';
@@ -32,30 +28,28 @@ Future<void> main() async {
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
-  
+
   @override
   State<StatefulWidget> createState() => _MyAppState();
-
 }
-class _MyAppState extends State<MyApp>{
+
+class _MyAppState extends State<MyApp> {
   final FlutterLocalization localization = FlutterLocalization.instance;
-  
+
   @override
   void initState() {
     configureLocalization();
     super.initState();
   }
 
-  void configureLocalization(){
+  void configureLocalization() {
     localization.init(mapLocales: LOCALES, initLanguageCode: 'am');
     localization.onTranslatedLanguage = onTranslatedLanguage;
   }
 
-    void onTranslatedLanguage(Locale? locale){
-      setState(() {
-        
-      });
-    }
+  void onTranslatedLanguage(Locale? locale) {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +62,9 @@ class _MyAppState extends State<MyApp>{
             title: 'WorryMate',
             theme: _buildLightTheme(),
             darkTheme: _buildDarkTheme(),
-            themeMode: themeManager.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            themeMode: themeManager.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
             supportedLocales: localization.supportedLocales,
             localizationsDelegates: localization.localizationsDelegates,
             initialRoute: '/',
