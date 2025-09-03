@@ -3,7 +3,7 @@ import 'dart:convert';
 class ActionCardModel {
   final String title;
   final String description;
-  final List<String> steps;
+  final List<ActionStepModel> steps;
   final List<ToolLinkModel> miniTools;
   final String ifWorse;
   final String disclaimer;
@@ -19,31 +19,21 @@ class ActionCardModel {
 
   factory ActionCardModel.fromJson(Map<String, dynamic> json) {
     // The 'card' field is a JSON string containing another JSON object
-    final cardString = json['card'] as String;
-    final cardJson = cardString
+    String cardString = json['card'] ?? '';
+    cardString = cardString
         .replaceAll('```json', '')
         .replaceAll('```', '')
         .trim();
-    final Map<String, dynamic> cardMap = cardJson.isNotEmpty
-        ? Map<String, dynamic>.from(
-            (cardString.contains('{'))
-                ? (cardString.contains('"'))
-                      ? (cardString.contains('\\n'))
-                            ? jsonDecode(
-                                cardString
-                                    .replaceAll('```json', '')
-                                    .replaceAll('```', ''),
-                              )
-                            : jsonDecode(cardJson)
-                      : {}
-                : {},
-          )
-        : {};
+
+    final Map<String, dynamic> cardMap = jsonDecode(cardString);
     final cardData = cardMap.values.first as Map<String, dynamic>;
+
     return ActionCardModel(
       title: cardData['title'] ?? '',
       description: cardData['description'] ?? '',
-      steps: List<String>.from(cardData['steps'] ?? []),
+      steps: (cardData['steps'] as List? ?? [])
+          .map((e) => ActionStepModel.fromJson(e))
+          .toList(),
       miniTools: (cardData['miniTools'] as List? ?? [])
           .map((e) => ToolLinkModel.fromJson(e))
           .toList(),
@@ -51,17 +41,20 @@ class ActionCardModel {
       disclaimer: cardData['disclaimer'] ?? '',
     );
   }
+}
 
-  Map<String, dynamic> toJson() => {
-    'title': title,
-    'description': description,
-    'steps': steps,
-    'miniTools': miniTools.map((e) => e.toJson()).toList(),
-    'ifWorse': ifWorse,
-    'disclaimer': disclaimer,
-  };
+class ActionStepModel {
+  final String title;
+  final String description;
 
-  // Add toEntity() if needed
+  ActionStepModel({required this.title, required this.description});
+
+  factory ActionStepModel.fromJson(Map<String, dynamic> json) {
+    return ActionStepModel(
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+    );
+  }
 }
 
 class ToolLinkModel {
@@ -71,8 +64,9 @@ class ToolLinkModel {
   ToolLinkModel({required this.title, required this.url});
 
   factory ToolLinkModel.fromJson(Map<String, dynamic> json) {
-    return ToolLinkModel(title: json['title'] ?? '', url: json['url'] ?? '');
+    return ToolLinkModel(
+      title: json['title'] ?? '',
+      url: json['url'] ?? '',
+    );
   }
-
-  Map<String, dynamic> toJson() => {'title': title, 'url': url};
 }

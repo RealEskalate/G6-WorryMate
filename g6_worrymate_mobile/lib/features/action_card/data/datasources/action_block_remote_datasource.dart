@@ -15,32 +15,22 @@ class ActionBlockRemoteDataSource {
   ) async {
     final formattedTopicKey = _formatTopicKey(topicKey);
     final url = Uri.parse(
-      'https://g6-worrymate-zt0r.onrender.com/chat/action_block/$formattedTopicKey/$lang',
+      'https://g6-worrymate-8osd.onrender.com/chat/action_block/$formattedTopicKey/$lang',
     );
 
     final response = await http.get(url);
-    print('[ActionBlockRemoteDataSource] Requested URL: ' + url.toString());
-    print(
-      '[ActionBlockRemoteDataSource] Status code: ' +
-          response.statusCode.toString(),
-    );
-    print('[ActionBlockRemoteDataSource] Response body: ' + response.body);
+    print('[ActionBlockRemoteDataSource] Requested URL: $url');
+    print('[ActionBlockRemoteDataSource] Status code: ${response.statusCode}');
+    print('[ActionBlockRemoteDataSource] Response body: ${response.body}');
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print('[ActionBlockRemoteDataSource] Parsed data: ' + data.toString());
-      final actionBlockJson = data['action_block'];
-      if (actionBlockJson == null) {
-        throw Exception('action_block is null');
-      }
-      // Wrap the map with the key your model expects
-      return ActionBlockResponseModel.fromJson({
-        'action-block': actionBlockJson,
-      });
+      print('[ActionBlockRemoteDataSource] Parsed data: $data');
+
+      return ActionBlockResponseModel.fromJson(data);
     } else {
       print(
-        '[ActionBlockRemoteDataSource] Error: Failed to load action block, status: ' +
-            response.statusCode.toString(),
+        '[ActionBlockRemoteDataSource] Error: Failed to load action block, status: ${response.statusCode}',
       );
       throw Exception('Failed to load action block: ${response.statusCode}');
     }

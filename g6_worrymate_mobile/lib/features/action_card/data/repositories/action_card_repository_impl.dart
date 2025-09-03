@@ -22,12 +22,17 @@ class ActionCardRepositoryImpl implements ActionCardRepository {
         block: block,
         language: language,
       );
-      print(' i have successfuly recieved data from remote for action card: $model');
+      print(
+        ' i have successfuly recieved data from remote for action card: $model',
+      );
       return Right(
         ActionCardEntity(
           title: model.title,
           description: model.description,
-          steps: model.steps,
+          steps: model.steps
+              .map((step) => '${step.title}: ${step.description}')
+              .toList(),
+
           miniTools: model.miniTools
               .map((e) => ToolLinkEntity(title: e.title, url: e.url))
               .toList(),
@@ -36,7 +41,9 @@ class ActionCardRepositoryImpl implements ActionCardRepository {
         ),
       );
     } catch (e) {
-      print('i havenot received data from remote this is the repo impl part: $e');
+      print(
+        'i havenot received data from remote this is the repo impl part: $e',
+      );
       return Left(ServerFailure(error: e.toString()));
     }
   }
