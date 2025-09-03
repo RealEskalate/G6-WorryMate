@@ -379,9 +379,9 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
         ),
       ),
       bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: 4,
+        currentIndex: 1,
         onTap: (i) {
-          if (i == 4) return;
+          // if (i == 4) return;
           switch (i) {
             case 0:
               Navigator.pushReplacementNamed(context, '/');
@@ -396,7 +396,9 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
               Navigator.pushReplacementNamed(context, '/chat');
               break;
             case 4:
+              Navigator.pushReplacementNamed(context, '/settings');
               break;
+
           }
         },
       ),
