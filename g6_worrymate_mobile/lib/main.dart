@@ -8,8 +8,13 @@ import 'core/localization/locales.dart';
 import 'core/theme/theme_manager.dart';
 import 'features/action_card/presentation/bloc/chat_bloc.dart';
 import 'features/action_card/presentation/screens/chat_screen.dart';
+import 'features/activity_tracking/presentation/cubit/activity_cubit.dart';
+import 'features/crisis_card/presentation/pages/crisis_card.dart';
+import 'features/offline_toolkit/presentation/pages/box_breathing_screen.dart';
 import 'features/offline_toolkit/presentation/pages/daily_journal_screen.dart';
+import 'features/offline_toolkit/presentation/pages/five_four_screen.dart';
 import 'features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
+import 'features/offline_toolkit/presentation/pages/win_tracker_screen.dart';
 import 'features/setting/settings.dart';
 import 'home_page/home_page.dart';
 import 'injection_container.dart';
@@ -18,10 +23,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterLocalization.instance.ensureInitialized();
 
-  await Hive.initFlutter();
-  await Hive.openBox('journalBox');
+  // await Hive.initFlutter();
 
-  init();
+  await init();
+  await Hive.openBox('journalBox');
 
   runApp(const MyApp());
 }
@@ -53,34 +58,41 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ThemeManager(),
-      child: Consumer<ThemeManager>(
-        builder: (context, themeManager, child) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'WorryMate',
-            theme: _buildLightTheme(),
-            darkTheme: _buildDarkTheme(),
-            themeMode: themeManager.isDarkMode
-                ? ThemeMode.dark
-                : ThemeMode.light,
-            supportedLocales: localization.supportedLocales,
-            localizationsDelegates: localization.localizationsDelegates,
-            initialRoute: '/',
-            routes: {
-              // '/action_card': (context) => const ActionCardWidget(),
-              '/': (context) => const HomePage(),
-              '/chat': (_) => BlocProvider(
-                create: (_) => sl<ChatBloc>(),
-                child: ChatScreen(),
-              ),
-              '/settings': (context) => const SettingsPage(),
-              '/offlinetoolkit': (context) => const OfflineToolkitScreen(),
-              '/journal': (context) => const DailyJournalScreen(),
-            },
-          );
-        },
+    return MultiBlocProvider(
+      providers: [BlocProvider(create: (_) => sl<ActivityCubit>()..load())],
+      child: ChangeNotifierProvider(
+        create: (context) => ThemeManager(),
+        child: Consumer<ThemeManager>(
+          builder: (context, themeManager, child) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'WorryMate',
+              theme: _buildLightTheme(),
+              darkTheme: _buildDarkTheme(),
+              themeMode: themeManager.isDarkMode
+                  ? ThemeMode.dark
+                  : ThemeMode.light,
+              supportedLocales: localization.supportedLocales,
+              localizationsDelegates: localization.localizationsDelegates,
+              initialRoute: '/',
+              routes: {
+                // '/action_card': (context) => const ActionCardWidget(),
+                '/': (context) => const HomePage(),
+                '/chat': (_) => BlocProvider(
+                  create: (_) => sl<ChatBloc>(),
+                  child: ChatScreen(),
+                ),
+                '/settings': (context) => const SettingsPage(),
+                '/offlinetoolkit': (context) => const OfflineToolkitScreen(),
+                '/journal': (context) => const DailyJournalScreen(),
+                '/crisis_action': (context) => const CrisisCard(),
+                '/win_tracker': (context) => const WinTrackerScreen(),
+                '/box_breathing': (context) => const BoxBreathingScreen(),
+                '/five_four': (context) => const FiveFourScreen(),
+              },
+            );
+          },
+        ),
       ),
     );
   }

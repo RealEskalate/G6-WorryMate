@@ -29,11 +29,13 @@ class _ChatScreenState extends State<ChatScreen> {
   String _selectedLang = 'en';
   late FlutterLocalization _flutterLocalization;
 
+
   @override
   void initState() {
     super.initState();
     _flutterLocalization = FlutterLocalization.instance;
     _selectedLang = _flutterLocalization.currentLocale?.languageCode ?? 'en';
+
   }
 
   Widget _exampleQuestion(BuildContext context, String text, bool isDarkMode) {
@@ -95,6 +97,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
     Color getHintColor() => isDarkMode ? Colors.white60 : Colors.grey[600]!;
 
+      final promptFromHomePage = ModalRoute.of(context)?.settings.arguments as String;
+    if (promptFromHomePage != null && _textController.text.isEmpty){
+      _textController.text = promptFromHomePage;
+    }
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         if (state is ChatCrisis) {
