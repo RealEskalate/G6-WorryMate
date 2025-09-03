@@ -15,21 +15,45 @@ type Chat struct {
 	TimeOfCreation time.Time
 }
 type ToolLink struct {
-	Title string 
-	URL   string 
+	Title string
+	URL   string
 }
 
 type Block struct {
-	EmpathyOpeners []string   
-	MicroSteps     []string   
-	Scripts        []string   
-	ToolLinks      []ToolLink 
-	IfWorse        []string   
-	Disclaimer     string     
+	EmpathyOpeners []string
+	MicroSteps     []string
+	Scripts        []string
+	ToolLinks      []ToolLink
+	IfWorse        []string
+	Disclaimer     string
 }
 
 type ActionBlock struct {
-	TopicKey string 
-	Block    Block  
-	Language  string 
+	TopicKey string
+	Block    Block
+	Language string
+}
+
+type Contact struct {
+	Phone        string
+	Availability string
+	Website      string
+	Email        string
+}
+
+type Resource struct {
+	Type     string
+	Name     string
+	Contacts Contact
+}
+
+type Plans struct {
+	Step        int
+	Instruction string
+}
+
+type Crisis struct {
+	Region      string
+	Resources   []Resource
+	SafteyPlans []Plans
 }

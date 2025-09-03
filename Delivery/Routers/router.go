@@ -18,6 +18,7 @@ func SetupRouter(ChtCtrl *controllers.ChatController) {
 		chatRoutes.GET("/resources", ChtCtrl.ResourceController)
 		chatRoutes.GET("/offline_pack", ChtCtrl.OfflinePackController)
 		chatRoutes.GET("/action_block/:topic_key/:lang", ChtCtrl.ActionBlockController)
+		chatRoutes.POST("/crisis_card", ChtCtrl.CrisisCardController)
 	}
 
 	// Run the app

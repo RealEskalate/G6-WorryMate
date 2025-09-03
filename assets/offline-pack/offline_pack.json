@@ -126,7 +126,7 @@
     },
 
     {
-        "topic_key": "family_conflicts",
+        "topic_key": "family_conflict",
         "block": {
             "empathy_openers": [
                 "It sounds like things are really tense at home.",
@@ -161,7 +161,7 @@
     },
 
     {
-        "topic_key": "family_conflicts",
+        "topic_key": "family_conflict",
         "block": {
             "empathy_openers": [
                 "ቤት ውስጥ ሁኔታዎች በጣም የተጨነቁ መሆናቸው ይታያል።",
@@ -827,6 +827,48 @@
                 "ጥንካሬዎትን ከሚያውቁ እና እርስዎ እንዳሉዎት ከሚቀበሉ ደጋፊ እና አዎንታዊ ሰዎች ጋር ይተባበሩ።"
             ],
             "disclaimer": "ይህ ይዘት አጠቃላይ የራስ አገዝ ምክሮችን ይሰጣል እንጂ ለክሊኒካዊ የስነ-ልቦና ግምገማ ወይም ህክምና ምትክ አይደለም።"
+        },
+        "language": "am"
+    },
+    {
+        "topic_key": "other",
+        "block": {
+            "empathy_openers": [
+                "We may not have a dedicated section for what you entered, but your concern is still valid and worth addressing.",
+                "Our app is designed to guide you through some common wellbeing topics, and knowing what we cover may help you connect your concern to one of them."
+            ],
+            "micro_steps": [
+                "Take a moment to look at the 12 areas we focus on: self confidence, new city anxiety,exam panic , motivation, time management, family conflicts, procastination, loneliness, sleep, work load, money stess and study stress.",
+                "See if your concern connects closely with one of these areas — sometimes challenges overlap more than we realize."
+            ],
+            "scripts": [],
+            "tool_links": [],
+            "if_worse": [
+                "If your concern feels urgent or is weighing on you heavily, it’s important to reach out to a trusted person or a mental health professional.",
+                "Remember, support is available even if your experience doesn’t match a predefined category."
+            ],
+            "disclaimer": "This content is meant to guide you toward one of the 12 topics we focus on and provide general self-help suggestions. It is not a substitute for clinical psychological assessment or treatment."
+        },
+        "language": "en"
+    },
+    {
+        "topic_key": "other",
+        "block": {
+            "empathy_openers": [
+                "የገለጹት ጉዳይ ለአንዳንዶቹ የተለመደ እና ትኩረት ሊሰጠው የሚገባ ነገር ነው።",
+                "የእኛ መተግበሪያ የተለመዱ ጉዳዮችን ለመዳሰስ የተነደፈ በመሆኑ፣ የእርስዎ ስጋት ከነሱ ጋር እንዴት እንደሚገናኝ ማየት ጠቃሚ ሊሆን ይችላል።"
+            ],
+            "micro_steps": [
+                "እኛ የምናተኩርባቸውን 12 ዋና ዋና ጉዳዮች ይመልከቱ፡- ራስን መቻል፣ አዲስ ከተማ ጭንቀት፣ የፈተና ፍርሃት፣ ተነሳሽነት፣ የጊዜ አጠቃቀም፣ የቤተሰብ ግጭቶች፣ ማዘግየት (Procrastination)፣ ብቸኝነት፣ እንቅልፍ፣ የሥራ ጫና፣ የገንዘብ ጭንቀት እና የትምህርት ጭንቀት።",
+                "አንዳንድ ጊዜ ችግሮች ከምናስበው በላይ እርስ በርሳቸው ስለሚያያዙ የእርስዎ ሁኔታ ከነዚህ ዘርፎች ከአንዱ ጋር እንደሚመሳሰል ይመልከቱ።"
+            ],
+            "scripts": [],
+            "tool_links": [],
+            "if_worse": [
+                "የገለጹት ጉዳይ ከባድ መስሎ ከታየዎት ወይም ከባድ ስሜት የሚፈጥርብዎት ከሆነ፣ ከታመነ ሰው ወይም ከአእምሮ ጤና ባለሙያ ጋር መነጋገር አስፈላጊ ነው።",
+                "የእርስዎ ገጠመኝ ከታወቀ ምድብ ጋር ባይመሳሰልም እንኳን፣ ድጋፍ ማግኘት እንደሚቻል አይዘንጉ።"
+            ],
+            "disclaimer": "ይህ መረጃ እርስዎ ወደምንሰራባቸው 12 ጉዳዮች እንዲያመሩ እና አጠቃላይ የሆነ የራስ አገዝ ምክር ለመስጠት ያለመ ነው። የክሊኒካዊ የስነ-ልቦና ምርመራ ወይም ህክምናን ሊተካ አይችልም።"
         },
         "language": "am"
     }

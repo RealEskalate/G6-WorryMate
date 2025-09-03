@@ -7,16 +7,15 @@ import (
 
 type ChatUsecase struct {
 	ChatRepo domain.ChatRepositoryI
-	aiServ domain.AIService
+	aiServ   domain.AIService
 }
 
-func NewChatUsecase(chtrp domain.ChatRepositoryI, ai domain.AIService) (*ChatUsecase) {
+func NewChatUsecase(chtrp domain.ChatRepositoryI, ai domain.AIService) *ChatUsecase {
 	return &ChatUsecase{
 		ChatRepo: chtrp,
-		aiServ: ai,
+		aiServ:   ai,
 	}
 }
-
 
 func (cu *ChatUsecase) ComposeCardUsecase(actBlk *domain.ActionBlock) (*string, error) {
 	return cu.aiServ.GenerateActionCard(actBlk)
@@ -36,4 +35,24 @@ func (cu *ChatUsecase) GetActionBlockUsecase(topic_key, lang string) (*domain.Ac
 		return &domain.ActionBlock{}, errors.New("can not find action block with this topic item")
 	}
 	return res, nil
+}
+
+func (cu *ChatUsecase) GetResourcesUseCase(region string) ([]*domain.Crisis, error) {
+	res, ok := cu.ChatRepo.GetResource(region)
+	if !ok {
+		return nil, errors.New("can not find resources for region: " + region)
+	}
+	return res, nil
+}
+
+func (cu *ChatUsecase) GetOffLinePackUseCase(lang string) ([]*domain.ActionBlock, error) {
+	res, ok := cu.ChatRepo.GetoffPack(lang)
+	if !ok {
+		return nil, errors.New("can not find action blocks with language " + lang)
+	}
+	return res, nil
+}
+
+func (cu *ChatUsecase) GenerateCrisisCard(lang, region string, tags []string) (*string, error) {
+	return cu.aiServ.GenerateCrisisCard(lang, region, tags)
 }
