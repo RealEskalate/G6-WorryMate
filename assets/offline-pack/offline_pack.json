@@ -126,7 +126,7 @@
     },
 
     {
-        "topic_key": "family_conflicts",
+        "topic_key": "family_conflict",
         "block": {
             "empathy_openers": [
                 "It sounds like things are really tense at home.",
@@ -161,7 +161,7 @@
     },
 
     {
-        "topic_key": "family_conflicts",
+        "topic_key": "family_conflict",
         "block": {
             "empathy_openers": [
                 "ቤት ውስጥ ሁኔታዎች በጣም የተጨነቁ መሆናቸው ይታያል።",
