@@ -87,7 +87,7 @@ export const InfiniteMovingCards = ({
             key={idx}
             className="relative w-[300px] md:w-[400px] lg:w-[450px] flex-shrink-0 rounded-2xl overflow-hidden shadow-lg"
           >
-            {/* Background Image */}
+            
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{ backgroundImage: `url(${item.image})` }}
