@@ -41,6 +41,16 @@ class ActionCardModel {
       disclaimer: cardData['disclaimer'] ?? '',
     );
   }
+
+   Map<String, dynamic> toJson() => {
+    'title': title,
+    'description': description,
+    'steps': steps.map((e) => e.toJson()).toList(),
+    'miniTools': miniTools.map((e) => e.toJson()).toList(),
+    'ifWorse': ifWorse,
+    'disclaimer': disclaimer,
+  };
+
 }
 
 class ActionStepModel {
@@ -55,6 +65,10 @@ class ActionStepModel {
       description: json['description'] ?? '',
     );
   }
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'description': description,
+      };
 }
 
 class ToolLinkModel {
@@ -69,4 +83,9 @@ class ToolLinkModel {
       url: json['url'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'url': url,
+      };
 }

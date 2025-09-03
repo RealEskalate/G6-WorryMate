@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import '../../../../core/localization/locales.dart';
 import 'package:provider/provider.dart';
 import 'package:g6_worrymate_mobile/core/theme/theme_manager.dart';
 
@@ -13,12 +15,12 @@ class FiveFourScreen extends StatefulWidget {
 class _FiveFourScreenState extends State<FiveFourScreen> {
   int _currentStep = 0;
 
-  final List<String> _steps = [
-    'Look around and name 5 things you can see',
-    'Listen carefully and name 4 things you can hear',
-    'Touch and name 3 things you can feel',
-    'Think of 2 things you can smell',
-    'Name 1 thing you can taste',
+  final List<String> _stepKeys = [
+    LocalData.fiveFourStep1,
+    LocalData.fiveFourStep2,
+    LocalData.fiveFourStep3,
+    LocalData.fiveFourStep4,
+    LocalData.fiveFourStep5,
   ];
 
   @override
@@ -42,9 +44,6 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
         ? Colors.white
         : const Color(0xFF22314A);
 
-    Color getSubtitleColor() => isDarkMode
-        ? Colors.white70
-        : const Color(0xFF7B8CA6);
 
     Color getBorderColor() => isDarkMode
         ? Colors.greenAccent.withOpacity(0.3)
@@ -76,7 +75,7 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          '5-4-3-2-1 Grounding',
+          LocalData.fiveFourTitle.getString(context),
           style: GoogleFonts.poppins(
             color: getTextColor(),
             fontWeight: FontWeight.w600,
@@ -112,7 +111,7 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
                   Icon(Icons.adjust, color: getPrimaryColor()),
                   const SizedBox(width: 8),
                   Text(
-                    '5-4-3-2-1 Grounding Exercise',
+                    LocalData.fiveFourExerciseTitle.getString(context),
                     style: GoogleFonts.poppins(
                       color: getTextColor(),
                       fontWeight: FontWeight.w500,
@@ -123,14 +122,14 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
               ),
               const SizedBox(height: 18),
               LinearProgressIndicator(
-                value: (_currentStep + 1) / _steps.length,
+                value: (_currentStep + 1) / _stepKeys.length,
                 backgroundColor: getBorderColor(),
                 valueColor: AlwaysStoppedAnimation<Color>(getPrimaryColor()),
                 minHeight: 6,
                 borderRadius: BorderRadius.circular(3),
               ),
               const SizedBox(height: 18),
-              ...List.generate(_steps.length, (i) {
+              ...List.generate(_stepKeys.length, (i) {
                 final isActive = i == _currentStep;
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
@@ -156,7 +155,7 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
                       ),
                     ),
                     title: Text(
-                      _steps[i],
+                      _stepKeys[i].getString(context),
                       style: GoogleFonts.poppins(
                         color: isActive ? getTextColor() : getStepInactiveText(),
                         fontWeight: isActive
@@ -186,7 +185,7 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
                       side: BorderSide(color: getPrimaryColor()),
                     ),
                     child: Text(
-                      'Previous',
+                      LocalData.fiveFourPrevious.getString(context),
                       style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
                     ),
                   ),
@@ -208,7 +207,7 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
                             Icon(Icons.refresh, size: 18, color: getButtonTextColor()),
                             const SizedBox(width: 4),
                             Text(
-                              'Reset',
+                              LocalData.fiveFourReset.getString(context),
                               style: GoogleFonts.poppins(
                                 color: getButtonTextColor(),
                                 fontWeight: FontWeight.w500,
@@ -219,7 +218,7 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
                       ),
                       const SizedBox(width: 12),
                       ElevatedButton(
-                        onPressed: _currentStep < _steps.length - 1
+                        onPressed: _currentStep < _stepKeys.length - 1
                             ? () => setState(() => _currentStep++)
                             : null,
                         style: ElevatedButton.styleFrom(
@@ -231,7 +230,7 @@ class _FiveFourScreenState extends State<FiveFourScreen> {
                           ),
                         ),
                         child: Text(
-                          'Next',
+                          LocalData.fiveFourNext.getString(context),
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w500,
                           ),

@@ -69,9 +69,6 @@ class ToolLinkModel {
   ToolLinkModel({required this.title, required this.url});
 
   factory ToolLinkModel.fromJson(Map<String, dynamic> json) {
-    return ToolLinkModel(
-      title: json['title'] ?? '',
-      url: json['url'] ?? '',
-    );
+    return ToolLinkModel(title: json['title'] ?? '', url: json['url'] ?? '');
   }
 }

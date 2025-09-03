@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:g6_worrymate_mobile/features/crisis_card/presentation/pages/crisis_card.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../core/localization/locales.dart';
 import '../../../../core/params/params.dart';
+import '../../../../core/theme/theme_manager.dart';
 import '../../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../../domain/entities/chat_message_entity.dart';
 import '../bloc/chat_bloc.dart';
 import '../bloc/chat_event.dart';
 import '../bloc/chat_state.dart';
+import '../widgets/typing_indicator.dart';
 import 'action_card_screen.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -21,9 +26,17 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _textController = TextEditingController();
   int _currentTab = 3;
-  String _selectedLang = 'EN';
+  String _selectedLang = 'en';
+  late FlutterLocalization _flutterLocalization;
 
-  Widget _exampleQuestion(BuildContext context, String text) {
+  @override
+  void initState() {
+    super.initState();
+    _flutterLocalization = FlutterLocalization.instance;
+    _selectedLang = _flutterLocalization.currentLocale?.languageCode ?? 'en';
+  }
+
+  Widget _exampleQuestion(BuildContext context, String text, bool isDarkMode) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: GestureDetector(
@@ -36,14 +49,19 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
           decoration: BoxDecoration(
-            color: const Color(0xFFE0E7EF),
+            color: isDarkMode
+                ? Colors.white.withOpacity(0.08)
+                : const Color(0xFFE0E7EF),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF22314A), width: 1),
+            border: Border.all(
+              color: isDarkMode ? Colors.greenAccent : const Color(0xFF22314A),
+              width: 1,
+            ),
           ),
           child: Text(
             text,
             style: GoogleFonts.poppins(
-              color: const Color(0xFF22314A),
+              color: isDarkMode ? Colors.white : const Color(0xFF22314A),
               fontSize: 14,
             ),
           ),
@@ -54,6 +72,29 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+    final isDarkMode = themeManager.isDarkMode;
+
+    Color getBackgroundColor() => isDarkMode
+        ? const Color.fromARGB(255, 9, 43, 71)
+        : const Color(0xFFF8FAFC);
+
+    Color getPrimaryColor() =>
+        isDarkMode ? Colors.greenAccent : const Color(0xFF22314A);
+
+    Color getTextColor() => isDarkMode ? Colors.white : Colors.black;
+
+    Color getSubtitleColor() =>
+        isDarkMode ? Colors.white70 : const Color(0xFF6B7280);
+
+    Color getInputBorderColor() =>
+        isDarkMode ? Colors.greenAccent : const Color(0xFF22314A);
+
+    Color getInputBackgroundColor() =>
+        isDarkMode ? Colors.white.withOpacity(0.08) : Colors.white;
+
+    Color getHintColor() => isDarkMode ? Colors.white60 : Colors.grey[600]!;
+
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         if (state is ChatCrisis) {
@@ -71,8 +112,9 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: getBackgroundColor(),
         appBar: AppBar(
-          backgroundColor: const Color(0xFFF8FAFC),
+          backgroundColor: getBackgroundColor(),
           elevation: 0,
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -80,27 +122,30 @@ class _ChatScreenState extends State<ChatScreen> {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: const Color(0xFF22314A),
+                color: getPrimaryColor(),
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(width: 1, color: const Color(0xFF22314A)),
+                border: Border.all(width: 1, color: getPrimaryColor()),
               ),
-              child: const Icon(Icons.favorite_border_rounded, color: Colors.white),
+              child: Icon(
+                Icons.favorite_border_rounded,
+                color: isDarkMode ? Colors.black : Colors.white,
+              ),
             ),
           ),
-          title: const Column(
+          title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "WorryMate",
+                'WorryMate',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Color(0xFF22314A),
+                  color: getTextColor(),
                 ),
               ),
               Text(
-                "Your AI worry buddy",
-                style: TextStyle(color: Color(0xFF6B7280), fontSize: 13),
+                LocalData.chatTagline.getString(context),
+                style: TextStyle(color: getSubtitleColor(), fontSize: 13),
               ),
             ],
           ),
@@ -111,21 +156,20 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: TextButton(
                     onPressed: () {
-                      setState(() {
-                        _selectedLang = 'EN';
-                      });
+                      _flutterLocalization.translate('en');
+                      setState(() => _selectedLang = 'en');
                     },
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      side: const BorderSide(width: 1, color: Color(0xFF22314A)),
-                      backgroundColor: _selectedLang == 'EN'
-                          ? const Color(0xFF22314A)
+                      side: BorderSide(width: 1, color: getPrimaryColor()),
+                      backgroundColor: _selectedLang == 'en'
+                          ? getPrimaryColor()
                           : Colors.transparent,
-                      foregroundColor: _selectedLang == 'EN'
-                          ? Colors.white
-                          : const Color(0xFF22314A),
+                      foregroundColor: _selectedLang == 'en'
+                          ? (isDarkMode ? Colors.black : Colors.white)
+                          : getPrimaryColor(),
                     ),
                     child: const Text('EN'),
                   ),
@@ -134,21 +178,20 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: TextButton(
                     onPressed: () {
-                      setState(() {
-                        _selectedLang = 'AM';
-                      });
+                      _flutterLocalization.translate('am');
+                      setState(() => _selectedLang = 'am');
                     },
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      side: const BorderSide(width: 1, color: Color(0xFF22314A)),
-                      backgroundColor: _selectedLang == 'AM'
-                          ? const Color(0xFF22314A)
+                      side: BorderSide(width: 1, color: getPrimaryColor()),
+                      backgroundColor: _selectedLang == 'am'
+                          ? getPrimaryColor()
                           : Colors.transparent,
-                      foregroundColor: _selectedLang == 'AM'
-                          ? Colors.white
-                          : const Color(0xFF22314A),
+                      foregroundColor: _selectedLang == 'am'
+                          ? (isDarkMode ? Colors.black : Colors.white)
+                          : getPrimaryColor(),
                     ),
                     child: const Text('አማ'),
                   ),
@@ -170,9 +213,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Try asking about:',
+                    LocalData.chatTryAsking.getString(context),
                     style: GoogleFonts.poppins(
-                      color: Colors.black54,
+                      color: getSubtitleColor(),
                       fontWeight: FontWeight.w500,
                       fontSize: 13,
                     ),
@@ -180,78 +223,126 @@ class _ChatScreenState extends State<ChatScreen> {
                   const SizedBox(height: 8),
                   _exampleQuestion(
                     context,
-                    "I'm really stressed about my exams",
+                    LocalData.chatExampleStressedExams.getString(context),
+                    isDarkMode,
                   ),
                   _exampleQuestion(
                     context,
-                    "I lost my job and i'm worried about money.",
+                    LocalData.chatExampleLostJob.getString(context),
+                    isDarkMode,
                   ),
-                  _exampleQuestion(context, "My family and i keep fighting."),
+                  _exampleQuestion(
+                    context,
+                    LocalData.chatExampleFamilyFighting.getString(context),
+                    isDarkMode,
+                  ),
                 ],
               ),
             ),
+
             Expanded(
               child: BlocBuilder<ChatBloc, ChatState>(
                 builder: (context, state) {
+                  if (state is ChatError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Text(
+                          state.message.isNotEmpty
+                              ? state.message
+                              : 'Server busy. Please try again later.',
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  }
+
                   final messages = state.messages;
+                  final isLoading = state is ChatLoading;
+
                   return ListView.builder(
                     padding: const EdgeInsets.symmetric(
                       vertical: 16,
                       horizontal: 8,
                     ),
-                    itemCount: messages.length,
+                    itemCount: isLoading
+                        ? messages.length + 1
+                        : messages.length,
                     itemBuilder: (context, index) {
-                      final msg = messages[index];
-                      if (msg.sender == ChatSender.user) {
-                        return Align(
-                          alignment: Alignment.centerRight,
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 4,
-                              horizontal: 8,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF22314A),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Text(
-                              msg.text,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
+                      if (index < messages.length) {
+                        final msg = messages[index];
+                        if (msg.sender == ChatSender.user) {
+                          return Align(
+                            alignment: Alignment.centerRight,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 8,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF22314A),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                msg.text,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      } else if (msg.actionCard != null) {
-                        return ActionCardWidget(actionCard: msg.actionCard!);
+                          );
+                        } else if (msg.actionCard != null) {
+                          return ActionCardWidget(actionCard: msg.actionCard!);
+                        } else {
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 8,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDarkMode
+                                    ? Colors.white.withOpacity(0.15)
+                                    : const Color(0xFFe0e7ef),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                msg.text,
+                                style: TextStyle(
+                                  color: isDarkMode
+                                      ? Colors.white
+                                      : const Color(0xFF22314A),
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
                       } else {
-                        return Align(
+                        // Show typing indicator at the end if loading
+                        return const Align(
                           alignment: Alignment.centerLeft,
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 4,
-                              horizontal: 8,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 8,
                               horizontal: 16,
                             ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFe0e7ef),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Text(
-                              msg.text,
-                              style: const TextStyle(
-                                color: Color(0xFF22314A),
-                                fontSize: 15,
-                              ),
-                            ),
+                            child: TypingIndicator(),
                           ),
                         );
                       }
@@ -260,8 +351,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 },
               ),
             ),
+
             Container(
-              color: Colors.white,
+              color: getBackgroundColor(),
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: Row(
                 children: [
@@ -269,19 +361,19 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: TextField(
                       controller: _textController,
                       decoration: InputDecoration(
-                        hintText: "Type your message...",
-                        hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
+                        hintText: LocalData.chatInputHint.getString(context),
+                        hintStyle: GoogleFonts.poppins(color: getHintColor()),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF22314A),
+                          borderSide: BorderSide(
+                            color: getInputBorderColor(),
                             width: 2,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF22314A),
+                          borderSide: BorderSide(
+                            color: getInputBorderColor(),
                             width: 2.5,
                           ),
                         ),
@@ -289,15 +381,15 @@ class _ChatScreenState extends State<ChatScreen> {
                           horizontal: 20,
                           vertical: 16,
                         ),
-                        fillColor: Colors.white,
+                        fillColor: getInputBackgroundColor(),
                         filled: true,
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.mic, color: Color(0xFF22314A)),
+                          icon: Icon(Icons.mic, color: getPrimaryColor()),
                           onPressed: () {},
                         ),
                       ),
                       style: GoogleFonts.poppins(
-                        color: Colors.black87,
+                        color: getTextColor(),
                         fontSize: 15,
                       ),
                       onSubmitted: (val) {
@@ -313,7 +405,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.send, color: Color(0xFF22314A)),
+                    icon: Icon(Icons.send, color: getPrimaryColor()),
                     onPressed: () {
                       final text = _textController.text.trim();
                       if (text.isNotEmpty) {
