@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:g6_worrymate_mobile/features/crisis_card/presentation/pages/crisis_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/localization/locales.dart';
+import '../../../../core/theme/theme_manager.dart';
 
 import '../../../../core/params/params.dart';
 import '../../../../core/widgets/custom_bottom_nav_bar.dart';
@@ -33,7 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _selectedLang = _flutterLocalization.currentLocale?.languageCode ?? 'en';
   }
 
-  Widget _exampleQuestion(BuildContext context, String text) {
+  Widget _exampleQuestion(BuildContext context, String text, bool isDarkMode) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: GestureDetector(
@@ -46,14 +48,17 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
           decoration: BoxDecoration(
-            color: const Color(0xFFE0E7EF),
+            color: isDarkMode ? Colors.white.withOpacity(0.08) : const Color(0xFFE0E7EF),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF22314A), width: 1),
+            border: Border.all(
+                color: isDarkMode ? Colors.greenAccent : const Color(0xFF22314A),
+                width: 1
+            ),
           ),
           child: Text(
             text,
             style: GoogleFonts.poppins(
-              color: const Color(0xFF22314A),
+              color: isDarkMode ? Colors.white : const Color(0xFF22314A),
               fontSize: 14,
             ),
           ),
@@ -64,6 +69,37 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeManager = Provider.of<ThemeManager>(context, listen: true);
+    final isDarkMode = themeManager.isDarkMode;
+
+    Color getBackgroundColor() => isDarkMode
+        ? const Color.fromARGB(255, 9, 43, 71)
+        : const Color(0xFFF8FAFC);
+
+    Color getPrimaryColor() => isDarkMode
+        ? Colors.greenAccent
+        : const Color(0xFF22314A);
+
+    Color getTextColor() => isDarkMode
+        ? Colors.white
+        : Colors.black;
+
+    Color getSubtitleColor() => isDarkMode
+        ? Colors.white70
+        : const Color(0xFF6B7280);
+
+    Color getInputBorderColor() => isDarkMode
+        ? Colors.greenAccent
+        : const Color(0xFF22314A);
+
+    Color getInputBackgroundColor() => isDarkMode
+        ? Colors.white.withOpacity(0.08)
+        : Colors.white;
+
+    Color getHintColor() => isDarkMode
+        ? Colors.white60
+        : Colors.grey[600]!;
+
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         if (state is ChatCrisis) {
@@ -81,8 +117,9 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: getBackgroundColor(),
         appBar: AppBar(
-          backgroundColor: const Color(0xFFF8FAFC),
+          backgroundColor: getBackgroundColor(),
           elevation: 0,
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -90,11 +127,14 @@ class _ChatScreenState extends State<ChatScreen> {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: const Color(0xFF22314A),
+                color: getPrimaryColor(),
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(width: 1, color: const Color(0xFF22314A)),
+                border: Border.all(width: 1, color: getPrimaryColor()),
               ),
-              child: const Icon(Icons.favorite_border_rounded, color: Colors.white),
+              child: Icon(
+                  Icons.favorite_border_rounded,
+                  color: isDarkMode ? Colors.black : Colors.white
+              ),
             ),
           ),
           title: Column(
@@ -102,15 +142,18 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               Text(
                 'WorryMate',
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Color(0xFF22314A),
+                  color: getTextColor(),
                 ),
               ),
               Text(
                 LocalData.chatTagline.getString(context),
-                style: const TextStyle(color: Color(0xFF6B7280), fontSize: 13),
+                style: TextStyle(
+                    color: getSubtitleColor(),
+                    fontSize: 13
+                ),
               ),
             ],
           ),
@@ -128,13 +171,13 @@ class _ChatScreenState extends State<ChatScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      side: const BorderSide(width: 1, color: Color(0xFF22314A)),
+                      side: BorderSide(width: 1, color: getPrimaryColor()),
                       backgroundColor: _selectedLang == 'en'
-                          ? const Color(0xFF22314A)
+                          ? getPrimaryColor()
                           : Colors.transparent,
                       foregroundColor: _selectedLang == 'en'
-                          ? Colors.white
-                          : const Color(0xFF22314A),
+                          ? (isDarkMode ? Colors.black : Colors.white)
+                          : getPrimaryColor(),
                     ),
                     child: const Text('EN'),
                   ),
@@ -150,13 +193,13 @@ class _ChatScreenState extends State<ChatScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      side: const BorderSide(width: 1, color: Color(0xFF22314A)),
+                      side: BorderSide(width: 1, color: getPrimaryColor()),
                       backgroundColor: _selectedLang == 'am'
-                          ? const Color(0xFF22314A)
+                          ? getPrimaryColor()
                           : Colors.transparent,
                       foregroundColor: _selectedLang == 'am'
-                          ? Colors.white
-                          : const Color(0xFF22314A),
+                          ? (isDarkMode ? Colors.black : Colors.white)
+                          : getPrimaryColor(),
                     ),
                     child: const Text('አማ'),
                   ),
@@ -180,7 +223,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   Text(
                     LocalData.chatTryAsking.getString(context),
                     style: GoogleFonts.poppins(
-                      color: Colors.black54,
+                      color: getSubtitleColor(),
                       fontWeight: FontWeight.w500,
                       fontSize: 13,
                     ),
@@ -189,12 +232,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   _exampleQuestion(
                     context,
                     LocalData.chatExampleStressedExams.getString(context),
+                    isDarkMode,
                   ),
                   _exampleQuestion(
                     context,
                     LocalData.chatExampleLostJob.getString(context),
+                    isDarkMode,
                   ),
-                  _exampleQuestion(context, LocalData.chatExampleFamilyFighting.getString(context)),
+                  _exampleQuestion(
+                    context,
+                    LocalData.chatExampleFamilyFighting.getString(context),
+                    isDarkMode,
+                  ),
                 ],
               ),
             ),
@@ -223,13 +272,13 @@ class _ChatScreenState extends State<ChatScreen> {
                               horizontal: 16,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF22314A),
+                              color: getPrimaryColor(),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
                               msg.text,
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: isDarkMode ? Colors.black : Colors.white,
                                 fontSize: 15,
                               ),
                             ),
@@ -250,13 +299,15 @@ class _ChatScreenState extends State<ChatScreen> {
                               horizontal: 16,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFe0e7ef),
+                              color: isDarkMode
+                                  ? Colors.white.withOpacity(0.15)
+                                  : const Color(0xFFe0e7ef),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
                               msg.text,
-                              style: const TextStyle(
-                                color: Color(0xFF22314A),
+                              style: TextStyle(
+                                color: isDarkMode ? Colors.white : const Color(0xFF22314A),
                                 fontSize: 15,
                               ),
                             ),
@@ -269,7 +320,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             Container(
-              color: Colors.white,
+              color: getBackgroundColor(),
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: Row(
                 children: [
@@ -278,18 +329,18 @@ class _ChatScreenState extends State<ChatScreen> {
                       controller: _textController,
                       decoration: InputDecoration(
                         hintText: LocalData.chatInputHint.getString(context),
-                        hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
+                        hintStyle: GoogleFonts.poppins(color: getHintColor()),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF22314A),
+                          borderSide: BorderSide(
+                            color: getInputBorderColor(),
                             width: 2,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF22314A),
+                          borderSide: BorderSide(
+                            color: getInputBorderColor(),
                             width: 2.5,
                           ),
                         ),
@@ -297,15 +348,15 @@ class _ChatScreenState extends State<ChatScreen> {
                           horizontal: 20,
                           vertical: 16,
                         ),
-                        fillColor: Colors.white,
+                        fillColor: getInputBackgroundColor(),
                         filled: true,
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.mic, color: Color(0xFF22314A)),
+                          icon: Icon(Icons.mic, color: getPrimaryColor()),
                           onPressed: () {},
                         ),
                       ),
                       style: GoogleFonts.poppins(
-                        color: Colors.black87,
+                        color: getTextColor(),
                         fontSize: 15,
                       ),
                       onSubmitted: (val) {
@@ -321,7 +372,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.send, color: Color(0xFF22314A)),
+                    icon: Icon(Icons.send, color: getPrimaryColor()),
                     onPressed: () {
                       final text = _textController.text.trim();
                       if (text.isNotEmpty) {
