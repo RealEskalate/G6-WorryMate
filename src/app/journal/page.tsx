@@ -1,5 +1,5 @@
 import React from 'react'
-import JournalEditor from '../_components/Test'
+import JournalEditor from '../_components/JournalEditor'
 
 function page() {
   return (
