@@ -15,6 +15,7 @@ import '../bloc/chat_event.dart';
 import '../bloc/chat_state.dart';
 import '../widgets/typing_indicator.dart';
 import 'action_card_screen.dart';
+import 'upgrade_to_premium_card.dart';
 
 class ChatScreen extends StatefulWidget {
   ChatScreen({Key? key}) : super(key: key);
@@ -28,14 +29,13 @@ class _ChatScreenState extends State<ChatScreen> {
   int _currentTab = 3;
   String _selectedLang = 'en';
   late FlutterLocalization _flutterLocalization;
-
+  bool _hasSentFirstPrompt = false;
 
   @override
   void initState() {
     super.initState();
     _flutterLocalization = FlutterLocalization.instance;
     _selectedLang = _flutterLocalization.currentLocale?.languageCode ?? 'en';
-
   }
 
   Widget _exampleQuestion(BuildContext context, String text, bool isDarkMode) {
@@ -43,8 +43,11 @@ class _ChatScreenState extends State<ChatScreen> {
       padding: const EdgeInsets.only(bottom: 6),
       child: GestureDetector(
         onTap: () {
+          setState(() {
+            _hasSentFirstPrompt = true;
+          });
           context.read<ChatBloc>().add(
-            SendChatMessageEvent(ChatParams(content: text)),
+            SendChatMessageEvent(ChatParams(content: text), _selectedLang),
           );
           _textController.clear();
         },
@@ -97,8 +100,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
     Color getHintColor() => isDarkMode ? Colors.white60 : Colors.grey[600]!;
 
-      final promptFromHomePage = ModalRoute.of(context)?.settings.arguments as String;
-    if (promptFromHomePage != null && _textController.text.isEmpty){
+    final promptFromHomePage = ModalRoute.of(context)?.settings.arguments;
+    if (promptFromHomePage is String && _textController.text.isEmpty) {
       _textController.text = promptFromHomePage;
     }
     return BlocListener<ChatBloc, ChatState>(
@@ -227,21 +230,24 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _exampleQuestion(
-                    context,
-                    LocalData.chatExampleStressedExams.getString(context),
-                    isDarkMode,
-                  ),
-                  _exampleQuestion(
-                    context,
-                    LocalData.chatExampleLostJob.getString(context),
-                    isDarkMode,
-                  ),
-                  _exampleQuestion(
-                    context,
-                    LocalData.chatExampleFamilyFighting.getString(context),
-                    isDarkMode,
-                  ),
+
+                  if (!_hasSentFirstPrompt) ...[
+                    _exampleQuestion(
+                      context,
+                      LocalData.chatExampleStressedExams.getString(context),
+                      isDarkMode,
+                    ),
+                    _exampleQuestion(
+                      context,
+                      LocalData.chatExampleLostJob.getString(context),
+                      isDarkMode,
+                    ),
+                    _exampleQuestion(
+                      context,
+                      LocalData.chatExampleFamilyFighting.getString(context),
+                      isDarkMode,
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -250,22 +256,22 @@ class _ChatScreenState extends State<ChatScreen> {
               child: BlocBuilder<ChatBloc, ChatState>(
                 builder: (context, state) {
                   if (state is ChatError) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Text(
-                          state.message.isNotEmpty
-                              ? state.message
-                              : 'Server busy. Please try again later.',
-                          style: const TextStyle(
-                            color: Colors.red,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    );
+                    // return Center(
+                    return const UpgradeToPremiumCard(); //   child: Padding(
+                    //     padding: const EdgeInsets.all(24.0),
+                    //     child: Text(
+                    //       state.message.isNotEmpty
+                    //           ? state.message
+                    //           : 'Server busy. Please try again later.',
+                    //       style: const TextStyle(
+                    //         color: Colors.red,
+                    //         fontSize: 16,
+                    //         fontWeight: FontWeight.bold,
+                    //       ),
+                    //       textAlign: TextAlign.center,
+                    //     ),
+                    //   ),
+                    // );
                   }
 
                   final messages = state.messages;
@@ -400,9 +406,13 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       onSubmitted: (val) {
                         if (val.trim().isNotEmpty) {
+                          setState(() {
+                            _hasSentFirstPrompt = true;
+                          });
                           context.read<ChatBloc>().add(
                             SendChatMessageEvent(
                               ChatParams(content: val.trim()),
+                              _selectedLang,
                             ),
                           );
                           _textController.clear();
@@ -415,8 +425,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     onPressed: () {
                       final text = _textController.text.trim();
                       if (text.isNotEmpty) {
+                        setState(() {
+                          _hasSentFirstPrompt = true;
+                        });
                         context.read<ChatBloc>().add(
-                          SendChatMessageEvent(ChatParams(content: text)),
+                          SendChatMessageEvent(
+                            ChatParams(content: text),
+                            _selectedLang,
+                          ),
                         );
                         _textController.clear();
                       }

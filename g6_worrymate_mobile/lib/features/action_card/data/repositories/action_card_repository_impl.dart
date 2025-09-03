@@ -36,6 +36,7 @@ class ActionCardRepositoryImpl implements ActionCardRepository {
           miniTools: model.miniTools
               .map((e) => ToolLinkEntity(title: e.title, url: e.url))
               .toList(),
+              uiTools: model.uiTools,
           ifWorse: model.ifWorse,
           disclaimer: model.disclaimer,
         ),

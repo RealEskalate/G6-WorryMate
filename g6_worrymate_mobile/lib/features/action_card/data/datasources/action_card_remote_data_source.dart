@@ -13,8 +13,7 @@ class ActionCardRemoteDataSource {
     final url = Uri.parse(
       'https://g6-worrymate-8osd.onrender.com/chat/compose',
     );
-    final response = await http.post(
-      url,
+    final response = await http.post(url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'topic_key': topicKey,
@@ -27,7 +26,7 @@ class ActionCardRemoteDataSource {
     );
     if (response.statusCode == 200) {
       print('i have reached the action card endpoint: ${response.body}');
-      
+
       return ActionCardModel.fromJson(json.decode(response.body));
     } else {
       print("am not able to fetch the action card");

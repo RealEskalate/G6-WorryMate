@@ -5,6 +5,7 @@ class ActionCardModel {
   final String description;
   final List<ActionStepModel> steps;
   final List<ToolLinkModel> miniTools;
+  final List<String> uiTools;
   final String ifWorse;
   final String disclaimer;
 
@@ -13,6 +14,7 @@ class ActionCardModel {
     required this.description,
     required this.steps,
     required this.miniTools,
+    required this.uiTools,
     required this.ifWorse,
     required this.disclaimer,
   });
@@ -37,6 +39,7 @@ class ActionCardModel {
       miniTools: (cardData['miniTools'] as List? ?? [])
           .map((e) => ToolLinkModel.fromJson(e))
           .toList(),
+      uiTools: List<String>.from(cardData['uiTools']??[]),
       ifWorse: cardData['ifWorse'] ?? '',
       disclaimer: cardData['disclaimer'] ?? '',
     );

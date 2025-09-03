@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_localization/flutter_localization.dart';
-import '../../../../core/localization/locales.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/localization/locales.dart';
 import '../../domain/entities/action_card_entity.dart';
 
 class ActionCardWidget extends StatelessWidget {
   final ActionCardEntity actionCard;
 
   const ActionCardWidget({Key? key, required this.actionCard})
-    : super(key: key);
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +173,13 @@ class ActionCardWidget extends StatelessWidget {
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(LocalData.actionCardLaunchError.getString(context))),
+                            SnackBar(
+                              content: Text(
+                                LocalData.actionCardLaunchError.getString(
+                                  context,
+                                ),
+                              ),
+                            ),
                           );
                         }
                       },
@@ -181,47 +187,47 @@ class ActionCardWidget extends StatelessWidget {
                   ),
                 ],
               ),
-            // Buttons below the card content
+
+            // --- DYNAMIC UI TOOLS BUTTONS ---
+            if (actionCard.uiTools.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Wrap(
+                  spacing: 8,
+                  children: actionCard.uiTools.map((tool) {
+                    String label;
+                    VoidCallback? onPressed;
+
+                    switch (tool) {
+                      case 'box_breathing':
+                        label = 'Box Breathing';
+                        onPressed = () => Navigator.pushNamed(context, '/boxbreathing');
+                        break;
+                      case 'daily_journal':
+                        label = 'Daily Journal';
+                        onPressed = () => Navigator.pushNamed(context, '/journal');
+                        break;
+                      case 'win_tracker' || 'tracker':
+                      label = 'Win Tracker';
+                      onPressed = ()=> Navigator.pushNamed(context, '/wint_racker');
+                      case 'five_four' || 'grounding':
+                      label = '5-4-3-2 grounding';
+                      onPressed = () => Navigator.pushNamed(context, '/five_four');
+                      default:
+                        label = tool;
+                        onPressed = null;
+                    }
+
+                    return ElevatedButton(
+                      onPressed: onPressed,
+                      child: Text(label),
+                    );
+                  }).toList(),
+                ),
+              ),
+            // --- END DYNAMIC UI TOOLS BUTTONS ---
+
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.greenAccent, // greenish
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/offlinetoolkit');
-                  },
-                  child: Text(LocalData.winTrackerTitle.getString(context)),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.greenAccent, // greenish
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/offlinetoolkit');
-                  },
-                  child: Text(LocalData.dailyJournalTitle.getString(context)),
-                ),
-              ],
-            ),
           ],
         ),
       ),
