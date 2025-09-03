@@ -121,7 +121,7 @@ class CrisisCard extends StatelessWidget {
                 subtitle: "National emergency services",
                 availability: "24/7",
                 buttonText: "Call 991",
-                onPressed: () {},
+                onPressed: () => _makePhoneCall('991'),
               ),
               _buildContactCard(
                 title: "National Mental Health Hotilne",
@@ -135,7 +135,7 @@ class CrisisCard extends StatelessWidget {
                 subtitle: "Emergency assistance and support",
                 availability: "24/7",
                 buttonText: "Call +251-11-515-4600",
-                onPressed: () {},
+                  onPressed: () => _makePhoneCall('+251-11-515-4600'),
               ),
               GestureDetector(
                 onTap: () {
