@@ -6,8 +6,8 @@ import 'core/connection/network_info.dart';
 import 'core/databases/api/api_consumer.dart';
 import 'core/databases/api/dio_consumer.dart';
 import 'features/action_card/data/datasources/action_block_remote_datasource.dart';
+import 'features/action_card/data/datasources/action_card_local_dat_source.dart';
 import 'features/action_card/data/datasources/action_card_remote_data_source.dart';
-import 'features/action_card/data/datasources/chat_local_data_source.dart';
 import 'features/action_card/data/datasources/chat_remote_data_source.dart';
 import 'features/action_card/data/repositories/action_block_repository_impl.dart';
 import 'features/action_card/data/repositories/action_card_repository_impl.dart';
@@ -62,7 +62,9 @@ void init() {
 
   // Data sources
   sl.registerLazySingleton<ChatRemoteDataSource>(() => ChatRemoteDataSource());
-  sl.registerLazySingleton<ChatLocalDataSource>(() => ChatLocalDataSource());
+  sl.registerLazySingleton<ActionCardLocalDataSource>(
+    () => ActionCardLocalDataSource(),
+  );
   sl.registerLazySingleton<ActionBlockRemoteDataSource>(
     () => ActionBlockRemoteDataSource(),
   );

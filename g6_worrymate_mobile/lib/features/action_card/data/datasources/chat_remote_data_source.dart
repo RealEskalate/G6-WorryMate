@@ -37,7 +37,7 @@ class ChatRemoteDataSource {
   Future<int> addChat(ChatParams params) async {
     try {
       final url = Uri.parse(
-        'https://g6-worrymate-zt0r.onrender.com/chat/risk_check',
+        'https://g6-worrymate-8osd.onrender.com/chat/risk_check',
       );
 
       final response = await http.post(

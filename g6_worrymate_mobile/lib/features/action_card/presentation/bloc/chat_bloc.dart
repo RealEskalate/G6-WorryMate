@@ -42,12 +42,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             emit(ChatCrisis(messages: currentMessages));
             return;
           } else if (risk == 2 || risk == 1) {
+            emit(ChatLoading(messages: currentMessages));
             final topicKeyResult = await getTopicKeyUsecase.call(event.params);
             await topicKeyResult.fold(
               (failure) async {
                 emit(ChatError(failure.toString(), messages: currentMessages));
               },
               (topicKey) async {
+                emit(ChatLoading(messages: currentMessages));
                 final lang = 'am';
                 final actionBlockResult = await getActionBlockUsecase.call(
                   topicKey,
@@ -60,6 +62,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                     );
                   },
                   (actionBlock) async {
+                    emit(ChatLoading(messages: currentMessages));
                     final composeResult = await composeActionCardUsecase.call(
                       topicKey: topicKey,
                       block: {

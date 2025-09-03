@@ -4,8 +4,9 @@ class ActionBlockResponseModel {
   ActionBlockResponseModel({required this.actionBlock});
 
   factory ActionBlockResponseModel.fromJson(Map<String, dynamic> json) {
+    // Pass the whole JSON, not json['action-block']
     return ActionBlockResponseModel(
-      actionBlock: ActionBlockModel.fromJson(json['action-block']),
+      actionBlock: ActionBlockModel.fromJson(json),
     );
   }
 }
@@ -23,9 +24,9 @@ class ActionBlockModel {
 
   factory ActionBlockModel.fromJson(Map<String, dynamic> json) {
     return ActionBlockModel(
-      topicKey: json['TopicKey'],
-      block: BlockModel.fromJson(json['Block']),
-      language: json['Language'],
+      topicKey: json['topic_key'] ?? '',
+      block: BlockModel.fromJson(json['block'] ?? {}),
+      language: json['language'] ?? '',
     );
   }
 }
@@ -49,28 +50,14 @@ class BlockModel {
 
   factory BlockModel.fromJson(Map<String, dynamic> json) {
     return BlockModel(
-      empathyOpeners: List<String>.from(
-        json['EmpathyOpeners'] ?? json['empathy_openers'] ?? [],
-      ),
-
-      microSteps: List<String>.from(
-        json['MicroSteps'] ?? json['micro_steps'] ?? [],
-      ),
-
-      scripts: List<String>.from(json['Scripts'] ?? json['scripts'] ?? []),
-
-      toolLinks: ((json['ToolLinks'] ?? json['tool_links']) as List? ?? [])
+      empathyOpeners: List<String>.from(json['empathy_openers'] ?? []),
+      microSteps: List<String>.from(json['micro_steps'] ?? []),
+      scripts: List<String>.from(json['scripts'] ?? []),
+      toolLinks: (json['tool_links'] as List? ?? [])
           .map((e) => ToolLinkModel.fromJson(e))
           .toList(),
-
-      ifWorse: (() {
-        final val = json['IfWorse'] ?? json['if_worse'];
-        if (val == null) return <String>[];
-        if (val is List) return List<String>.from(val);
-        return <String>[];
-      })(),
-
-      disclaimer: (json['Disclaimer'] ?? json['disclaimer'] ?? '').toString(),
+      ifWorse: List<String>.from(json['if_worse'] ?? []),
+      disclaimer: json['disclaimer'] ?? '',
     );
   }
 }
@@ -82,6 +69,6 @@ class ToolLinkModel {
   ToolLinkModel({required this.title, required this.url});
 
   factory ToolLinkModel.fromJson(Map<String, dynamic> json) {
-    return ToolLinkModel(title: json['Title'], url: json['URL']);
+    return ToolLinkModel(title: json['title'] ?? '', url: json['url'] ?? '');
   }
 }

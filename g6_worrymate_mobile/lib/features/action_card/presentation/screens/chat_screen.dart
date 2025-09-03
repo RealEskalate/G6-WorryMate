@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:g6_worrymate_mobile/features/crisis_card/presentation/pages/crisis_card.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_localization/flutter_localization.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/localization/locales.dart';
-import '../../../../core/theme/theme_manager.dart';
 
+import '../../../../core/localization/locales.dart';
 import '../../../../core/params/params.dart';
+import '../../../../core/theme/theme_manager.dart';
 import '../../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../../domain/entities/chat_message_entity.dart';
 import '../bloc/chat_bloc.dart';
@@ -49,11 +49,13 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
           decoration: BoxDecoration(
-            color: isDarkMode ? Colors.white.withOpacity(0.08) : const Color(0xFFE0E7EF),
+            color: isDarkMode
+                ? Colors.white.withOpacity(0.08)
+                : const Color(0xFFE0E7EF),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-                color: isDarkMode ? Colors.greenAccent : const Color(0xFF22314A),
-                width: 1
+              color: isDarkMode ? Colors.greenAccent : const Color(0xFF22314A),
+              width: 1,
             ),
           ),
           child: Text(
@@ -77,29 +79,21 @@ class _ChatScreenState extends State<ChatScreen> {
         ? const Color.fromARGB(255, 9, 43, 71)
         : const Color(0xFFF8FAFC);
 
-    Color getPrimaryColor() => isDarkMode
-        ? Colors.greenAccent
-        : const Color(0xFF22314A);
+    Color getPrimaryColor() =>
+        isDarkMode ? Colors.greenAccent : const Color(0xFF22314A);
 
-    Color getTextColor() => isDarkMode
-        ? Colors.white
-        : Colors.black;
+    Color getTextColor() => isDarkMode ? Colors.white : Colors.black;
 
-    Color getSubtitleColor() => isDarkMode
-        ? Colors.white70
-        : const Color(0xFF6B7280);
+    Color getSubtitleColor() =>
+        isDarkMode ? Colors.white70 : const Color(0xFF6B7280);
 
-    Color getInputBorderColor() => isDarkMode
-        ? Colors.greenAccent
-        : const Color(0xFF22314A);
+    Color getInputBorderColor() =>
+        isDarkMode ? Colors.greenAccent : const Color(0xFF22314A);
 
-    Color getInputBackgroundColor() => isDarkMode
-        ? Colors.white.withOpacity(0.08)
-        : Colors.white;
+    Color getInputBackgroundColor() =>
+        isDarkMode ? Colors.white.withOpacity(0.08) : Colors.white;
 
-    Color getHintColor() => isDarkMode
-        ? Colors.white60
-        : Colors.grey[600]!;
+    Color getHintColor() => isDarkMode ? Colors.white60 : Colors.grey[600]!;
 
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
@@ -151,10 +145,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               Text(
                 LocalData.chatTagline.getString(context),
-                style: TextStyle(
-                    color: getSubtitleColor(),
-                    fontSize: 13
-                ),
+                style: TextStyle(color: getSubtitleColor(), fontSize: 13),
               ),
             ],
           ),
@@ -248,9 +239,29 @@ class _ChatScreenState extends State<ChatScreen> {
                 ],
               ),
             ),
+
             Expanded(
               child: BlocBuilder<ChatBloc, ChatState>(
                 builder: (context, state) {
+                  if (state is ChatError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Text(
+                          state.message.isNotEmpty
+                              ? state.message
+                              : 'Server busy. Please try again later.',
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  }
+
                   final messages = state.messages;
                   final isLoading = state is ChatLoading;
 
@@ -313,7 +324,9 @@ class _ChatScreenState extends State<ChatScreen> {
                               child: Text(
                                 msg.text,
                                 style: TextStyle(
-                                  color: isDarkMode ? Colors.white : const Color(0xFF22314A),
+                                  color: isDarkMode
+                                      ? Colors.white
+                                      : const Color(0xFF22314A),
                                   fontSize: 15,
                                 ),
                               ),
@@ -322,10 +335,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         }
                       } else {
                         // Show typing indicator at the end if loading
-                        return Align(
+                        return const Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
+                            padding: EdgeInsets.symmetric(
                               vertical: 8,
                               horizontal: 16,
                             ),
@@ -338,6 +351,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 },
               ),
             ),
+
             Container(
               color: getBackgroundColor(),
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),

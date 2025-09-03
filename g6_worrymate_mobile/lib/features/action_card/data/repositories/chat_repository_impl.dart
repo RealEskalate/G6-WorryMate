@@ -5,12 +5,12 @@ import '../../../../core/connection/network_info.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/params/params.dart';
 import '../../domain/repositories/chat_repository.dart';
-import '../datasources/chat_local_data_source.dart';
+import '../datasources/action_card_local_dat_source.dart';
 import '../datasources/chat_remote_data_source.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
   final ChatRemoteDataSource remoteDataSource;
-  final ChatLocalDataSource localDataSource;
+  final ActionCardLocalDataSource localDataSource;
   final NetworkInfo networkInfo;
 
   ChatRepositoryImpl({required this.localDataSource,

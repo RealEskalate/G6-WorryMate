@@ -19,28 +19,18 @@ class ActionBlockRemoteDataSource {
     );
 
     final response = await http.get(url);
-    print('[ActionBlockRemoteDataSource] Requested URL: ' + url.toString());
-    print(
-      '[ActionBlockRemoteDataSource] Status code: ' +
-          response.statusCode.toString(),
-    );
-    print('[ActionBlockRemoteDataSource] Response body: ' + response.body);
+    print('[ActionBlockRemoteDataSource] Requested URL: $url');
+    print('[ActionBlockRemoteDataSource] Status code: ${response.statusCode}');
+    print('[ActionBlockRemoteDataSource] Response body: ${response.body}');
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print('[ActionBlockRemoteDataSource] Parsed data: ' + data.toString());
-      final actionBlockJson = data['block'];
-      if (actionBlockJson == null) {
-        throw Exception('action_block is null');
-      }
+      print('[ActionBlockRemoteDataSource] Parsed data: $data');
 
-      return ActionBlockResponseModel.fromJson({
-        'action-block': actionBlockJson,
-      });
+      return ActionBlockResponseModel.fromJson(data);
     } else {
       print(
-        '[ActionBlockRemoteDataSource] Error: Failed to load action block, status: ' +
-            response.statusCode.toString(),
+        '[ActionBlockRemoteDataSource] Error: Failed to load action block, status: ${response.statusCode}',
       );
       throw Exception('Failed to load action block: ${response.statusCode}');
     }
