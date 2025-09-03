@@ -462,7 +462,8 @@ JSON Structure Example:
 `, region, tagString, lang, string(resourcesJSON), string(safetyPlansJSON), region))
 
 	// Call AI
-	resp, err := ai.Ai_client.Models.GenerateContent(
+	client := ai.getClient()
+	resp, err := client.Models.GenerateContent(
 		ctx,
 		ai.model_name,
 		userPrompt,
