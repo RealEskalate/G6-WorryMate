@@ -37,18 +37,14 @@ func InitAIClient() *AI {
 	if apiKeysStr == "" {
 		log.Fatal("GEMINI_API_KEYS environment variable not set or empty!")
 	}
-
+	
 	apiKeys := strings.Split(apiKeysStr, ",")
 	var clients []*genai.Client
 
 	// MODIFIED: Loop through each key and create a client for it
 	for _, key := range apiKeys {
-		trimmedKey := strings.TrimSpace(key)
-		if trimmedKey == "" {
-			continue // Skip empty keys
-		}
 		client, err := genai.NewClient(ctx, &genai.ClientConfig{
-			APIKey: trimmedKey,
+			APIKey: key,
 		})
 		if err != nil {
 			// Log a warning but don't crash, so the app can run with the valid keys
@@ -89,6 +85,7 @@ func InitAIClient() *AI {
 		model_name: model_name,
 		config:     config,
 		clients:    clients,
+		currentIndex: 0,
 	}
 }
 
@@ -155,6 +152,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 
 	// MODIFIED: Use the getClient() helper to pick a client for this request
 	client := ai.getClient()
+	log.Print(client.ClientConfig().APIKey)
 	result, err := client.Models.GenerateContent(
 		ctx,
 		ai.model_name,
