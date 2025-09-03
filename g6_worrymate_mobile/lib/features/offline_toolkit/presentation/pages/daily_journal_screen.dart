@@ -43,32 +43,47 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
     });
   }
 
-  void _removeEntry(int index) {
+  // FIX 1: The remove function now accepts the entry object itself.
+  void _removeEntry(Map<String, String> entryToRemove) {
+    // Find the actual index of the item in the Hive box before removing it from the UI list.
+    final int originalIndex = _entries.indexOf(entryToRemove);
+    if (originalIndex == -1) return; // Item not found, do nothing.
+
+    // Optimistically remove from the UI state list first for a responsive feel.
     setState(() {
-      _entries.removeAt(index);
+      _entries.remove(entryToRemove);
     });
-    _journalBox.deleteAt(index).then((_) {
-      // Optional: you can add any post-deletion logic here
-    }).catchError((error) {
-      // Handle error and potentially restore the entry
+
+    // Now, delete from the Hive database at the correct index.
+    _journalBox.deleteAt(originalIndex).catchError((error) {
+      // If the deletion fails, add the entry back to the UI to stay in sync.
       if (mounted) {
         setState(() {
-          _entries.insert(index, _journalBox.getAt(index));
+          _entries.insert(originalIndex, entryToRemove);
         });
+        // Optionally, show an error message to the user.
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error: Could not delete entry.')),
+        );
       }
     });
   }
 
-
   void _saveEntry(Map<String, String> entry) {
     _journalBox.add(entry);
-    _loadEntries();
+    // FIX 2: Performance improvement. Instead of reloading all entries,
+    // just add the new one to the current state list.
+    setState(() {
+      _entries.add(entry);
+    });
   }
 
   void _sendEntry() {
     final text = _controller.text.trim();
     if (text.isEmpty || _selectedPromptIdx == null) return;
     final entry = {
+      // FIX 3: Add a unique, stable ID to each entry. A timestamp is perfect for this.
+      'id': DateTime.now().toIso8601String(),
       'promptKey': _promptKeys[_selectedPromptIdx!],
       'response': text,
     };
@@ -78,7 +93,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
       _selectedPromptIdx = null;
     });
   }
-
+  @override
   @override
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
@@ -88,9 +103,8 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
         ? const Color.fromARGB(255, 9, 43, 71)
         : const Color(0xFFF7F9FB);
 
-    Color getCardColor() => isDarkMode
-        ? Colors.white.withOpacity(0.08)
-        : Colors.white;
+    Color getCardColor() =>
+        isDarkMode ? Colors.white.withOpacity(0.08) : Colors.white;
 
     Color getTextColor() => isDarkMode ? Colors.white : Colors.black87;
 
@@ -99,14 +113,14 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
     Color getPrimaryColor() =>
         isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71);
 
-    Color getBorderColor() =>
-        isDarkMode ? Colors.greenAccent.withOpacity(0.3) : const Color(0xFFE0E6ED);
+    Color getBorderColor() => isDarkMode
+        ? Colors.greenAccent.withOpacity(0.3)
+        : const Color(0xFFE0E6ED);
 
     Color getInputBackgroundColor() =>
         isDarkMode ? Colors.white.withOpacity(0.05) : const Color(0xFFF7F9FB);
 
-    Color getHintColor() =>
-        isDarkMode ? Colors.white60 : Colors.grey[500]!;
+    Color getHintColor() => isDarkMode ? Colors.white60 : Colors.grey[500]!;
 
     Color getEntryBackgroundColor() =>
         isDarkMode ? Colors.white.withOpacity(0.05) : const Color(0xFFF7F9FB);
@@ -185,9 +199,8 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                             ? getPrimaryColor().withOpacity(0.08)
                             : getInputBackgroundColor(),
                         border: Border.all(
-                          color: isSelected
-                              ? getPrimaryColor()
-                              : getBorderColor(),
+                          color:
+                          isSelected ? getPrimaryColor() : getBorderColor(),
                           width: isSelected ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(8),
@@ -202,9 +215,8 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                             isSelected
                                 ? Icons.radio_button_checked
                                 : Icons.radio_button_unchecked,
-                            color: isSelected
-                                ? getPrimaryColor()
-                                : getHintColor(),
+                            color:
+                            isSelected ? getPrimaryColor() : getHintColor(),
                             size: 20,
                           ),
                           const SizedBox(width: 10),
@@ -247,7 +259,8 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                           fontWeight: FontWeight.w400,
                         ),
                         decoration: InputDecoration(
-                          hintText: LocalData.journalInputHint.getString(context),
+                          hintText:
+                          LocalData.journalInputHint.getString(context),
                           hintStyle: GoogleFonts.poppins(
                             color: getHintColor(),
                           ),
@@ -266,22 +279,17 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                         onSubmitted: (_) => _sendEntry(),
                       ),
                     ),
-
-
                   ],
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-
                     onPressed: _sendEntry,
-
                     style: ElevatedButton.styleFrom(
                       backgroundColor: getPrimaryColor(),
                       foregroundColor: Colors.white,
                       elevation: 0,
-
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
                         vertical: 10,
@@ -290,7 +298,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Icon(Icons.send, size: 30.0, ),
+                    child: const Icon(Icons.send, size: 30.0),
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -312,15 +320,17 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                       final entry = _entries[i];
                       final promptKey = entry['promptKey'] ?? '';
                       return Dismissible(
-                        key: ValueKey(i),
+                        key: ValueKey(entry['id']),
                         background: Container(
-                          color: Colors.red,
+                          color: const Color.fromRGBO(239, 68, 68, 1),
                           alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: const Icon(Icons.delete, color: Colors.white),
+                          padding:
+                          const EdgeInsets.symmetric(horizontal: 20),
+                          child:
+                          const Icon(Icons.delete, color: Colors.white),
                         ),
                         direction: DismissDirection.endToStart,
-                        onDismissed: (_) => _removeEntry(i),
+                        onDismissed: (_) => _removeEntry(entry),
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(14),
@@ -354,7 +364,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                       );
                     },
                   ),
-                ],
+                ], // ✅ FIX: The extra '),' was removed from this line.
                 const SizedBox(height: 10),
                 Text(
                   LocalData.journalEntriesPrivacyNote.getString(context),
@@ -391,5 +401,4 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
         },
       ),
     );
-  }
-}
+  }}
