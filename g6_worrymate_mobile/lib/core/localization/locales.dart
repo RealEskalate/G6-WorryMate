@@ -55,6 +55,7 @@ mixin LocalData {
   static const String homeQuickMood = 'home_quick_mood';
   static const String homeQuickBreathing = 'home_quick_breathing';
   static const String homeQuickChatAI = 'home_quick_chat_ai';
+  static const String homeQuickTrackWins = 'home_quick_wins';
 
   static const String homeAffirmation1 = 'home_affirmation_1';
   static const String homeAffirmation2 = 'home_affirmation_2';
@@ -78,12 +79,71 @@ mixin LocalData {
   static const String homeMoodGood = 'home_mood_good';
   static const String homeMoodGreat = 'home_mood_great';
   static const String homeMoodLoggedTemplate = 'home_mood_logged_template';
+  static const String homeActivityLoggedTemplate = 'home_activity_logged_template'; 
+
+    // box breathing (offline toolkit)
+    static const String boxBreathingTitle = 'box_breathing_title';
+    static const String boxBreathingExerciseTitle = 'box_breathing_exercise_title';
+    static const String boxBreathingStepIn = 'box_breathing_step_in';
+    static const String boxBreathingStepHold = 'box_breathing_step_hold';
+    static const String boxBreathingStepOut = 'box_breathing_step_out';
+    static const String boxBreathingInstruction = 'box_breathing_instruction';
+    static const String boxBreathingStart = 'box_breathing_start';
+    static const String boxBreathingReset = 'box_breathing_reset';
+    static const String boxBreathingDescription = 'box_breathing_description';
+  
+  // five-four grounding (offline toolkit)
+  static const String fiveFourTitle = 'five_four_title';
+  static const String fiveFourExerciseTitle = 'five_four_exercise_title';
+  static const String fiveFourStep1 = 'five_four_step_1';
+  static const String fiveFourStep2 = 'five_four_step_2';
+  static const String fiveFourStep3 = 'five_four_step_3';
+  static const String fiveFourStep4 = 'five_four_step_4';
+  static const String fiveFourStep5 = 'five_four_step_5';
+  static const String fiveFourPrevious = 'five_four_previous';
+  static const String fiveFourNext = 'five_four_next';
+  static const String fiveFourReset = 'five_four_reset';
+  static const String fiveFourDescription = 'five_four_description';
+
+  // offline toolkit screen general
+  static const String offlineToolkitTitle = 'offline_toolkit_title';
+  static const String offlineToolkitSubtitle = 'offline_toolkit_subtitle';
+  static const String offlineToolkitWorksOffline = 'offline_toolkit_works_offline';
+
+  // daily journal description (card)
+  static const String dailyJournalDescription = 'daily_journal_description';
+
+  // win tracker
+  static const String winTrackerTitle = 'win_tracker_title';
+  static const String winTrackerDescription = 'win_tracker_description';
+  static const String winTrackerAddLabel = 'win_tracker_add_label';
+  static const String winTrackerHint = 'win_tracker_hint';
+  static const String winTrackerAddButton = 'win_tracker_add_button';
+  static const String winTrackerYourWins = 'win_tracker_your_wins';
+  static const String winTrackerEmptyState = 'win_tracker_empty_state';
+
+  // chat screen
+  static const String chatTagline = 'chat_tagline';
+  static const String chatTryAsking = 'chat_try_asking';
+  static const String chatExampleStressedExams = 'chat_example_stressed_exams';
+  static const String chatExampleLostJob = 'chat_example_lost_job';
+  static const String chatExampleFamilyFighting = 'chat_example_family_fighting';
+  static const String chatInputHint = 'chat_input_hint';
+
+  // action card screen
+  static const String actionCardPanicSteps = 'action_card_panic_steps';
+  static const String actionCardIfWorse = 'action_card_if_worse';
+  static const String actionCardDisclaimerLabel = 'action_card_disclaimer_label';
+  static const String actionCardTools = 'action_card_tools';
+  static const String actionCardLaunchError = 'action_card_launch_error';
 
   static const String homeActivityTitle = 'home_activity_title';
   static const String homeRingToday = 'home_ring_today';
   static const String homeRing7Days = 'home_ring_7days';
   static const String homeRingStreak = 'home_ring_streak';
   static const String homeStreakBarTemplate = 'home_streak_bar_template';
+
+
 
   // (Optional legacy keys)
   static const String title = 'title';
@@ -135,6 +195,7 @@ mixin LocalData {
     homeQuickMood: 'Mood',
     homeQuickBreathing: 'Breathing',
     homeQuickChatAI: 'Chat AI',
+    homeQuickTrackWins: 'Wins',
     homeAffirmation1: 'You are making progress, one small step at a time.',
     homeAffirmation2: 'Your feelings are valid.',
     homeAffirmation3: 'Breathing space creates thinking space.',
@@ -153,13 +214,62 @@ mixin LocalData {
     homeMoodOkay: 'Okay',
     homeMoodGood: 'Good',
     homeMoodGreat: 'Great',
-    homeMoodLoggedTemplate: 'Logged mood: {}',
+    homeMoodLoggedTemplate: 'Logged mood: %a',
     homeActivityTitle: 'Your activity',
     homeRingToday: 'Today',
     homeRing7Days: '7 Days',
     homeRingStreak: 'Streak',
-    homeStreakBarTemplate: 'Streak: {}',
-
+    homeStreakBarTemplate: 'Streak: %a',
+    homeActivityLoggedTemplate: 'Activity logged: %a',
+    // box breathing
+    boxBreathingTitle: 'Box Breathing',
+    boxBreathingExerciseTitle: 'Box Breathing Exercise',
+    boxBreathingStepIn: 'Breathe In',
+    boxBreathingStepHold: 'Hold',
+    boxBreathingStepOut: 'Breathe Out',
+    boxBreathingInstruction: 'Breathe in for 4 seconds, hold for 4, exhale for 4, hold for 4',
+    boxBreathingStart: 'Start Breathing',
+    boxBreathingReset: 'Reset',
+    boxBreathingDescription: '4-4-4-4 breathing pattern to calm your mind',
+  // five-four grounding
+  fiveFourTitle: '5-4-3-2-1 Grounding',
+  fiveFourExerciseTitle: '5-4-3-2-1 Grounding Exercise',
+  fiveFourStep1: 'Look around and name 5 things you can see',
+  fiveFourStep2: 'Listen carefully and name 4 things you can hear',
+  fiveFourStep3: 'Touch and name 3 things you can feel',
+  fiveFourStep4: 'Think of 2 things you can smell',
+  fiveFourStep5: 'Name 1 thing you can taste',
+  fiveFourPrevious: 'Previous',
+  fiveFourNext: 'Next',
+  fiveFourReset: 'Reset',
+  fiveFourDescription: 'Focus on your senses to stay present',
+  // offline toolkit screen
+  offlineToolkitTitle: 'Offline Toolkit',
+  offlineToolkitSubtitle: 'Wellness tools that work without internet',
+  offlineToolkitWorksOffline: 'Works Offline',
+  // daily journal description
+  dailyJournalDescription: 'Reflect on your thoughts and feelings',
+  // win tracker
+  winTrackerTitle: 'Win Tracker',
+  winTrackerDescription: 'Celebrate small victories and progress',
+  winTrackerAddLabel: 'Add a new win:',
+  winTrackerHint: 'I completed my assignment...',
+  winTrackerAddButton: 'Add',
+  winTrackerYourWins: 'Your Wins:',
+  winTrackerEmptyState: 'Start tracking your wins, no matter how small!',
+  // chat screen
+  chatTagline: 'Your AI worry buddy',
+  chatTryAsking: 'Try asking about:',
+  chatExampleStressedExams: "I'm really stressed about my exams",
+  chatExampleLostJob: "I lost my job and i'm worried about money.",
+  chatExampleFamilyFighting: 'My family and i keep fighting.',
+  chatInputHint: 'Type your message...',
+  // action card
+  actionCardPanicSteps: 'Panic Steps:',
+  actionCardIfWorse: 'If Worse:',
+  actionCardDisclaimerLabel: 'Disclaimer',
+  actionCardTools: 'Tools:',
+  actionCardLaunchError: 'Could not launch URL',
     // Legacy
     title: 'Settings',
     body: 'Manage your preferences'
@@ -211,6 +321,7 @@ mixin LocalData {
     homeQuickMood: 'ስሜት',
     homeQuickBreathing: 'መተንፈሻ',
     homeQuickChatAI: 'AI ውይይት',
+    homeQuickTrackWins: 'ድሎች',
     homeAffirmation1: 'በትንሽ ደረጃ በየቀኑ እየተመጣጠንህ ነህ።',
     homeAffirmation2: 'ስሜቶችህ ትክክለኛ ናቸው።',
     homeAffirmation3: 'የመተንፈስ እረፍት የሐሳብ ቦታ ይፈጥራል።',
@@ -229,12 +340,62 @@ mixin LocalData {
     homeMoodOkay: 'እሺ',
     homeMoodGood: 'ጥሩ',
     homeMoodGreat: 'በጣም ጥሩ',
-    homeMoodLoggedTemplate: 'የተመዘገበ ስሜት: {}',
+    homeMoodLoggedTemplate: 'የተመዘገበ ስሜት: %a',
     homeActivityTitle: 'እንቅስቃሴህ',
     homeRingToday: 'ዛሬ',
     homeRing7Days: '7 ቀን',
     homeRingStreak: 'ቀጥታ',
-    homeStreakBarTemplate: 'ቀጥታ: {}',
+    homeStreakBarTemplate: 'ቀጥታ: %a',
+    homeActivityLoggedTemplate: 'እንቅስቃሴ ተመዝግቧል: %a',
+    // box breathing
+    boxBreathingTitle: 'የሳጥን መተንፈስ',
+    boxBreathingExerciseTitle: 'የሳጥን መተንፈስ ልምምድ',
+    boxBreathingStepIn: 'እስትንፉ',
+    boxBreathingStepHold: 'ይጠብቁ',
+    boxBreathingStepOut: 'ተንፈሱ',
+    boxBreathingInstruction: '4 ሰከንድ እስትንፉ፣ 4 ሰከንድ ይጠብቁ፣ 4 ሰከንድ ተንፈሱ፣ 4 ሰከንድ ይጠብቁ',
+    boxBreathingStart: 'መተንፈስ ጀምር',
+    boxBreathingReset: 'ዳግም ጀምር',
+    boxBreathingDescription: 'አእምሮን ለማረጋጋት 4-4-4-4 የመተንፈስ ንድፍ',
+  // five-four grounding
+  fiveFourTitle: '5-4-3-2-1 መመርመሪያ',
+  fiveFourExerciseTitle: '5-4-3-2-1 መመርመሪያ ልምምድ',
+  fiveFourStep1: 'በዙሪያህ ተመልከት እና ማየት የምትችላቸውን 5 ነገሮች ስማቸውን',
+  fiveFourStep2: 'በጥንቃቄ ስማ እና ማዳመጥ የምትችላቸውን 4 ነገሮች ስማቸውን',
+  fiveFourStep3: 'ስምር እና ማስተዋል የምትችላቸውን 3 ነገሮች ተንከባከብ',
+  fiveFourStep4: 'ማሽተት የምትችላቸውን 2 ነገሮች አስብ',
+  fiveFourStep5: 'ማቀመጥ የምትችለውን 1 ነገር ስሙ',
+  fiveFourPrevious: 'የቀድሞ',
+  fiveFourNext: 'ቀጣይ',
+  fiveFourReset: 'ዳግም ጀምር',
+  fiveFourDescription: 'በአምስቱ ስሜቶችህ ላይ ትኩረት አድርግ እዚህ ቆይ',
+  // offline toolkit screen
+  offlineToolkitTitle: 'ከመስመር ውጭ መሣሪያዎች',
+  offlineToolkitSubtitle: 'በድር አለመኖሩም የሚሰሩ ጤና መሣሪያዎች',
+  offlineToolkitWorksOffline: 'ከመስመር ውጭ ይሰራል',
+  // daily journal description
+  dailyJournalDescription: 'ስለ ሐሳብህና ስሜቶችህ የሚያስተውል',
+  // win tracker
+  winTrackerTitle: 'የድል መቁጠሪያ',
+  winTrackerDescription: 'ትንሽ እድገቶችን እና ድሎችን አክብር',
+  winTrackerAddLabel: 'አዲስ ድል አክል:',
+  winTrackerHint: 'ተግባሬን ጨረስሁ...',
+  winTrackerAddButton: 'አክል',
+  winTrackerYourWins: 'ድሎችህ:',
+  winTrackerEmptyState: 'ድሎችህን መከታተል ጀምር፣ ቢትንሽም እንኳ!',
+  // chat screen
+  chatTagline: 'የAI የውርይ ጓደኛህ',
+  chatTryAsking: 'ስለ እነዚህ ለመጠየቅ ሞክር:',
+  chatExampleStressedExams: 'ስለ ፈተናዎቼ ብዙ ጭንቀት አለብኝ',
+  chatExampleLostJob: 'ስራዬን አጣሁ ስለ ገንዘብ እጨነቃለሁ።',
+  chatExampleFamilyFighting: 'ከቤተሰቤ ጋር በቀጥታ እንጣላለን',
+  chatInputHint: 'መልዕክትህን ፃፍ...',
+  // action card
+  actionCardPanicSteps: 'የፍርሃት እርምጃዎች:',
+  actionCardIfWorse: 'ከዚያ ቢበልጥ:',
+  actionCardDisclaimerLabel: 'ማስታወሻ',
+  actionCardTools: 'መሣሪያዎች:',
+  actionCardLaunchError: 'URL መክፈት አልተቻለም',
 
     // Legacy
     title: 'ቅንብሮች',
