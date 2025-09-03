@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { ActionCardData } from "../types"
+import { ActionCardData, ActionStep } from "../types"
 
 interface ActionCardProps {
   data?: ActionCardData
@@ -9,7 +9,7 @@ interface ActionCardProps {
 export default function ActionCard({ data: propData }: ActionCardProps) {
   const [data, setData] = useState<ActionCardData | null>(propData || null)
   const [loading, setLoading] = useState(!propData)
-  const [error, setError] = useState<string | null>(null)
+  const [error, _setError] = useState<string | null>(null)
   const [completedTasks, setCompletedTasks] = useState<boolean[]>([])
   const [showModal, setShowModal] = useState(false)
   console.log('data:', data)
@@ -22,6 +22,30 @@ export default function ActionCard({ data: propData }: ActionCardProps) {
 
   const openTool = (url: string) => {
     window.open(url, "_blank")
+  }
+
+  useEffect(() => {
+    if (propData) {
+      setData(propData)
+      setLoading(false)
+      const stepsLength = Array.isArray(propData.steps) ? propData.steps.length : 0
+      setCompletedTasks((prev) => {
+        if (prev.length === stepsLength) return prev
+        return Array.from({ length: stepsLength }, (_, i) => prev[i] ?? false)
+      })
+    }
+  }, [propData])
+
+  const renderStepText = (step: ActionStep): string => {
+    if (typeof step === "string") return step
+    if (step == null) return ""
+    if (typeof step === "object") {
+      if ("step" in step && typeof step.step === "string") return step.step
+      if ("text" in step && typeof step.text === "string") return step.text
+      if ("description" in step && typeof step.description === "string") return step.description
+      return JSON.stringify(step)
+    }
+    return String(step)
   }
 
   if (loading) {
@@ -74,7 +98,7 @@ export default function ActionCard({ data: propData }: ActionCardProps) {
                 className="mt-1 w-4 h-4 text-teal-600 border-2 border-teal-300 rounded focus:ring-teal-500"
               />
               <span className={`text-md ${completedTasks[index] ? "line-through text-gray-400" : "text-gray-700"}`}>
-                {step}
+                {renderStepText(step)}
               </span>
             </div>
           ))}

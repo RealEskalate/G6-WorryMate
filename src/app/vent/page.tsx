@@ -2,8 +2,9 @@
 import Sidebar from '@/components/Sidebar'
 import OtherCard from '@/components/OtherCard'
 import ActionCard from '@/components/ActionCard'
-import { Mic, Send, Menu } from 'lucide-react'
+import { Mic, Send } from 'lucide-react'
 import React, { useState } from 'react'
+import { ActionCardData, ActionStep, CrisisCardData } from '@/types'
 
 const Workspace = () => {
     type ChatMessage = { role: 'user' | 'assistant', content: string }
@@ -12,9 +13,9 @@ const Workspace = () => {
     const [isListening, setIsListening] = useState(false)
     const [isMuted, setIsMuted] = useState(false)
     const [messages, setMessages] = useState<ChatMessage[]>([])
-    const [actionCards, setActionCards] = useState<any[]>([])
+    const [actionCards, setActionCards] = useState<ActionCardData[]>([])
     const [isCrisisMode, setIsCrisisMode] = useState(false)
-    const [crisisCard, setCrisisCard] = useState<any | null>(null)
+    const [crisisCard, setCrisisCard] = useState<CrisisCardData | null>(null)
     const [hasStarted, setHasStarted] = useState(false)
     const [showRateLimit, setShowRateLimit] = useState(false)
     const toggleSidebar = () => {
@@ -58,7 +59,7 @@ const Workspace = () => {
                         console.log('crisis-card error', data)
                         return
                     }
-                    let payload: any = data?.["Crisis-card: "] ?? data?.card ?? data
+                    let payload: unknown = data?.["Crisis-card: "] ?? data?.card ?? data
                     if (typeof payload === 'string') {
                         const stripped = payload
                             .replace(/^```json\n?/i, '')
@@ -66,7 +67,7 @@ const Workspace = () => {
                             .trim()
                         payload = JSON.parse(stripped)
                     }
-                    setCrisisCard(payload)
+                    setCrisisCard(payload as CrisisCardData)
                 } catch (e) {
                     console.log('Failed fetching crisis card', e)
                 }
@@ -74,7 +75,7 @@ const Workspace = () => {
             }
 
             // 2. map - intent
-            let mapRes = await fetch('/api/map_intent', {
+            const mapRes = await fetch('/api/map_intent', {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
                 body: JSON.stringify({ content: trimmed })
@@ -100,7 +101,7 @@ const Workspace = () => {
                 setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I could not load the action block.' }])
                 return
             }
-            const block = actionBlockData?.actionBlock || actionBlockData?.Block || actionBlockData?.block || actionBlockData.action_block
+            const block = actionBlockData.action_block
 
             // 4. compose full card from backend
             const composeRes = await fetch('/api/compose', {
@@ -125,7 +126,7 @@ const Workspace = () => {
             console.log('composeData:', composeData)
 
             // The compose API returns data in a 'card' field as a JSON string
-            let cardPayload: any = composeData?.card ?? composeData?.action_block ?? composeData
+            let cardPayload: unknown = composeData?.card ?? composeData?.action_block ?? composeData
             console.log('cardPayload:', cardPayload)
 
             // Only parse if it's a string
@@ -143,24 +144,42 @@ const Workspace = () => {
             }
 
             // Handle the weird `""` root key case
-            if (cardPayload[""]) {
-                cardPayload = cardPayload[""]
+            if (typeof cardPayload === 'object' && cardPayload !== null && (cardPayload as Record<string, unknown>)[""]) {
+                cardPayload = (cardPayload as Record<string, unknown>)[""];
+            }
+
+            // Unwrap if the payload is an object with a single key
+            if (
+                typeof cardPayload === "object" &&
+                cardPayload !== null &&
+                Object.keys(cardPayload).length === 1
+            ) {
+                const firstKey = Object.keys(cardPayload as Record<string, unknown>)[0];
+                cardPayload = (cardPayload as Record<string, unknown>)[firstKey];
             }
 
             console.log("final cardPayload:", cardPayload)
 
             // Now normalize to UI format
-            const transformedCard = {
+            const normalized = cardPayload as Record<string, unknown>
+            const transformedCard: ActionCardData = {
                 title:
-                    cardPayload.title ??
+                    (normalized.title as string | undefined) ??
                     `Action Plan for ${topicKey?.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) || "Your Concern"}`,
-                description: cardPayload.description ?? "Here's a plan to help you with your concern.",
-                steps: cardPayload.micro_steps ?? cardPayload.steps ?? [],
-                miniTools: cardPayload.tool_links ?? cardPayload.miniTools ?? [],
-                ifWorse: cardPayload.if_worse ?? cardPayload.ifWorse ?? "",
-                disclaimer: cardPayload.disclaimer ?? "",
-                empathyOpeners: cardPayload.empathy_openers ?? [],
-                scripts: cardPayload.scripts ?? [],
+                description: (normalized.description as string | undefined) ?? "Here's a plan to help you with your concern.",
+                steps: (normalized.micro_steps as ActionStep[] | undefined)
+                    ?? (normalized.steps as ActionStep[] | undefined)
+                    ?? [],
+                miniTools: (normalized.tool_links as Array<{ title: string; url: string }> | undefined)
+                    ?? (normalized.miniTools as Array<{ title: string; url: string }> | undefined)
+                    ?? [],
+                uiTools: (normalized.uiTools as unknown[]) ?? [],
+                ifWorse: (normalized.if_worse as string | undefined)
+                    ?? (normalized.ifWorse as string | undefined)
+                    ?? "",
+                disclaimer: (normalized.disclaimer as string | undefined) ?? "",
+                empathyOpeners: (normalized.empathy_openers as string[] | undefined) ?? [],
+                scripts: (normalized.scripts as string[] | undefined) ?? [],
                 __crisis: false,
             }
 
@@ -213,77 +232,80 @@ const Workspace = () => {
                 {(messages.length > 0 || actionCards.length > 0) && (
                     <div className='w-full flex-1 overflow-y-auto px-2 md:px-4 pt-8 self-stretch'>
                         <div className='mx-auto w-full max-w-[700px]'>
-                            {messages.map((msg, idx) => {
-                                const isUser = msg.role === 'user'
-                                return (
-                                    <div key={idx} className={`w-full flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
-                                        <div className={`max-w-[85%] border rounded-lg px-3 py-2 ${isUser ? 'bg-[#eaf6ff] text-[#2a4461]' : 'bg-white text-[#2a4461]'}`}>
-                                            {msg.content}
+                            {Array.from({ length: Math.max(messages.length, actionCards.length) }).map((_, idx) => (
+                                <React.Fragment key={idx}>
+                                    {messages[idx] && (
+                                        <div className={`w-full flex ${messages[idx].role === 'user' ? 'justify-end' : 'justify-start'} mb-3`}>
+                                            <div className={`max-w-[85%] border rounded-lg px-3 py-2 ${messages[idx].role === 'user' ? 'bg-[#eaf6ff] text-[#2a4461]' : 'bg-white text-[#2a4461]'}`}>
+                                                {messages[idx].content}
+                                            </div>
                                         </div>
-                                    </div>
-                                )
-                            })}
-                            {actionCards.map((card, idx) => (
-                                <div key={`card-${idx}`} className='w-full flex justify-start mb-4'>
-                                    {card.__crisis ? (
-                                        <div className={`w-full max-w-[85%] border rounded-lg p-4 bg-red-50 border-red-300 text-red-800`}>
-                                            <h2 className='text-lg font-semibold mb-1'>{card.title}</h2>
-                                            {card.description && (
-                                                <p className='text-sm text-gray-700 mb-3'>{card.description}</p>
-                                            )}
-                                            {Array.isArray(card.steps) && card.steps.length > 0 && (
-                                                <div className='mb-3'>
-                                                    <h3 className='font-medium mb-1'>Steps</h3>
-                                                    <ul className='list-disc pl-5 space-y-1'>
-                                                        {card.steps.map((s: string, i: number) => (
-                                                            <li key={i} className='text-sm'>{s}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-                                            {Array.isArray(card.empathyOpeners) && card.empathyOpeners.length > 0 && (
-                                                <div className='mb-3'>
-                                                    <h3 className='font-medium mb-1'>Supportive Messages</h3>
-                                                    <ul className='list-disc pl-5 space-y-1'>
-                                                        {card.empathyOpeners.map((opener: string, i: number) => (
-                                                            <li key={i} className='text-sm text-gray-600 italic'>{opener}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-                                            {Array.isArray(card.scripts) && card.scripts.length > 0 && (
-                                                <div className='mb-3'>
-                                                    <h3 className='font-medium mb-1'>Helpful Scripts</h3>
-                                                    <ul className='list-disc pl-5 space-y-1'>
-                                                        {card.scripts.map((script: string, i: number) => (
-                                                            <li key={i} className='text-sm text-gray-700'>{script}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-                                            {Array.isArray(card.miniTools) && card.miniTools.length > 0 && (
-                                                <div className='mb-3'>
-                                                    <h3 className='font-medium mb-1'>Mini Tools</h3>
-                                                    <div className='flex flex-wrap gap-2'>
-                                                        {card.miniTools.map((t: any, i: number) => (
-                                                            <a key={i} href={t.url} target='_blank' rel='noreferrer' className='text-blue-600 underline text-sm'>
-                                                                {t.title}
-                                                            </a>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {card.ifWorse && (
-                                                <p className='text-sm text-gray-700 mb-2'><span className='font-medium'>If worse:</span> {card.ifWorse}</p>
-                                            )}
-                                            {card.disclaimer && (
-                                                <p className='text-xs text-gray-500 italic'>{card.disclaimer}</p>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <ActionCard data={card} />
                                     )}
-                                </div>
+                                    {actionCards[idx] && (
+                                        <div className='w-full flex justify-start mb-4'>
+                                            {actionCards[idx].__crisis ? (
+                                                <div className={`w-full max-w-[85%] border rounded-lg p-4 bg-red-50 border-red-300 text-red-800`}>
+                                                    <h2 className='text-lg font-semibold mb-1'>{actionCards[idx].title}</h2>
+                                                    {actionCards[idx].description && (
+                                                        <p className='text-sm text-gray-700 mb-3'>{actionCards[idx].description}</p>
+                                                    )}
+                                                    {Array.isArray(actionCards[idx].steps) && actionCards[idx].steps.length > 0 && (
+                                                        <div className='mb-3'>
+                                                            <h3 className='font-medium mb-1'>Steps</h3>
+                                                            <ul className='list-disc pl-5 space-y-1'>
+                                                                {actionCards[idx].steps.map((s: ActionStep, i: number) => (
+                                                                    <li key={i} className='text-sm'>
+                                                                        {typeof s === "string" ? s : ("step" in s ? s.step : JSON.stringify(s))}
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+                                                    {Array.isArray(actionCards[idx].empathyOpeners) && actionCards[idx].empathyOpeners.length > 0 && (
+                                                        <div className='mb-3'>
+                                                            <h3 className='font-medium mb-1'>Supportive Messages</h3>
+                                                            <ul className='list-disc pl-5 space-y-1'>
+                                                                {actionCards[idx].empathyOpeners.map((opener: string, i: number) => (
+                                                                    <li key={i} className='text-sm text-gray-600 italic'>{opener}</li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+                                                    {Array.isArray(actionCards[idx].scripts) && actionCards[idx].scripts.length > 0 && (
+                                                        <div className='mb-3'>
+                                                            <h3 className='font-medium mb-1'>Helpful Scripts</h3>
+                                                            <ul className='list-disc pl-5 space-y-1'>
+                                                                {actionCards[idx].scripts.map((script: string, i: number) => (
+                                                                    <li key={i} className='text-sm text-gray-700'>{script}</li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+                                                    {Array.isArray(actionCards[idx].miniTools) && actionCards[idx].miniTools.length > 0 && (
+                                                        <div className='mb-3'>
+                                                            <h3 className='font-medium mb-1'>Mini Tools</h3>
+                                                            <div className='flex flex-wrap gap-2'>
+                                                                {actionCards[idx].miniTools.map((t: { title: string; url: string }, i: number) => (
+                                                                    <a key={i} href={t.url} target='_blank' rel='noreferrer' className='text-blue-600 underline text-sm'>
+                                                                        {t.title}
+                                                                    </a>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {actionCards[idx].ifWorse && (
+                                                        <p className='text-sm text-gray-700 mb-2'><span className='font-medium'>If worse:</span> {actionCards[idx].ifWorse}</p>
+                                                    )}
+                                                    {actionCards[idx].disclaimer && (
+                                                        <p className='text-xs text-gray-500 italic'>{actionCards[idx].disclaimer}</p>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <ActionCard data={actionCards[idx]} />
+                                            )}
+                                        </div>
+                                    )}
+                                </React.Fragment>
                             ))}
 
                             {/* Rate Limit Card */}
@@ -342,8 +364,8 @@ const Workspace = () => {
                                 )}
                                 <h3 className="text-base lg:text-lg font-bold text-red-600 mb-2 mt-2">Immediate Steps</h3>
                                 <div className="space-y-2 mb-4 lg:grid lg:grid-cols-2 lg:gap-4">
-                                    {(crisisCard?.safety_plan || []).map((step: any) => (
-                                        <div key={step.step} className="p-2 lg:p-3 rounded-lg border border-red-100 bg-red-50 shadow-sm flex flex-col gap-0.5">
+                                    {(crisisCard?.safety_plan || []).map((step) => (
+                                        <div key={String(step.step)} className="p-2 lg:p-3 rounded-lg border border-red-100 bg-red-50 shadow-sm flex flex-col gap-0.5">
                                             <p className="font-semibold text-red-700 text-sm lg:text-base">Step {step.step}</p>
                                             <p className="text-gray-700 text-xs lg:text-sm">{step.instruction}</p>
                                         </div>
@@ -351,7 +373,7 @@ const Workspace = () => {
                                 </div>
                                 <h3 className="text-base lg:text-lg font-bold text-red-600 mb-2 mt-4">Resources</h3>
                                 <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:gap-4">
-                                    {(crisisCard?.resources || []).map((res: any, idx: number) => (
+                                    {(crisisCard?.resources || []).map((res, idx: number) => (
                                         <div key={idx} className="p-3 rounded-lg border border-gray-200 bg-gray-50">
                                             <p className="font-semibold text-sm text-gray-800">{res.name} <span className="text-gray-500">({res.type})</span></p>
                                             {res.contact?.phone && (
@@ -395,7 +417,7 @@ const Workspace = () => {
                 {/* Composer */}
                 {!isCrisisMode ? (
                     <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6 px-2 md:px-0">
-                        <h1 className='mx-auto text-blue font-bold mb-2 text-center text-sm md:text-base'>General wellbeing advice, not medical advice.</h1>
+                        {/* <h1 className='mx-auto text-blue font-bold mb-2 text-center text-sm md:text-base'>General wellbeing advice, not medical advice.</h1> */}
                         <div className="border rounded-lg overflow-hidden mt-2 flex w-full max-w-[700px] h-28 bg-white sticky bottom-0">
                             <div className="flex items-stretch gap-3 p-4 w-full">
                                 <div className="flex-1">
