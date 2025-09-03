@@ -18,7 +18,7 @@ interface SidebarProps {
     onToggle: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
         favorites: false,
         favoriteChats: false,
@@ -43,29 +43,34 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
     ];
 
     return (
-        <div className={`bg-[#132A4F] shadow-2xl text-white h-screen  flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'
+        <div className={`bg-[#f6f6f6] shadow-2xl text-blue h-screen  flex flex-col border-2 transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'
             }`}>
-            {/* Header */}
-            <div className="p-4 border-b">
-                <button className="w-full  text-[#2a4461] px-3 py-2 rounded-lg flex items-center gap-2 transition-colors hover:bg-[#0D2A4B] hover:text-white">
-                    <MessageSquarePlus className="w-4 h-4" />
-                    {!isCollapsed && <span className="text-lg font-medium">WorryMate</span>}
-                </button>
+            {/* Sidebar Toggle Button */}
+            <div className="p-4 border-b flex items-center justify-between">
+                {/* <button
+                    className="text-[#2a4461] px-3 py-2 rounded-lg flex items-center gap-2 transition-colors hover:bg-[#0D2A4B] hover:text-white"
+                    onClick={typeof onToggle === 'function' ? onToggle : undefined}
+                    aria-label="Toggle Sidebar"
+                >
+                </button> */}
             </div>
 
             {/* Navigation */}
             <div className="flex-1 overflow-y-auto">
                 <nav className="p-2">
-
                     <button className="w-full flex items-center gap-3 px-3 py-2 text-[#2a4461]  hover:bg-[#0D2A4B] hover:text-white hover:cursor-pointer rounded-lg transition-colors">
                         <MessageCircle className="w-4 h-4" />
-                        {!isCollapsed && <span className="text-lg  hover:text-white">Venting Chat</span>}
+                        {!isCollapsed && <span className="text-lg  hover:text-white">Home</span>}
+                    </button>
+                    <button className="w-full flex items-center gap-3 px-3 py-2 text-[#2a4461]  hover:bg-[#0D2A4B] hover:text-white hover:cursor-pointer rounded-lg transition-colors">
+                        <MessageCircle className="w-4 h-4" />
+                        {!isCollapsed && <span className="text-lg  hover:text-white">Vent</span>}
                     </button>
 
                     {/* Recents */}
                     <button className="w-full flex items-center gap-3 px-3 py-2 text-[#2a4461] hover:bg-[#0D2A4B] hover:text-white hover:cursor-pointer rounded-lg transition-colors">
                         <Clock className="w-4 h-4" />
-                        {!isCollapsed && <span className="text-lg ">Offline ToolKit</span>}
+                        {!isCollapsed && <span className="text-lg ">ToolKit</span>}
                     </button>
 
                     {/* Community */}
