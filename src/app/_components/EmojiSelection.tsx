@@ -24,7 +24,7 @@ function EmojiSelection() {
   const handleSelect = async (em: string, description?: string) => {
     setSelectedEmoji(em);
   
-
+    
     const today = new Date().toISOString().split('T')[0];
     const existing = await db.dailyemoji.get(today);
 
