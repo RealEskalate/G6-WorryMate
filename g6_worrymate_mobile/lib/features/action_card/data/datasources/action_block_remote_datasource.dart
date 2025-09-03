@@ -15,7 +15,7 @@ class ActionBlockRemoteDataSource {
   ) async {
     final formattedTopicKey = _formatTopicKey(topicKey);
     final url = Uri.parse(
-      'https://g6-worrymate-zt0r.onrender.com/chat/action_block/$formattedTopicKey/$lang',
+      'https://g6-worrymate-8osd.onrender.com/chat/action_block/$formattedTopicKey/$lang',
     );
 
     final response = await http.get(url);
@@ -29,11 +29,11 @@ class ActionBlockRemoteDataSource {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       print('[ActionBlockRemoteDataSource] Parsed data: ' + data.toString());
-      final actionBlockJson = data['action_block'];
+      final actionBlockJson = data['block'];
       if (actionBlockJson == null) {
         throw Exception('action_block is null');
       }
-      // Wrap the map with the key your model expects
+
       return ActionBlockResponseModel.fromJson({
         'action-block': actionBlockJson,
       });

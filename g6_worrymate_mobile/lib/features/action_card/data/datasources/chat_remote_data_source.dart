@@ -9,7 +9,7 @@ class ChatRemoteDataSource {
 
   Future<String> getTopicKey(ChatParams params) async {
     final url = Uri.parse(
-      'https://g6-worrymate-zt0r.onrender.com/chat/intent_mapping',
+      'https://g6-worrymate-8osd.onrender.com/chat/intent_mapping',
     );
 
     final response = await http.post(

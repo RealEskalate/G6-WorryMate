@@ -49,14 +49,28 @@ class BlockModel {
 
   factory BlockModel.fromJson(Map<String, dynamic> json) {
     return BlockModel(
-      empathyOpeners: List<String>.from(json['EmpathyOpeners']),
-      microSteps: List<String>.from(json['MicroSteps']),
-      scripts: List<String>.from(json['Scripts']),
-      toolLinks: (json['ToolLinks'] as List)
+      empathyOpeners: List<String>.from(
+        json['EmpathyOpeners'] ?? json['empathy_openers'] ?? [],
+      ),
+
+      microSteps: List<String>.from(
+        json['MicroSteps'] ?? json['micro_steps'] ?? [],
+      ),
+
+      scripts: List<String>.from(json['Scripts'] ?? json['scripts'] ?? []),
+
+      toolLinks: ((json['ToolLinks'] ?? json['tool_links']) as List? ?? [])
           .map((e) => ToolLinkModel.fromJson(e))
           .toList(),
-      ifWorse: List<String>.from(json['IfWorse']),
-      disclaimer: json['Disclaimer'],
+
+      ifWorse: (() {
+        final val = json['IfWorse'] ?? json['if_worse'];
+        if (val == null) return <String>[];
+        if (val is List) return List<String>.from(val);
+        return <String>[];
+      })(),
+
+      disclaimer: (json['Disclaimer'] ?? json['disclaimer'] ?? '').toString(),
     );
   }
 }

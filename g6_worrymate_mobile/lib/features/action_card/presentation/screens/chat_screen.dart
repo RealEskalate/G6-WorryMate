@@ -9,6 +9,7 @@ import '../../domain/entities/chat_message_entity.dart';
 import '../bloc/chat_bloc.dart';
 import '../bloc/chat_event.dart';
 import '../bloc/chat_state.dart';
+import '../widgets/typing_indicator.dart';
 import 'action_card_screen.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -84,7 +85,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 borderRadius: BorderRadius.circular(30),
                 border: Border.all(width: 1, color: const Color(0xFF22314A)),
               ),
-              child: const Icon(Icons.favorite_border_rounded, color: Colors.white),
+              child: const Icon(
+                Icons.favorite_border_rounded,
+                color: Colors.white,
+              ),
             ),
           ),
           title: const Column(
@@ -119,7 +123,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      side: const BorderSide(width: 1, color: Color(0xFF22314A)),
+                      side: const BorderSide(
+                        width: 1,
+                        color: Color(0xFF22314A),
+                      ),
                       backgroundColor: _selectedLang == 'EN'
                           ? const Color(0xFF22314A)
                           : Colors.transparent,
@@ -142,7 +149,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      side: const BorderSide(width: 1, color: Color(0xFF22314A)),
+                      side: const BorderSide(
+                        width: 1,
+                        color: Color(0xFF22314A),
+                      ),
                       backgroundColor: _selectedLang == 'AM'
                           ? const Color(0xFF22314A)
                           : Colors.transparent,
@@ -194,64 +204,81 @@ class _ChatScreenState extends State<ChatScreen> {
               child: BlocBuilder<ChatBloc, ChatState>(
                 builder: (context, state) {
                   final messages = state.messages;
+                  final isLoading = state is ChatLoading;
                   return ListView.builder(
                     padding: const EdgeInsets.symmetric(
                       vertical: 16,
                       horizontal: 8,
                     ),
-                    itemCount: messages.length,
+                    itemCount: isLoading
+                        ? messages.length + 1
+                        : messages.length,
                     itemBuilder: (context, index) {
-                      final msg = messages[index];
-                      if (msg.sender == ChatSender.user) {
-                        return Align(
-                          alignment: Alignment.centerRight,
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 4,
-                              horizontal: 8,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF22314A),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Text(
-                              msg.text,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
+                      if (index < messages.length) {
+                        final msg = messages[index];
+                        if (msg.sender == ChatSender.user) {
+                          return Align(
+                            alignment: Alignment.centerRight,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 8,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF22314A),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                msg.text,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      } else if (msg.actionCard != null) {
-                        return ActionCardWidget(actionCard: msg.actionCard!);
+                          );
+                        } else if (msg.actionCard != null) {
+                          return ActionCardWidget(actionCard: msg.actionCard!);
+                        } else {
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 8,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFe0e7ef),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                msg.text,
+                                style: const TextStyle(
+                                  color: Color(0xFF22314A),
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
                       } else {
+                        // Show typing indicator at the end if loading
                         return Align(
                           alignment: Alignment.centerLeft,
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 4,
-                              horizontal: 8,
-                            ),
+                          child: Padding(
                             padding: const EdgeInsets.symmetric(
-                              vertical: 10,
+                              vertical: 8,
                               horizontal: 16,
                             ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFe0e7ef),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Text(
-                              msg.text,
-                              style: const TextStyle(
-                                color: Color(0xFF22314A),
-                                fontSize: 15,
-                              ),
-                            ),
+                            child: TypingIndicator(),
                           ),
                         );
                       }
