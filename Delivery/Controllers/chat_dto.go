@@ -97,6 +97,8 @@ func ChangeToChatDTO(ac *domain.ActionBlock) (*ActionBlockDTO) {
 		MicroSteps: ac.Block.MicroSteps,
 		Scripts: ac.Block.Scripts,
 		ToolLinks: toolLks,
+		IfWorse: ac.Block.IfWorse,
+		Disclaimer: ac.Block.Disclaimer,
 	}
 
 	return &ActionBlockDTO{

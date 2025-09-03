@@ -91,7 +91,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
     - You can use ui tools only if they are in this list : ["box_breathing", "daily_journal", "grounding", "tracker"].
     - always return two relevant ui tools for the topic based on the action block.
     - The mini tools should have the same format as the one in the action block.
-	- If the topic is other,return the same json format but with only title : "other" (in lower case) and the description the steps in a coherent format. The other fields should be empty.
+	- If the topic is other,return the same json format but with only title : "other" (in lower case) and the description the steps in a coherent format and also include the ifWorse and disclaimer always. The other fields should be empty.
 
 	Steps:
 	%s
