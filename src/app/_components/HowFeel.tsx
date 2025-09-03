@@ -1,11 +1,37 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState,useEffect, use} from 'react'
 import Image from 'next/image'
 import image from '../../../public/Chatbot.png'
 import EmojiSelection from './EmojiSelection'
+type Quote = {
+  _id: string;
+  content: string;
+  author: string;
+  tags?: string[];
+  length: number;
+};
+
 
 function HowFeel() {
   const [show, setShow] = useState(false)
+  const [quote,setQuote] = useState<Quote>()
+  useEffect(() => {
+  const fetchQuote = async () => {
+    try {
+      const res = await fetch("/api/quote",{
+        method: "GET",
+      });
+      
+      const data: Quote = await res.json();
+      setQuote(data);
+    } catch (err) {
+      console.error("Error fetching quote:", err);
+    }
+  };
+
+  fetchQuote();
+}, []);
+
 
   const timecheck = () => {
     const hour = new Date().getHours()
@@ -19,7 +45,7 @@ function HowFeel() {
     <div className="w-[90%] relative flex flex-col md:flex-row items-start justify-between bg-[#F7F9FB] rounded-xl shadow-md  max-w-5xl mx-auto overflow-hidden p-6">
     
       <div className="flex flex-col gap-4 md:w-1/2 z-10 text-[#0D2A4B]">
-      <h1 className='text-2xl font-semibold'>some quote shit</h1>
+      <h1 className='text-2xl font-semibold'>{quote?.content}</h1>
         <h2 className="text-xl font-semibold">{`${timecheck()}, How do you feel?`}</h2>
         <p className="text-base opacity-90">Please, mark your mood today</p>
         <button
