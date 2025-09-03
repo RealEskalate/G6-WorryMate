@@ -79,7 +79,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
     final isDarkMode = themeManager.isDarkMode;
-
+    final promptFromHomePage = ModalRoute.of(context)?.settings.arguments as String?;
+    if (promptFromHomePage != null && _textController.text.isEmpty){
+      _textController.text = promptFromHomePage;
+    }
     Color getBackgroundColor() => isDarkMode
         ? const Color.fromARGB(255, 9, 43, 71)
         : const Color(0xFFF8FAFC);
@@ -100,10 +103,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
     Color getHintColor() => isDarkMode ? Colors.white60 : Colors.grey[600]!;
 
-    final promptFromHomePage = ModalRoute.of(context)?.settings.arguments;
-    if (promptFromHomePage is String && _textController.text.isEmpty) {
-      _textController.text = promptFromHomePage;
-    }
+    // final promptFromHomePage = ModalRoute.of(context)?.settings.arguments;
+    // if (promptFromHomePage is String && _textController.text.isEmpty) {
+    //   _textController.text = promptFromHomePage;
+    // }
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         if (state is ChatCrisis) {
