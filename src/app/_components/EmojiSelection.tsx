@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { emoji } from '../lib/emoji';
 import { db } from '../lib/db';
+import { useRouter } from 'next/navigation';
 
 function EmojiSelection() {
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   
-
+  const router = useRouter();
 
   useEffect(() => {
     async function getEmoji() {
@@ -32,6 +33,8 @@ function EmojiSelection() {
     } else {
       await db.dailyemoji.add({ date: today, emoji: em });
     }
+router.push('/dashboard');
+
   };
 
   return (

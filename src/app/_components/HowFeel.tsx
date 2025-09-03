@@ -71,7 +71,7 @@ useEffect(()=>{
           onClick={() => setShow(!show)}
           className="bg-[#0D2A4B] text-white px-4 py-2 rounded-md font-medium hover:bg-[#0c2847] transition"
         >
-          {show ? 'Save now' : 'Mark now'}
+          {show ? 'Hide' : 'Mark now'}
         </button>
         {show && (
           <div className="mt-4">

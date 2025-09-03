@@ -27,7 +27,7 @@ export const features: FeatureCard[] = [
     description: "Explore curated resources to support your mental and emotional well-being.",
     image: "/meditation.png",
     buttonText: "Explore Kits",
-    buttonLink: "/community",
+    buttonLink: "/kits",
   },
   {
     title: "Progress Tracker",

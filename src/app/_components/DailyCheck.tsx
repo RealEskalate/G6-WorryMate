@@ -44,7 +44,7 @@ function DailyCheck() {
       const dateStr = formatDateOnly(date)
       const isChecked = checkedIn.includes(dateStr)
       const isToday = dateStr === todayStr
-      console.log(`Tile: ${dateStr}, isChecked: ${isChecked}, isToday: ${isToday}`)
+      // console.log(`Tile: ${dateStr}, isChecked: ${isChecked}, isToday: ${isToday}`)
 
       const classes = [
        
