@@ -11,7 +11,7 @@ class ActionCardRemoteDataSource {
     required String language,
   }) async {
     final url = Uri.parse(
-      'https://g6-worrymate-zt0r.onrender.com/chat/compose',
+      'https://g6-worrymate-8osd.onrender.com/chat/compose',
     );
     final response = await http.post(
       url,
