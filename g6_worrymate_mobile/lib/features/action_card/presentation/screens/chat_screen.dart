@@ -133,14 +133,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 border: Border.all(width: 1, color: getPrimaryColor()),
               ),
               child: Icon(
-                  Icons.favorite_border_rounded,
-                  color: isDarkMode ? Colors.black : Colors.white
-              ),
-      child: const Icon(
                 Icons.favorite_border_rounded,
-                color: Colors.white,
+                color: isDarkMode ? Colors.black : Colors.white,
               ),
-
             ),
           ),
           title: Column(
@@ -177,9 +172,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-
                       side: BorderSide(width: 1, color: getPrimaryColor()),
-
                       backgroundColor: _selectedLang == 'en'
                           ? getPrimaryColor()
                           : Colors.transparent,
@@ -201,11 +194,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-
                       side: BorderSide(width: 1, color: getPrimaryColor()),
                       backgroundColor: _selectedLang == 'am'
                           ? getPrimaryColor()
-
                           : Colors.transparent,
                       foregroundColor: _selectedLang == 'am'
                           ? (isDarkMode ? Colors.black : Colors.white)
@@ -262,6 +253,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 builder: (context, state) {
                   final messages = state.messages;
                   final isLoading = state is ChatLoading;
+
                   return ListView.builder(
                     padding: const EdgeInsets.symmetric(
                       vertical: 16,
@@ -271,7 +263,6 @@ class _ChatScreenState extends State<ChatScreen> {
                         ? messages.length + 1
                         : messages.length,
                     itemBuilder: (context, index) {
-
                       if (index < messages.length) {
                         final msg = messages[index];
                         if (msg.sender == ChatSender.user) {
@@ -314,16 +305,17 @@ class _ChatScreenState extends State<ChatScreen> {
                                 horizontal: 16,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFe0e7ef),
+                                color: isDarkMode
+                                    ? Colors.white.withOpacity(0.15)
+                                    : const Color(0xFFe0e7ef),
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Text(
                                 msg.text,
-                                style: const TextStyle(
-                                  color: Color(0xFF22314A),
+                                style: TextStyle(
+                                  color: isDarkMode ? Colors.white : const Color(0xFF22314A),
                                   fontSize: 15,
                                 ),
-
                               ),
                             ),
                           );
@@ -337,23 +329,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               vertical: 8,
                               horizontal: 16,
                             ),
-
-                            decoration: BoxDecoration(
-                              color: isDarkMode
-                                  ? Colors.white.withOpacity(0.15)
-                                  : const Color(0xFFe0e7ef),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Text(
-                              msg.text,
-                              style: TextStyle(
-                                color: isDarkMode ? Colors.white : const Color(0xFF22314A),
-                                fontSize: 15,
-                              ),
-                            ),
-
                             child: TypingIndicator(),
-
                           ),
                         );
                       }
