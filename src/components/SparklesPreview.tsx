@@ -7,7 +7,7 @@ export function SparklesPreview({ tittle }) {
         (<div
             className="h-[40rem] w-full flex flex-col items-center justify-center overflow-hidden rounded-md">
             <h1
-                className="md:text-4xl text-3xl lg:text-6xl font-bold text-center text-black relative z-20">
+                className="md:text-4xl text-3xl lg:text-6xl font-bold text-center text-black dark:text-white relative z-20">
                 {tittle}
             </h1>
             <div className="w-[40rem] h-40 relative">

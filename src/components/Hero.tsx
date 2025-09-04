@@ -42,14 +42,14 @@ const Hero = () => {
                     />
 
                     {/* Subheading */}
-                    <p className="text-xl sm:text-md mb-8 max-w-2xl text-[#2a4461]">
+                    <p className="text-xl sm:text-md mb-8 max-w-2xl text-[#0D2A4B] dark:text-white">
                         Share your worries safely, find comfort in your own language, and take small steps toward a calmer mind with your AI-powered buddy.
                     </p>
 
 
                     {/* CTA Button */}
                     <Link href="/vent">
-                        <ShinyButton className=" bg-[#2a4461] text-white rounded-3xl  hover:bg-blue-900/50 hover:text-black">
+                        <ShinyButton className=" bg-[#0D2A4B] dark:bg-[#10B981] text-white rounded-3xl hover:bg-[#071b32] dark:hover:bg-[#059669]">
                             <span className='text-white'>Get Started</span>
                             <span className="ml-2 text-white">→</span>
                         </ShinyButton>

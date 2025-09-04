@@ -29,7 +29,6 @@ const Footer = () => {
                             <Image src="/logo-black.png" alt="Logo" height={40} width={40} />
                         )} */}
 
-                        <h1>WorryMate</h1>
                         <span className=" font-bold sm:inline-block">
                             WorryMate
                         </span>

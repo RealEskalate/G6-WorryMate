@@ -3,7 +3,9 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Metadata } from 'next';
 import Header from '@/components/Header';
+import LayoutWithSidebar from '@/components/LayoutWithSidebar';
 import '@/app/globals.css';
+import { ThemeProvider } from '@/components/theme-provider';
 
 type Props = {
   children: React.ReactNode;
@@ -29,7 +31,17 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider>
           {/* <Header /> */}
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+
+            <LayoutWithSidebar>
+              {children}
+            </LayoutWithSidebar>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>

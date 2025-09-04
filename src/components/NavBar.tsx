@@ -11,6 +11,7 @@ import {
     MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
+import { ModeToggle } from "./ModeToggle";
 
 export function NavbarDemo() {
     const navItems = [
@@ -39,7 +40,8 @@ export function NavbarDemo() {
                     <h1 className="font-bold">WorryMate</h1>
                     <NavItems items={navItems} />
                     <div className="flex items-center gap-4">
-                        <NavbarButton variant="secondary">Get started</NavbarButton>
+                        <ModeToggle />
+                        <NavbarButton variant="secondary" className="bg-[#0D2A4B] text-white dark:bg-[#10B981]">Get started</NavbarButton>
                     </div>
                 </NavBody>
 
@@ -69,7 +71,9 @@ export function NavbarDemo() {
                             </a>
                         ))}
                         <div className="flex w-full flex-col gap-4">
-
+                            <div className="flex justify-center">
+                                <ModeToggle />
+                            </div>
                             <NavbarButton
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 variant="primary"
