@@ -13,4 +13,8 @@ class SendChatMessageEvent extends ChatEvent{
   SendChatMessageEvent( this.params, this.language);
 }
 
+class SaveChatTranscriptEvent extends ChatEvent {}
+
+class LoadChatTranscriptEvent extends ChatEvent {}
+
 

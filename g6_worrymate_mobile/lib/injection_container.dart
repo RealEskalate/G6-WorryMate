@@ -9,6 +9,7 @@ import 'core/databases/api/dio_consumer.dart';
 import 'features/action_card/data/datasources/action_block_remote_datasource.dart';
 import 'features/action_card/data/datasources/action_card_local_dat_source.dart';
 import 'features/action_card/data/datasources/action_card_remote_data_source.dart';
+import 'features/action_card/data/datasources/chat_local_data_source.dart';
 import 'features/action_card/data/datasources/chat_remote_data_source.dart';
 import 'features/action_card/data/repositories/action_block_repository_impl.dart';
 import 'features/action_card/data/repositories/action_card_repository_impl.dart';
@@ -67,6 +68,7 @@ Future<void> init() async {
       getActionBlockUsecase: sl(),
       addChatUsecase: sl(),
       composeActionCardUsecase: sl(),
+      chatLocalDataSource: sl(),
     ),
   );
 
@@ -101,6 +103,9 @@ Future<void> init() async {
   sl.registerLazySingleton<ChatRemoteDataSource>(() => ChatRemoteDataSource());
   sl.registerLazySingleton<ActionCardLocalDataSource>(
     () => ActionCardLocalDataSource(),
+  );
+  sl.registerLazySingleton<ChatLocalDataSource>(
+    () => ChatLocalDataSource(),
   );
   sl.registerLazySingleton<ActionBlockRemoteDataSource>(
     () => ActionBlockRemoteDataSource(),

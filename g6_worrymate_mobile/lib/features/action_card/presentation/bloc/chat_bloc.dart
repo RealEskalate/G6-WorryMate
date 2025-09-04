@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/chat_message_entity.dart';
+import '../../data/datasources/chat_local_data_source.dart';
 import '../../domain/usecases/action_block_usecase.dart';
 import '../../domain/usecases/action_card_usecase.dart';
 import '../../domain/usecases/add_chat.dart';
@@ -12,15 +13,23 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetTopicKeyUsecase getTopicKeyUsecase;
   final GetActionBlockUsecase getActionBlockUsecase;
   final ComposeActionCardUsecase composeActionCardUsecase;
+  final ChatLocalDataSource chatLocalDataSource;
 
   ChatBloc({
     required this.composeActionCardUsecase,
     required this.addChatUsecase,
     required this.getActionBlockUsecase,
     required this.getTopicKeyUsecase,
+    required this.chatLocalDataSource,
   }) : super(const ChatInitial()) {
     on<SendChatMessageEvent>(_onSendChatMessage);
+    on<SaveChatTranscriptEvent>(_onSaveTranscript);
+    on<LoadChatTranscriptEvent>(_onLoadTranscript);
   }
+
+
+
+
 
   Future<void> _onSendChatMessage(
     SendChatMessageEvent event,
@@ -41,6 +50,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         },
         (risk) async {
           if (risk == 3) {
+            // Persist crisis event with the triggering user message
+            await chatLocalDataSource.saveCrisis(
+              userText: event.params.content,
+            );
             emit(ChatCrisis(messages: currentMessages));
             return;
           } else if (risk == 2 || risk == 1) {
@@ -82,14 +95,21 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                       },
                       language: lang,
                     );
-                    composeResult.fold(
-                      (failure) => emit(
-                        ChatError(
-                          failure.toString(),
-                          messages: currentMessages,
-                        ),
-                      ),
-                      (actionCard) {
+                    await composeResult.fold(
+                      (failure) async {
+                        emit(
+                          ChatError(
+                            failure.toString(),
+                            messages: currentMessages,
+                          ),
+                        );
+                      },
+                      (actionCard) async {
+                        // Persist action card with the user's prompt
+                        await chatLocalDataSource.saveActionCardWithPrompt(
+                          userText: event.params.content,
+                          actionCard: actionCard,
+                        );
                         currentMessages.add(
                           ChatMessage(
                             text: 'Here is an action card for you.',
@@ -118,6 +138,37 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       );
     } catch (e) {
       emit(ChatError(e.toString(), messages: currentMessages));
+    }
+  }
+
+
+
+  
+
+  Future<void> _onSaveTranscript(
+    SaveChatTranscriptEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final currentMessages = List<ChatMessage>.from(state.messages);
+    try {
+      await chatLocalDataSource.saveTranscript(messages: currentMessages);
+      emit(ChatSuccess(risk: state is ChatSuccess ? (state as ChatSuccess).risk : 0, messages: currentMessages));
+    } catch (e) {
+      emit(ChatError(e.toString(), messages: currentMessages));
+    }
+  }
+  
+  Future<void> _onLoadTranscript(
+    LoadChatTranscriptEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    try {
+      final loaded = await chatLocalDataSource.loadLastTranscript();
+      if (loaded.isNotEmpty) {
+        emit(ChatSuccess(risk: 0, messages: loaded));
+      }
+    } catch (_) {
+      // ignore load errors silently
     }
   }
 }

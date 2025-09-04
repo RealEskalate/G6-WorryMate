@@ -36,6 +36,11 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _flutterLocalization = FlutterLocalization.instance;
     _selectedLang = _flutterLocalization.currentLocale?.languageCode ?? 'en';
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<ChatBloc>().add(LoadChatTranscriptEvent());
+      }
+    });
   }
 
   Widget _exampleQuestion(BuildContext context, String text, bool isDarkMode) {
@@ -164,6 +169,16 @@ class _ChatScreenState extends State<ChatScreen> {
           actions: [
             Row(
               children: [
+                IconButton(
+                  tooltip: 'Save chat',
+                  onPressed: () {
+                    context.read<ChatBloc>().add(SaveChatTranscriptEvent());
+                  },
+                  icon: Icon(
+                    Icons.save_alt,
+                    color: getPrimaryColor(),
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: TextButton(
@@ -438,6 +453,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                         );
                         _textController.clear();
+                        // Opportunistic auto-save after each send
+                        context.read<ChatBloc>().add(SaveChatTranscriptEvent());
                       }
                     },
                   ),
