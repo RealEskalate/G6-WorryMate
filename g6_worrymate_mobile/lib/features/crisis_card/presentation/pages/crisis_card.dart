@@ -122,21 +122,21 @@ class CrisisCard extends StatelessWidget {
                 subtitle: "National emergency services",
                 availability: "24/7",
                 buttonText: "Call 991",
-                onPressed: () => _makePhoneCall('991'),
+                onPressed: () => _makePhoneCall('991', context),
               ),
               _buildContactCard(
                 title: "National Mental Health Hotilne",
                 subtitle: "Local mental health crisis support",
                 availability: "24/7",
                 buttonText: "8335",
-                onPressed: () => _makePhoneCall('8335'),
+                onPressed: () => _makePhoneCall('8335',context),
               ),
               _buildContactCard(
                 title: "Ethiopia Red Cross Society",
                 subtitle: "Emergency assistance and support",
                 availability: "24/7",
                 buttonText: "Call +251-11-515-4600",
-                  onPressed: () => _makePhoneCall('+251-11-515-4600'),
+                  onPressed: () => _makePhoneCall('+251-11-515-4600', context),
               ),
               GestureDetector(
                 onTap: () {
@@ -287,30 +287,59 @@ class CrisisCard extends StatelessWidget {
   }
 }
 
-Future<void> _makePhoneCall(String phoneNumber) async {
-  // Request CALL_PHONE permission
-  var status = await Permission.phone.request();
+Future<void> _makePhoneCall(String phoneNumber, BuildContext context) async {
+  final scaffoldMessenger = ScaffoldMessenger.of(context); // Get ScaffoldMessenger
+
+  var status = await Permission.phone.request(); // Request permission
+
   if (status.isGranted) {
     final Uri launchUri = Uri(
       scheme: 'tel',
       path: phoneNumber,
     );
 
-    if (await canLaunchUrl(launchUri)) {
-      await launchUrl(launchUri);
-    } else {
-      // If canLaunchUrl still fails after permission, something else is wrong
-      throw 'Could not launch $phoneNumber';
+    try {
+      // Try to launch the URL.
+      // Use LaunchMode.externalApplication to explicitly open the phone app.
+      bool launched = await launchUrl(
+        launchUri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        // If launchUrl returns false, it means it couldn't be launched
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('Failed to open phone dialer for $phoneNumber')),
+        );
+      }
+    } catch (e) {
+      // Catch any unexpected errors during launch
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Error making call: $e')),
+      );
+      print('Error launching phone dialer: $e'); // For debugging
     }
   } else if (status.isDenied) {
-    // The user denied the permission. Handle this gracefully.
+    scaffoldMessenger.showSnackBar(
+      const SnackBar(content: Text('Phone call permission denied by user.')),
+    );
     print('Phone permission denied');
-    // You might want to show a dialog explaining why the permission is needed
-    // and guide the user to app settings.
   } else if (status.isPermanentlyDenied) {
-    // The user permanently denied the permission.
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
+        content: const Text('Phone call permission permanently denied. Please enable in app settings.'),
+        action: SnackBarAction(
+          label: 'Settings',
+          onPressed: () => openAppSettings(), // Open app settings
+        ),
+      ),
+    );
     print('Phone permission permanently denied. Open app settings.');
-    // You might want to open app settings so the user can enable it manually.
-    openAppSettings();
+    // No need to call openAppSettings() immediately if user can click SnackBar action
+  } else {
+    scaffoldMessenger.showSnackBar(
+      const SnackBar(content: Text('Phone call permission state unknown.')),
+    );
+    print('Phone permission status: $status');
   }
 }
