@@ -5,6 +5,7 @@ import ActionCard from '@/components/ActionCard'
 import { Mic, Send } from 'lucide-react'
 import React, { useState } from 'react'
 import { ActionCardData, ActionStep, CrisisCardData } from '@/types'
+import { AuroraText } from '@/components/magicui/aurora-text'
 
 const Workspace = () => {
     type ChatMessage = { role: 'user' | 'assistant', content: string }
@@ -213,7 +214,7 @@ const Workspace = () => {
             <div className='flex flex-col flex-1 relative items-stretch h-screen min-h-0'>
                 {!hasStarted && messages.length === 0 && (
                     <div className='flex flex-col gap-3 justify-center items-center flex-1 pt-16 px-4'>
-                        <h1 className='font-bold text-xl md:text-2xl text-center'>Hey Mate, How can i Help you today?</h1>
+                        <h1 className='font-bold text-xl md:text-2xl text-center'>Hey Mate, How can i <AuroraText>Help you today?</AuroraText></h1>
                         <div className='w-full max-w-md'>
                             {sampleQuestions.map((question, index) => (
                                 <div className='flex flex-col gap-y-3' key={index}>
@@ -416,11 +417,11 @@ const Workspace = () => {
 
                 {/* Composer */}
                 {!isCrisisMode ? (
-                    <div className="relative rounded-lg overflow-hidden mt-2 flex w-full max-w-[700px] h-28 sticky bottom-0
+                    <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6 px-2 md:px-0">
+                        {/* <h1 className='mx-auto text-blue font-bold mb-2 text-center text-sm md:text-base'>General wellbeing advice, not medical advice.</h1> */}
+                        <div className="relative rounded-lg overflow-hidden mt-2 flex w-full max-w-[700px] h-28 sticky bottom-0
   [border:2px_solid_transparent]
   [background:linear-gradient(white,white)_padding-box,linear-gradient(90deg,#0752a8,#a259e6)_border-box]">
-                        {/* <h1 className='mx-auto text-blue font-bold mb-2 text-center text-sm md:text-base'>General wellbeing advice, not medical advice.</h1> */}
-                        <div className="border rounded-lg overflow-hidden mt-2 flex w-full max-w-[700px] h-28 bg-white sticky bottom-0">
                             <div className="flex items-stretch gap-3 p-4 w-full">
                                 <div className="flex-1">
                                     <textarea
