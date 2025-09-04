@@ -54,11 +54,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         },
         (risk) async {
           if (risk == 3) {
-            // Persist crisis event with the triggering user message
+            // Persist crisis and full transcript when toggle is on
             if (await chatPrefsLocalDataSource.isSaveEnabled()) {
               await chatLocalDataSource.saveCrisis(
                 userText: event.params.content,
               );
+              await chatLocalDataSource.saveTranscript(messages: currentMessages);
             }
             emit(ChatCrisis(messages: currentMessages));
             return;
@@ -128,6 +129,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                             actionCard: actionCard,
                           ),
                         );
+                        if (await chatPrefsLocalDataSource.isSaveEnabled()) {
+                          await chatLocalDataSource.saveTranscript(messages: currentMessages);
+                        }
                         emit(
                           ChatSuccess(risk: risk, messages: currentMessages),
                         );
