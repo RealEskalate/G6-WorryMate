@@ -416,7 +416,9 @@ const Workspace = () => {
 
                 {/* Composer */}
                 {!isCrisisMode ? (
-                    <div className="w-full flex-shrink-0 flex flex-col items-center justify-center pb-6 px-2 md:px-0">
+                    <div className="relative rounded-lg overflow-hidden mt-2 flex w-full max-w-[700px] h-28 sticky bottom-0
+  [border:2px_solid_transparent]
+  [background:linear-gradient(white,white)_padding-box,linear-gradient(90deg,#0752a8,#a259e6)_border-box]">
                         {/* <h1 className='mx-auto text-blue font-bold mb-2 text-center text-sm md:text-base'>General wellbeing advice, not medical advice.</h1> */}
                         <div className="border rounded-lg overflow-hidden mt-2 flex w-full max-w-[700px] h-28 bg-white sticky bottom-0">
                             <div className="flex items-stretch gap-3 p-4 w-full">
