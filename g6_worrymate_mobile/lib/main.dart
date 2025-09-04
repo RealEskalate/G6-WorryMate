@@ -82,7 +82,10 @@ class _MyAppState extends State<MyApp> {
                   create: (_) => sl<ChatBloc>(),
                   child: ChatScreen(),
                 ),
-                '/settings': (context) => const SettingsPage(),
+                '/settings': (context) => BlocProvider(
+                      create: (_) => sl<ChatBloc>(),
+                      child: const SettingsPage(),
+                    ),
                 '/offlinetoolkit': (context) => const OfflineToolkitScreen(),
                 '/journal': (context) => const DailyJournalScreen(),
                 '/crisis_action': (context) => const CrisisCard(),

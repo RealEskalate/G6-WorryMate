@@ -101,6 +101,17 @@ class ChatLocalDataSource {
       );
     }).toList();
   }
+
+  Future<void> clearAllChatData() async {
+    final crisis = await Hive.openBox(crisisBoxName);
+    final actions = await Hive.openBox(actionHistoryBoxName);
+    final transcripts = await Hive.openBox(transcriptBoxName);
+    await Future.wait([
+      crisis.clear(),
+      actions.clear(),
+      transcripts.clear(),
+    ]);
+  }
 }
 
 

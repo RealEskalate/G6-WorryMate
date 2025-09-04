@@ -7,6 +7,7 @@ import '../../domain/usecases/action_card_usecase.dart';
 import '../../domain/usecases/add_chat.dart';
 import 'chat_event.dart';
 import 'chat_state.dart';
+import '../../data/datasources/chat_prefs_local_data_source.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final AddChatUsecase addChatUsecase;
@@ -14,6 +15,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetActionBlockUsecase getActionBlockUsecase;
   final ComposeActionCardUsecase composeActionCardUsecase;
   final ChatLocalDataSource chatLocalDataSource;
+  final ChatPrefsLocalDataSource chatPrefsLocalDataSource;
 
   ChatBloc({
     required this.composeActionCardUsecase,
@@ -21,10 +23,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     required this.getActionBlockUsecase,
     required this.getTopicKeyUsecase,
     required this.chatLocalDataSource,
+    required this.chatPrefsLocalDataSource,
   }) : super(const ChatInitial()) {
     on<SendChatMessageEvent>(_onSendChatMessage);
     on<SaveChatTranscriptEvent>(_onSaveTranscript);
     on<LoadChatTranscriptEvent>(_onLoadTranscript);
+    on<DeleteAllChatHistoryEvent>(_onDeleteAll);
   }
 
 
@@ -51,9 +55,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         (risk) async {
           if (risk == 3) {
             // Persist crisis event with the triggering user message
-            await chatLocalDataSource.saveCrisis(
-              userText: event.params.content,
-            );
+            if (await chatPrefsLocalDataSource.isSaveEnabled()) {
+              await chatLocalDataSource.saveCrisis(
+                userText: event.params.content,
+              );
+            }
             emit(ChatCrisis(messages: currentMessages));
             return;
           } else if (risk == 2 || risk == 1) {
@@ -109,10 +115,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                       },
                       (actionCard) async {
                         // Persist action card with the user's prompt
-                        await chatLocalDataSource.saveActionCardWithPrompt(
-                          userText: event.params.content,
-                          actionCard: actionCard,
-                        );
+                        if (await chatPrefsLocalDataSource.isSaveEnabled()) {
+                          await chatLocalDataSource.saveActionCardWithPrompt(
+                            userText: event.params.content,
+                            actionCard: actionCard,
+                          );
+                        }
                         currentMessages.add(
                           ChatMessage(
                             text: 'Here is an action card for you.',
@@ -154,7 +162,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) async {
     final currentMessages = List<ChatMessage>.from(state.messages);
     try {
-      await chatLocalDataSource.saveTranscript(messages: currentMessages);
+      if (await chatPrefsLocalDataSource.isSaveEnabled()) {
+        await chatLocalDataSource.saveTranscript(messages: currentMessages);
+      }
       emit(ChatSuccess(risk: state is ChatSuccess ? (state as ChatSuccess).risk : 0, messages: currentMessages));
     } catch (e) {
       emit(ChatError(e.toString(), messages: currentMessages));
@@ -172,6 +182,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
     } catch (_) {
       // ignore load errors silently
+    }
+  }
+
+  Future<void> _onDeleteAll(
+    DeleteAllChatHistoryEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    try {
+      await chatLocalDataSource.clearAllChatData();
+      emit(const ChatInitial());
+    } catch (e) {
+      emit(ChatError(e.toString(), messages: state.messages));
     }
   }
 }

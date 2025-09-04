@@ -2,6 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:g6_worrymate_mobile/features/action_card/presentation/bloc/chat_bloc.dart';
+import 'package:g6_worrymate_mobile/features/action_card/presentation/bloc/chat_event.dart';
+import 'package:g6_worrymate_mobile/features/action_card/data/datasources/chat_prefs_local_data_source.dart';
 import 'package:provider/provider.dart';
 import 'package:g6_worrymate_mobile/core/theme/theme_manager.dart';
 import 'package:g6_worrymate_mobile/core/widgets/custom_bottom_nav_bar.dart';
@@ -26,6 +30,12 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
     _flutterLocalization = FlutterLocalization.instance;
     _currentLocale = _flutterLocalization.currentLocale!.languageCode;
+    // Load initial toggle from local prefs
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final ds = ChatPrefsLocalDataSource();
+      final enabled = await ds.isSaveEnabled();
+      if (mounted) setState(() => saveChat = enabled);
+    });
   }
 
   @override
@@ -195,10 +205,19 @@ class _SettingsPageState extends State<SettingsPage> {
                 title: Text(LocalData.saveChat.getString(context), style: TextStyle(color: getTextColor())),
                 value: saveChat,
                 activeColor: getPrimaryColor(),
-                onChanged: (value) => setState(() => saveChat = value),
+                onChanged: (value) async {
+                  setState(() => saveChat = value);
+                  final ds = ChatPrefsLocalDataSource();
+                  await ds.setSaveEnabled(value);
+                },
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.read<ChatBloc>().add(DeleteAllChatHistoryEvent());
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Chat history deleted')),
+                  );
+                },
                 child: Text(
                   LocalData.deleteChatHistory.getString(context),
                   style: TextStyle(color: isDarkMode ? Colors.red : Colors.red[700]),
