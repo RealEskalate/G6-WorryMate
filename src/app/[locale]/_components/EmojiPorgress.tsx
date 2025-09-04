@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import { db, DailyEmoji } from "../lib/db";
 import {
   LineChart,
   Line,
@@ -17,6 +16,7 @@ import {
   format,
   isWithinInterval
 } from "date-fns";
+import { DailyEmoji, db } from "@/app/lib/db";
 
 const emojiLevels: Record<string, number> = {
   "😞": 1,

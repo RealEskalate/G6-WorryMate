@@ -1,56 +1,56 @@
 'use client'
-import React, { useState,useEffect, use} from 'react'
+import React, { useState, useEffect, use } from 'react'
 import Image from 'next/image'
-import image from '../../../public/Chatbot.png'
+import image from "../../../../public/Chatbot.png"
 import EmojiSelection from './EmojiSelection'
 type Quote = {
-  text:string;
-  author:string|null;
+  text: string;
+  author: string | null;
 };
 const motivationalKeywords = [
-    'success',
-    'inspiration',
-    'motivation',
-    'hope',
-    'dream',
-    'achieve',
-    'believe',
-    'courage',
-    'perseverance',
-    'strength',
-    'positive',
-    'goal',
-    'aspire',
-    'uplift',
-    'determination',
-  ];
+  'success',
+  'inspiration',
+  'motivation',
+  'hope',
+  'dream',
+  'achieve',
+  'believe',
+  'courage',
+  'perseverance',
+  'strength',
+  'positive',
+  'goal',
+  'aspire',
+  'uplift',
+  'determination',
+];
 
 function HowFeel() {
   const [show, setShow] = useState(false)
-  const [quote,setQuote] = useState<Quote>()
- 
-const fetchQuote=async()=>{
-  try{
-    const res=await fetch('https://type.fit/api/quotes',{cache:'no-store'});
-    if(!res.ok){
-     throw new Error(`HTTP error! status: ${res.status}`);
-    }
-      const data: Quote[] = await res.json();
-    const motivationalQuotes = data.filter(
-      (q)=>{
-        q.text.length<=100;
-        motivationalKeywords.some((keyword) => q.text.toLowerCase().includes(keyword));
+  const [quote, setQuote] = useState<Quote>()
+
+  const fetchQuote = async () => {
+    try {
+      const res = await fetch('https://type.fit/api/quotes', { cache: 'no-store' });
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
-    )
-    const randomQuote=motivationalQuotes[Math.floor(Math.random()*motivationalQuotes.length)] || data.find((q)=>q.text.length<=100)||data[0];
-    setQuote(randomQuote);
-  }catch(err){
-    console.log(err);
+      const data: Quote[] = await res.json();
+      const motivationalQuotes = data.filter(
+        (q) => {
+          q.text.length <= 100;
+          motivationalKeywords.some((keyword) => q.text.toLowerCase().includes(keyword));
+        }
+      )
+      const randomQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)] || data.find((q) => q.text.length <= 100) || data[0];
+      setQuote(randomQuote);
+    } catch (err) {
+      console.log(err);
+    }
   }
-}
-useEffect(()=>{
-  fetchQuote();
-},[])
+  useEffect(() => {
+    fetchQuote();
+  }, [])
 
   const timecheck = () => {
     const hour = new Date().getHours()
@@ -62,9 +62,9 @@ useEffect(()=>{
 
   return (
     <div className="w-[90%] relative flex flex-col md:flex-row items-start justify-between bg-[#F7F9FB] rounded-xl shadow-md  max-w-5xl mx-auto overflow-hidden p-6">
-    
+
       <div className="flex flex-col gap-4 md:w-1/2 z-10 text-[#0D2A4B]">
-      <h1 className='text-2xl font-semibold'>{quote?.text}</h1>
+        <h1 className='text-2xl font-semibold'>{quote?.text}</h1>
         <h2 className="text-xl font-semibold">{`${timecheck()}, How do you feel?`}</h2>
         <p className="text-base opacity-90">Please, mark your mood today</p>
         <button
@@ -80,7 +80,7 @@ useEffect(()=>{
         )}
       </div>
 
-    
+
       <div className="absolute right-0 top-0 bottom-0 w-1/2 hidden md:block">
         <Image
           src={image}

@@ -1,9 +1,9 @@
 'use client'
 import React, { useEffect, useState, useCallback } from 'react'
-import { db } from '../lib/db'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
+import { db } from '@/app/lib/db'
 
 function formatDateOnly(date: Date): string {
   return date.toISOString().split('T')[0]
@@ -30,7 +30,7 @@ function DailyCheck() {
           setCheckedIn(prev => [...prev, todayStr])
         }
       } catch (err) {
-        
+
         setError(`Error checking in: ${err}`)
       } finally {
         setIsLoading(false)
@@ -47,13 +47,13 @@ function DailyCheck() {
       // console.log(`Tile: ${dateStr}, isChecked: ${isChecked}, isToday: ${isToday}`)
 
       const classes = [
-       
-        'custom-tile', 
+
+        'custom-tile',
         isChecked ? 'bg-green-200' : '',
         isChecked ? 'hover:bg-green-300' : 'hover:bg-gray-100',
         isToday ? 'border-2 border-green-500' : '',
-        isChecked? 'text-white':'',
-        
+        isChecked ? 'text-white' : '',
+
         'rounded-full',
         'transition-colors',
         'duration-200',

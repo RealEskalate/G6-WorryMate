@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { db, JournalEntry } from '../../lib/db';
 import { useParams, useRouter } from 'next/navigation';
+import { db, JournalEntry } from '@/app/lib/db';
 
 function Page() {
   const [entry, setEntry] = useState<JournalEntry>();
