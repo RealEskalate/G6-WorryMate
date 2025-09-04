@@ -1,12 +1,12 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { emoji } from '../lib/emoji';
-import { db } from '../lib/db';
 import { useRouter } from 'next/navigation';
+import { db } from '@/app/lib/db';
+import { emoji } from '@/app/lib/emoji';
 
 function EmojiSelection() {
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
-  
+
   const router = useRouter();
 
   useEffect(() => {
@@ -15,7 +15,7 @@ function EmojiSelection() {
       const entry = await db.dailyemoji.get(today);
       if (entry) {
         setSelectedEmoji(entry.emoji);
-      
+
       }
     }
     getEmoji();
@@ -23,8 +23,8 @@ function EmojiSelection() {
 
   const handleSelect = async (em: string, description?: string) => {
     setSelectedEmoji(em);
-  
-    
+
+
     const today = new Date().toISOString().split('T')[0];
     const existing = await db.dailyemoji.get(today);
 
@@ -33,7 +33,7 @@ function EmojiSelection() {
     } else {
       await db.dailyemoji.add({ date: today, emoji: em });
     }
-router.push('/dashboard');
+    router.push('/dashboard');
 
   };
 

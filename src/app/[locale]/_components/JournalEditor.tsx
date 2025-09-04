@@ -11,8 +11,8 @@ import BulletList from '@tiptap/extension-bullet-list';
 import OrderedList from '@tiptap/extension-ordered-list';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { db, JournalEntry } from '../lib/db';
 import { useRouter } from 'next/navigation';
+import { db, JournalEntry } from '@/app/lib/db';
 
 export default function JournalEditor() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
@@ -37,7 +37,7 @@ export default function JournalEditor() {
     immediatelyRender: false,
   });
 
-  
+
   useEffect(() => {
     const fetchEntries = async () => {
       const all = await db.journals.toArray();
@@ -46,7 +46,7 @@ export default function JournalEditor() {
     fetchEntries();
   }, []);
 
-  
+
   useEffect(() => {
     if (!editor) return;
 
@@ -60,7 +60,7 @@ export default function JournalEditor() {
     };
   }, [editor]);
 
-  
+
   const saveEntry = async () => {
     if (!editor) return;
     const content = editor.getText();

@@ -1,5 +1,5 @@
-import InfiniteMovingCards from "../../components/ui/infinite-moving-cards";
-import { features } from '../lib/features'
+import { features } from "@/app/lib/features";
+import InfiniteMovingCards from "@/components/ui/infinite-moving-cards";
 
 export default function Features() {
   return (

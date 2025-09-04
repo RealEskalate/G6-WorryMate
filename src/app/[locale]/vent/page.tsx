@@ -6,8 +6,9 @@ import { Mic, Send } from 'lucide-react'
 import React, { useState } from 'react'
 import { ActionCardData, ActionStep, CrisisCardData } from '@/types'
 import { AuroraText } from '@/components/magicui/aurora-text'
-
+import { useTranslations } from 'next-intl'
 const Workspace = () => {
+    const t = useTranslations('Workspace')
     type ChatMessage = { role: 'user' | 'assistant', content: string }
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
     const [prompt, setPrompt] = useState('')
@@ -190,11 +191,13 @@ const Workspace = () => {
             console.log('Pipeline failed', e)
         }
     }
-    const sampleQuestions = [
-        "I'm really stressed about my exams",
-        "I lost my job and I'm worried about money",
-        "My family and I keep fighting"
-    ];
+    // const sampleQuestions = [
+    //     "I'm really stressed about my exams",
+    //     "I lost my job and I'm worried about money",
+    //     "My family and I keep fighting"
+    // ];
+    const sampleQuestions: string[] = t.raw('sampleQuestions')
+
     return (
         <div className='h-screen flex flex-row min-h-screen text-[#2a4461] bg-[#ffffff]'>
             {/* Collapse Button - always visible */}
@@ -214,7 +217,9 @@ const Workspace = () => {
             <div className='flex flex-col flex-1 relative items-stretch h-screen min-h-0'>
                 {!hasStarted && messages.length === 0 && (
                     <div className='flex flex-col gap-3 justify-center items-center flex-1 pt-16 px-4'>
-                        <h1 className='font-bold text-xl md:text-2xl text-center'>Hey Mate, How can i <AuroraText>Help you today?</AuroraText></h1>
+                        <h1 className='font-bold text-xl md:text-2xl text-center'>
+                            {t('welcomePrefix')} <AuroraText>{t('welcomeMate')}</AuroraText>
+                        </h1>
                         <div className='w-full max-w-md'>
                             {sampleQuestions.map((question, index) => (
                                 <div className='flex flex-col gap-y-3' key={index}>
@@ -333,21 +338,21 @@ const Workspace = () => {
                                 <span className="relative inline-flex rounded-full h-20 w-20 bg-blue-500/80"></span>
                             </div>
                             <div className="text-center">
-                                <p className="text-lg font-semibold">Listening...</p>
-                                <p className="text-sm text-gray-600">Speak now</p>
+                                <p className="text-lg font-semibold">{t('listening')}</p>
+                                <p className="text-sm text-gray-600">{t('speakNow')}</p>
                             </div>
                             <div className="flex items-center gap-3">
                                 <button
                                     className="px-4 py-2 rounded-md border text-sm hover:bg-gray-50 cursor-pointer"
                                     onClick={() => setIsListening(false)}
                                 >
-                                    Close
+                                    {t('close')}
                                 </button>
                                 <button
                                     className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 cursor-pointer"
                                     onClick={() => setIsMuted((m) => !m)}
                                 >
-                                    {isMuted ? 'Unmute' : 'Mute'}
+                                    {isMuted ? t('unmute') : t('mute')}
                                 </button>
                             </div>
                         </div>

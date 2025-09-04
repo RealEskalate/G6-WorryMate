@@ -5,12 +5,13 @@ import DailyCheck from "../_components/DailyCheck";
 import RecentEntires from "../_components/RecentEntires";
 import Features from "../_components/Features";
 
+
 function Page() {
   return (
     <div className="flex flex-col bg-white min-h-screen p-6 gap-8">
 
       <div className="flex flex-col md:flex-row gap-8">
-   
+
         <div className="w-full md:w-3/4 pt-10 bg-white shadow-md rounded-lg flex flex-col items-center gap-6">
           <HowFeel />
           <EmojiProgress />

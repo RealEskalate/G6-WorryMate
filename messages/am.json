@@ -15,9 +15,10 @@
     "appVersion": "ስሪት እና የግንባታ ዝርዝሮች",
     "versionTag": "ስሪት 1.0 ዴሞ",
     "betaTag": "ቤታ እትም"
-  }, 
+  },
   "Workspace": {
-    "welcome": "ሰላም ጓደኛ, ዛሬ እንዴት ልረዳህ?",
+    "welcomePrefix": "ሰላም",
+    "welcomeMate": "ጓደኛዬ፣ የሚያስጨንቅህን ነገር ንገረኝ?",
     "sampleQuestions": [
       "ስለ ፈተናዬ በጣም ተጨንቄያለሁ",
       "ሥራዬን አጣሁ እና ስለ ገንዘብ እጨነቃለሁ",
@@ -31,19 +32,18 @@
     "disclaimer": "አጠቃላይ የተሻለ ጤና ምክር፣ ህክምና አይደለም።",
     "placeholder": "የሚያስጨንቅህን ነገር ንገረኝ እኔም ልረዳህ.."
   },
-    "Sidebar": {
-      "ventingChat": "ተናገር የሚችል ቻት",
-      "toolkit": "ኦፍላይን መሣሪያዎች",
-      "settings": "ቅንብሮች",
-      "brand": "ወሪ ሜት"
-    },
-    "HomePage": {
-      "title": "የጭንቀት"
-    },
-    "Header": {
-        "home": "መነሻ",
-        "settings": "ቅንብሮች",
-        "about": "ስለ"
-      }
-    
+  "Sidebar": {
+    "ventingChat": "ተናገር የሚችል ቻት",
+    "toolkit": "ኦፍላይን መሣሪያዎች",
+    "settings": "ቅንብሮች",
+    "brand": "ወሪ ሜት"
+  },
+  "HomePage": {
+    "title": "የጭንቀት"
+  },
+  "Header": {
+    "home": "መነሻ",
+    "settings": "ቅንብሮች",
+    "about": "ስለ"
+  }
 }
