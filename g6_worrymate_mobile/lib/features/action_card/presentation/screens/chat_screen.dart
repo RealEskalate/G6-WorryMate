@@ -102,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
         isDarkMode ? Colors.white.withOpacity(0.08) : Colors.white;
 
     Color getHintColor() => isDarkMode ? Colors.white60 : Colors.grey[600]!;
-    final promptFromHomePage = ModalRoute.of(context)?.settings.arguments;
+    // final promptFromHomePage = ModalRoute.of(context)?.settings.arguments;
     if (promptFromHomePage is String && _textController.text.isEmpty) {
       _textController.text = promptFromHomePage;
     }

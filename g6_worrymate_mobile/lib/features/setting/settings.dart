@@ -122,36 +122,36 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
               const SizedBox(height: 20),
-              Text(
-                LocalData.fontSize.getString(context),
-                style: TextStyle(
-                  color: getTextColor(),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.remove_circle, color: getPrimaryColor()),
-                    onPressed: () => setState(() {
-                      if (fontSize > 12) fontSize -= 2;
-                    }),
-                  ),
-                  Text(
-                    "A",
-                    style: TextStyle(
-                      fontSize: fontSize,
-                      color: getTextColor(),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.add_circle, color: getPrimaryColor()),
-                    onPressed: () => setState(() {
-                      if (fontSize < 30) fontSize += 2;
-                    }),
-                  ),
-                ],
-              ),
+              // Text(
+              //   LocalData.fontSize.getString(context),
+              //   style: TextStyle(
+              //     color: getTextColor(),
+              //     fontWeight: FontWeight.w500,
+              //   ),
+              // ),
+              // Row(
+              //   children: [
+              //     IconButton(
+              //       icon: Icon(Icons.remove_circle, color: getPrimaryColor()),
+              //       onPressed: () => setState(() {
+              //         if (fontSize > 12) fontSize -= 2;
+              //       }),
+              //     ),
+              //     Text(
+              //       "A",
+              //       style: TextStyle(
+              //         fontSize: fontSize,
+              //         color: getTextColor(),
+              //       ),
+              //     ),
+              //     IconButton(
+              //       icon: Icon(Icons.add_circle, color: getPrimaryColor()),
+              //       onPressed: () => setState(() {
+              //         if (fontSize < 30) fontSize += 2;
+              //       }),
+              //     ),
+              //   ],
+              // ),
             ],
             isDarkMode: isDarkMode,
             containerColor: getContainerColor(),
