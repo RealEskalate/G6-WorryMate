@@ -36,6 +36,11 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _flutterLocalization = FlutterLocalization.instance;
     _selectedLang = _flutterLocalization.currentLocale?.languageCode ?? 'en';
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<ChatBloc>().add(LoadChatTranscriptEvent());
+      }
+    });
   }
 
   Widget _exampleQuestion(BuildContext context, String text, bool isDarkMode) {
@@ -79,8 +84,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
     final isDarkMode = themeManager.isDarkMode;
-    final promptFromHomePage = ModalRoute.of(context)?.settings.arguments as String?;
-    if (promptFromHomePage != null && _textController.text.isEmpty){
+    final promptFromHomePage =
+        ModalRoute.of(context)?.settings.arguments as String?;
+    if (promptFromHomePage != null && _textController.text.isEmpty) {
       _textController.text = promptFromHomePage;
     }
     Color getBackgroundColor() => isDarkMode
@@ -102,11 +108,11 @@ class _ChatScreenState extends State<ChatScreen> {
         isDarkMode ? Colors.white.withOpacity(0.08) : Colors.white;
 
     Color getHintColor() => isDarkMode ? Colors.white60 : Colors.grey[600]!;
-    // final promptFromHomePage = ModalRoute.of(context)?.settings.arguments;
-    if (promptFromHomePage is String && _textController.text.isEmpty) {
-      _textController.text = promptFromHomePage;
-    }
 
+    // final promptFromHomePage = ModalRoute.of(context)?.settings.arguments;
+    // if (promptFromHomePage is String && _textController.text.isEmpty) {
+    //   _textController.text = promptFromHomePage;
+    // }
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         if (state is ChatCrisis) {
@@ -164,6 +170,13 @@ class _ChatScreenState extends State<ChatScreen> {
           actions: [
             Row(
               children: [
+                IconButton(
+                  tooltip: 'Save chat',
+                  onPressed: () {
+                    context.read<ChatBloc>().add(SaveChatTranscriptEvent());
+                  },
+                  icon: Icon(Icons.save_alt, color: getPrimaryColor()),
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: TextButton(
@@ -438,6 +451,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                         );
                         _textController.clear();
+                        // Opportunistic auto-save after each send
+                        context.read<ChatBloc>().add(SaveChatTranscriptEvent());
                       }
                     },
                   ),
