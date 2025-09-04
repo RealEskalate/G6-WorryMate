@@ -1,0 +1,49 @@
+{
+  "Settings": {
+    "title": "ቅንብሮች",
+    "header": "ቋንቋ እና መዳረሻ",
+    "language": "ቋንቋ",
+    "english": "እንግሊዝኛ",
+    "amharic": "አማርኛ",
+    "privacy": "ግላዊነት እና ደህንነት",
+    "saveChatHistory": "የውይይት ታሪክ አስቀምጥ",
+    "saveChatDescription": "ውይይቶችን በኋላ ለማየት ማስቀመጥ ትችላለህ።",
+    "enableChat": "የውይይት ማስቀመጥን አንቃ",
+    "deleteChat": "የውይይት ታሪክ አስወግድ",
+    "about": "ስለ WorryMate",
+    "appInfo": "የመተግበሪያ መረጃ",
+    "appVersion": "ስሪት እና የግንባታ ዝርዝሮች",
+    "versionTag": "ስሪት 1.0 ዴሞ",
+    "betaTag": "ቤታ እትም"
+  }, 
+  "Workspace": {
+    "welcome": "ሰላም ጓደኛ, ዛሬ እንዴት ልረዳህ?",
+    "sampleQuestions": [
+      "ስለ ፈተናዬ በጣም ተጨንቄያለሁ",
+      "ሥራዬን አጣሁ እና ስለ ገንዘብ እጨነቃለሁ",
+      "እኔና ቤተሰቤ እንደገና እንከራከራለን"
+    ],
+    "listening": "በመስማት ላይ...",
+    "speakNow": "አሁን ተናገር",
+    "close": "ዝጋ",
+    "mute": "ጸጥ",
+    "unmute": "ድምፅ አስጀምር",
+    "disclaimer": "አጠቃላይ የተሻለ ጤና ምክር፣ ህክምና አይደለም።",
+    "placeholder": "የሚያስጨንቅህን ነገር ንገረኝ እኔም ልረዳህ.."
+  },
+    "Sidebar": {
+      "ventingChat": "ተናገር የሚችል ቻት",
+      "toolkit": "ኦፍላይን መሣሪያዎች",
+      "settings": "ቅንብሮች",
+      "brand": "ወሪ ሜት"
+    },
+    "HomePage": {
+      "title": "የጭንቀት"
+    },
+    "Header": {
+        "home": "መነሻ",
+        "settings": "ቅንብሮች",
+        "about": "ስለ"
+      }
+    
+}

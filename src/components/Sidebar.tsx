@@ -12,6 +12,7 @@ import {
     ChartArea,
     MessageCircle
 } from 'lucide-react';
+import Link from 'next/link';
 
 interface SidebarProps {
     isCollapsed: boolean;
@@ -60,17 +61,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 <nav className="p-2">
                     <button className="w-full flex items-center gap-3 px-3 py-2 text-[#2a4461]  hover:bg-[#0D2A4B] hover:text-white hover:cursor-pointer rounded-lg transition-colors">
                         <MessageCircle className="w-4 h-4" />
-                        {!isCollapsed && <span className="text-lg  hover:text-white">Home</span>}
+                        {!isCollapsed && <span className="text-lg  hover:text-white"><Link href="/dashboard">Home</Link></span>}
                     </button>
                     <button className="w-full flex items-center gap-3 px-3 py-2 text-[#2a4461]  hover:bg-[#0D2A4B] hover:text-white hover:cursor-pointer rounded-lg transition-colors">
                         <MessageCircle className="w-4 h-4" />
-                        {!isCollapsed && <span className="text-lg  hover:text-white">Vent</span>}
+                        {!isCollapsed && <span className="text-lg  hover:text-white"><Link href="/vent">Vent</Link></span>}
                     </button>
 
                     {/* Recents */}
                     <button className="w-full flex items-center gap-3 px-3 py-2 text-[#2a4461] hover:bg-[#0D2A4B] hover:text-white hover:cursor-pointer rounded-lg transition-colors">
                         <Clock className="w-4 h-4" />
-                        {!isCollapsed && <span className="text-lg ">ToolKit</span>}
+                        {!isCollapsed && <span className="text-lg "><Link href="/toolkit">ToolKits</Link></span>}
                     </button>
 
                     {/* Community */}
