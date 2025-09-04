@@ -242,7 +242,7 @@ const Workspace = () => {
                                 <React.Fragment key={idx}>
                                     {messages[idx] && (
                                         <div className={`w-full flex ${messages[idx].role === 'user' ? 'justify-end' : 'justify-start'} mb-3`}>
-                                            <div className={`max-w-[85%] border rounded-lg px-3 py-2 ${messages[idx].role === 'user' ? 'bg-[#eaf6ff] text-[#2a4461]' : 'bg-white text-[#2a4461]'}`}>
+                                            <div className={`max-w-[85%] border rounded-lg px-3 py-2 ${messages[idx].role === 'user' ? 'bg-[#0D2A4B] text-white' : 'bg-white text-[#2a4461]'}`}>
                                                 {messages[idx].content}
                                             </div>
                                         </div>
