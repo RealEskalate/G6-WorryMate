@@ -4,6 +4,7 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:g6_worrymate_mobile/features/crisis_card/presentation/pages/crisis_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import '../../../../core/localization/locales.dart';
 import '../../../../core/params/params.dart';
@@ -30,17 +31,73 @@ class _ChatScreenState extends State<ChatScreen> {
   String _selectedLang = 'en';
   late FlutterLocalization _flutterLocalization;
   bool _hasSentFirstPrompt = false;
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
 
   @override
   void initState() {
     super.initState();
     _flutterLocalization = FlutterLocalization.instance;
     _selectedLang = _flutterLocalization.currentLocale?.languageCode ?? 'en';
+    _speech = stt.SpeechToText();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<ChatBloc>().add(LoadChatTranscriptEvent());
       }
     });
+  }
+
+  @override
+  void dispose() {
+    // Attempt to persist current transcript when leaving the screen
+    if (mounted) {
+      try {
+        context.read<ChatBloc>().add(SaveChatTranscriptEvent());
+      } catch (_) {}
+    }
+    _textController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onMicPressed() async {
+    if (!_isListening) {
+      final available = await _speech.initialize(
+        onStatus: (s) {
+          if (s == 'done' || s == 'notListening') {
+            setState(() => _isListening = false);
+          }
+        },
+        onError: (e) {
+          setState(() => _isListening = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Speech error: ${e.errorMsg}')),
+          );
+        },
+      );
+      if (available) {
+        setState(() => _isListening = true);
+        await _speech.listen(
+          localeId: _selectedLang == 'am' ? 'am_ET' : 'en_US',
+          onResult: (res) {
+            setState(() {
+              _textController.text = res.recognizedWords;
+              _textController.selection = TextSelection.fromPosition(
+                TextPosition(offset: _textController.text.length),
+              );
+            });
+          },
+          listenMode: stt.ListenMode.confirmation,
+          partialResults: true,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Speech recognition not available')),
+        );
+      }
+    } else {
+      await _speech.stop();
+      setState(() => _isListening = false);
+    }
   }
 
   Widget _exampleQuestion(BuildContext context, String text, bool isDarkMode) {
@@ -274,20 +331,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   if (state is ChatError) {
                     // return Center(
                     return const UpgradeToPremiumCard(); //   child: Padding(
-                    //     padding: const EdgeInsets.all(24.0),
-                    //     child: Text(
-                    //       state.message.isNotEmpty
-                    //           ? state.message
-                    //           : 'Server busy. Please try again later.',
-                    //       style: const TextStyle(
-                    //         color: Colors.red,
-                    //         fontSize: 16,
-                    //         fontWeight: FontWeight.bold,
-                    //       ),
-                    //       textAlign: TextAlign.center,
-                    //     ),
-                    //   ),
-                    // );
+                    
                   }
 
                   final messages = state.messages;
@@ -412,8 +456,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         fillColor: getInputBackgroundColor(),
                         filled: true,
                         suffixIcon: IconButton(
-                          icon: Icon(Icons.mic, color: getPrimaryColor()),
-                          onPressed: () {},
+                          icon: Icon(
+                            _isListening ? Icons.mic : Icons.mic_none,
+                            color: _isListening
+                                ? Colors.redAccent
+                                : getPrimaryColor(),
+                          ),
+                          onPressed: _onMicPressed,
                         ),
                       ),
                       style: GoogleFonts.poppins(

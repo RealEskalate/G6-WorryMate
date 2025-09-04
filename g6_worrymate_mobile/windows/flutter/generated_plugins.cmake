@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   flutter_localization
+  speech_to_text_windows
   url_launcher_windows
 )
 
