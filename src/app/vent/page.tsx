@@ -428,6 +428,12 @@ const Workspace = () => {
                                         onChange={(e) => setPrompt(e.target.value)}
                                         placeholder="Tell me what's worrying you so i can help.."
                                         className="w-full h-full border-secondary-blue bg-transparent text-left resize-none outline-none"
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleSend();
+                                            }
+                                        }}
                                     />
                                 </div>
                                 <button className="text-blue cursor-pointer  p-2 rounded-lg transition-colors" onClick={() => setIsListening(true)}>
