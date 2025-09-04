@@ -65,7 +65,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               },
               (topicKey) async {
                 emit(ChatLoading(messages: currentMessages));
+
+
                 final lang = event.language;
+
                 final actionBlockResult = await getActionBlockUsecase.call(
                   topicKey,
                   lang,

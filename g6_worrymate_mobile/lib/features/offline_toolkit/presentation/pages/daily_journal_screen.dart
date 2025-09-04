@@ -24,6 +24,8 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
   ];
 
   final TextEditingController _controller = TextEditingController();
+  final TextEditingController _titleController = TextEditingController(); // ✅ new
+
   int? _selectedPromptIdx;
 
   late Box _journalBox;
@@ -80,19 +82,33 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
 
   void _sendEntry() {
     final text = _controller.text.trim();
-    if (text.isEmpty || _selectedPromptIdx == null) return;
+    final customTitle = _titleController.text.trim();
+
+    if (text.isEmpty) return;
+
+    // ✅ If user types a custom title, use it. Else fallback to prompt. Else "Untitled".
+    final title = customTitle.isNotEmpty
+        ? customTitle
+        : (_selectedPromptIdx != null
+        ? _promptKeys[_selectedPromptIdx!]
+        : 'Untitled');
+
     final entry = {
-      // FIX 3: Add a unique, stable ID to each entry. A timestamp is perfect for this.
-      'id': DateTime.now().toIso8601String(),
-      'promptKey': _promptKeys[_selectedPromptIdx!],
+      'id': DateTime.now().millisecondsSinceEpoch.toString(),
+      'title': title,
       'response': text,
+      'createdAt': DateTime.now().toIso8601String(), // ✅ save date/time
     };
+
     _saveEntry(entry);
+
     setState(() {
       _controller.clear();
+      _titleController.clear();
       _selectedPromptIdx = null;
     });
   }
+
   @override
   @override
   Widget build(BuildContext context) {
@@ -162,6 +178,19 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
+                // TextField(
+                //   controller: _titleController,
+                //   decoration: InputDecoration(
+                //     labelText: "Custom Title (optional)",
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(10),
+                //     ),
+                //     filled: true,
+                //     fillColor: getInputBackgroundColor(),
+                //   ),
+                // ),
+                const SizedBox(height: 18),
+
                 Row(
                   children: [
                     Icon(Icons.library_books_outlined, color: getPrimaryColor()),
@@ -183,6 +212,17 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                     color: getTextColor(),
                     fontWeight: FontWeight.w500,
                     fontSize: 15,
+                  ),
+                ),
+                TextField(
+                  controller: _titleController,
+                  decoration: InputDecoration(
+                    labelText: "Custom Title (optional)",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: getInputBackgroundColor(),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -245,6 +285,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
+
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -303,13 +344,29 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                 ),
                 const SizedBox(height: 18),
                 if (_entries.isNotEmpty) ...[
-                  Text(
-                    LocalData.journalEntriesHeading.getString(context),
-                    style: GoogleFonts.poppins(
-                      color: getTextColor(),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 15,
-                    ),
+                  // UI ENHANCEMENT: Add a hint for the swipe-to-delete action.
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Text(
+                        LocalData.journalEntriesHeading.getString(context),
+                        style: GoogleFonts.poppins(
+                          color: getTextColor(),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        "Swipe left to delete",
+                        style: GoogleFonts.poppins(
+                          color: getSubtitleColor(),
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   ListView.builder(
@@ -318,16 +375,25 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                     itemCount: _entries.length,
                     itemBuilder: (context, i) {
                       final entry = _entries[i];
-                      final promptKey = entry['promptKey'] ?? '';
+                      final titleKeyOrCustom = entry['title'] ?? 'Untitled';
+                      final createdAt = entry['createdAt'] != null
+                          ? DateTime.tryParse(entry['createdAt']!)
+                          : null;
+                      final response = entry['response'] ?? '';
+
+                      // BUG FIX: Determine if the title is a localization key or a custom title.
+                      final bool isPrompt = _promptKeys.contains(titleKeyOrCustom);
+                      final String displayTitle = isPrompt
+                          ? titleKeyOrCustom.getString(context)
+                          : titleKeyOrCustom;
+
                       return Dismissible(
                         key: ValueKey(entry['id']),
                         background: Container(
                           color: const Color.fromRGBO(239, 68, 68, 1),
                           alignment: Alignment.centerRight,
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 20),
-                          child:
-                          const Icon(Icons.delete, color: Colors.white),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: const Icon(Icons.delete, color: Colors.white),
                         ),
                         direction: DismissDirection.endToStart,
                         onDismissed: (_) => _removeEntry(entry),
@@ -343,19 +409,29 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                promptKey.getString(context),
+                                displayTitle, // Use the corrected display title
                                 style: GoogleFonts.poppins(
                                   color: getPrimaryColor(),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
                                 ),
                               ),
+                              if (createdAt != null) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${createdAt.toLocal()}'.split('.')[0], // yyyy-MM-dd hh:mm:ss
+                                  style: GoogleFonts.poppins(
+                                    color: getSubtitleColor(),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
                               const SizedBox(height: 6),
                               Text(
-                                entry['response'] ?? '',
+                                response,
                                 style: GoogleFonts.poppins(
                                   color: getTextColor(),
-                                  fontSize: 15,
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
@@ -364,7 +440,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                       );
                     },
                   ),
-                ], // ✅ FIX: The extra '),' was removed from this line.
+                ],
                 const SizedBox(height: 10),
                 Text(
                   LocalData.journalEntriesPrivacyNote.getString(context),
@@ -398,9 +474,9 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
             case 4:
               Navigator.pushReplacementNamed(context, '/settings');
               break;
-
           }
         },
       ),
     );
-  }}
+  }
+}

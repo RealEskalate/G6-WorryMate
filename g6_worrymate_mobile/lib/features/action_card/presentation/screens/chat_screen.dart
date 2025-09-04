@@ -84,8 +84,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
     final isDarkMode = themeManager.isDarkMode;
-    final promptFromHomePage = ModalRoute.of(context)?.settings.arguments as String?;
-    if (promptFromHomePage != null && _textController.text.isEmpty){
+    final promptFromHomePage =
+        ModalRoute.of(context)?.settings.arguments as String?;
+    if (promptFromHomePage != null && _textController.text.isEmpty) {
       _textController.text = promptFromHomePage;
     }
     Color getBackgroundColor() => isDarkMode
@@ -174,10 +175,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   onPressed: () {
                     context.read<ChatBloc>().add(SaveChatTranscriptEvent());
                   },
-                  icon: Icon(
-                    Icons.save_alt,
-                    color: getPrimaryColor(),
-                  ),
+                  icon: Icon(Icons.save_alt, color: getPrimaryColor()),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
