@@ -17,7 +17,8 @@
     "betaTag": "Beta Release"
   },
   "Workspace": {
-    "welcome": "Hey Mate, How can I help you today?",
+    "welcomePrefix": "Hey",
+    "welcomeMate": "Mate, what's worrying you?",
     "sampleQuestions": [
       "I'm really stressed about my exams",
       "I lost my job and I'm worried about money",
@@ -31,20 +32,18 @@
     "disclaimer": "General wellbeing advice, not medical advice.",
     "placeholder": "Tell me what's worrying you so I can help.."
   },
-    "Sidebar": {
-      "ventingChat": "Venting Chat",
-      "toolkit": "Offline ToolKit",
-      "settings": "Settings",
-      "brand": "WorryMate"
-    },
-    "HomePage": {
-      "title": "Worry Mate"
-    },
-    "Header": {
-        "home": "Home",
-        "settings": "Settings",
-        "about": "About"
-      }
-    
+  "Sidebar": {
+    "ventingChat": "Venting Chat",
+    "toolkit": "Offline ToolKit",
+    "settings": "Settings",
+    "brand": "WorryMate"
+  },
+  "HomePage": {
+    "title": "Worry Mate"
+  },
+  "Header": {
+    "home": "Home",
+    "settings": "Settings",
+    "about": "About"
+  }
 }
-
