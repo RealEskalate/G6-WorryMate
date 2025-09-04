@@ -35,7 +35,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       final result = await addChatUsecase.call(event.params);
       await result.fold(
         (failure) async {
-          emit(ChatError(failure.toString(), messages: currentMessages));
+          emit(
+            ChatError('cannot get risk from APi', messages: currentMessages),
+          );
         },
         (risk) async {
           if (risk == 3) {
@@ -50,7 +52,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               },
               (topicKey) async {
                 emit(ChatLoading(messages: currentMessages));
-                final lang = 'en';
+
+
+                final lang = event.language;
+
                 final actionBlockResult = await getActionBlockUsecase.call(
                   topicKey,
                   lang,
@@ -58,7 +63,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                 await actionBlockResult.fold(
                   (failure) async {
                     emit(
-                      ChatError(failure.toString(), messages: currentMessages),
+                      ChatError(
+                        'The server is busy or not responding. Please wait a moment and try again. 429 error',
+                        messages: currentMessages,
+                      ),
                     );
                   },
                   (actionBlock) async {

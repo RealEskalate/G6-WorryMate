@@ -3,20 +3,25 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
-import 'package:g6_worrymate_mobile/core/widgets/custom_bottom_nav_bar.dart';
-import 'package:g6_worrymate_mobile/features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:g6_worrymate_mobile/core/theme/theme_manager.dart';
 
 import '../core/localization/locales.dart';
+import '../core/theme/theme_manager.dart';
+import '../core/widgets/custom_bottom_nav_bar.dart';
+
+import '../features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
+import '../features/activity_tracking/presentation/cubit/activity_cubit.dart';
+import '../features/activity_tracking/presentation/cubit/activity_state.dart';
+
+// Page section + widget imports (already refactored)
 import 'data.dart';
-import 'functions/streak_calculator.dart';
 import 'scrollable_services_widget.dart';
-import 'widgets/greetings.dart';
-import 'widgets/progress_row.dart';
 import 'widgets/top_bar.dart';
+import 'widgets/greetings.dart';
 import 'widgets/module_header.dart';
+import 'widgets/progress_row.dart';
 import 'widgets/quick_actions_row.dart';
 import 'widgets/daily_affirmation_card.dart';
 import 'widgets/ai_prompt_section.dart';
@@ -33,91 +38,32 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // Device
   late double _deviceHeight;
   late double _deviceWidth;
 
+  // Hero (module) carousel
   late final PageController _heroPageController;
   Timer? _heroSlideTimer;
   final Duration _heroSlideInterval = const Duration(seconds: 5);
   final Duration _heroSlideAnimDuration = const Duration(milliseconds: 600);
   final Curve _heroSlideCurve = Curves.easeInOut;
   late final List<ImageProvider> _heroImages;
-
   int _selectedModule = 0;
+
+  // Tabs
   int _currentTab = 0;
 
+  // Prompt / AI
   final TextEditingController _promptCtrl = TextEditingController();
-
-  // ================= UNIQUE ACTIVITY TRACKING =================
-  // Public-facing map still used by charts and progress UI.
-  final Map<DateTime, int> _activityData = {};
-
-  // Internal per-day unique activity sets.
-  final Map<DateTime, Set<String>> _dailyActivitySets = {};
-
-  // Universe of trackable daily unique activities (add more ids as needed).
-  static const List<String> _kActivityIds = [
-    'journal',
-    'breathing',
-    'trackWins',
-    'chatAI',
-    'moodCheckIn',
+  final List<String> _quickPromptKeys = [
+    LocalData.homePromptFeelingAnxious,
+    LocalData.homePromptImproveSleep,
+    LocalData.homePromptLowMotivation,
+    LocalData.homePromptOverthinking,
   ];
 
-  int get _kMaxDailyActivity => _kActivityIds.length;
-  static const int _kVisualMaxStreak = 30; // for ring normalization
-
-  DateTime _dayKey(DateTime d) => DateTime(d.year, d.month, d.day);
-
-  /// Records an activity only if it hasn't been done yet today.
-  /// Returns true if this call added a NEW unique activity (and updated UI).
-  bool _recordActivity(String activityId, {DateTime? when}) {
-    if (!_kActivityIds.contains(activityId)) {
-      // Optionally ignore or add dynamically. For now we ignore unknown IDs.
-      return false;
-    }
-    final ts = when ?? DateTime.now();
-    final key = _dayKey(ts);
-    final set = _dailyActivitySets.putIfAbsent(key, () => <String>{});
-    final before = set.length;
-    set.add(activityId);
-    if (set.length != before) {
-      _activityData[key] = set.length.clamp(0, _kMaxDailyActivity);
-      setState(() {});
-      return true;
-    }
-    return false;
-  }
-
-  void _onQuickActionSelected(String id) {
-    final added = _recordActivity(id);
-    if (added) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            context.formatString(LocalData.homeActivityLoggedTemplate, [id]),
-          ),
-          duration: const Duration(milliseconds: 900),
-        ),
-      );
-    }
-  }
-
-  void _onMoodSelected(String moodLabel) {
-    final added = _recordActivity('moodCheckIn');
-    if (added) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            context.formatString(LocalData.homeMoodLoggedTemplate, [moodLabel]),
-          ),
-          duration: const Duration(seconds: 1),
-        ),
-      );
-    }
-  }
-
-  // ================= AFFIRMATIONS & PROMPTS =================
+  // Affirmations
   final List<String> _affirmationKeys = [
     LocalData.homeAffirmation1,
     LocalData.homeAffirmation2,
@@ -125,13 +71,6 @@ class _HomePageState extends State<HomePage> {
     LocalData.homeAffirmation4,
   ];
   late final int _affirmationIndex;
-
-  final List<String> _quickPromptKeys = [
-    LocalData.homePromptFeelingAnxious,
-    LocalData.homePromptImproveSleep,
-    LocalData.homePromptLowMotivation,
-    LocalData.homePromptOverthinking,
-  ];
 
   @override
   void initState() {
@@ -166,6 +105,8 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  // ========= Helpers =========
+
   void _startHeroAutoSlide() {
     _heroSlideTimer?.cancel();
     _heroSlideTimer = Timer.periodic(_heroSlideInterval, (_) {
@@ -181,35 +122,123 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // Safe formatting (user replaced {} with %a in templates)
+  String _fmtTemplate(String raw, List<String> args) {
+    if (args.isEmpty) return raw;
+    if (raw.contains('%a')) {
+      var out = raw;
+      for (final a in args) {
+        out = out.replaceFirst('%a', a);
+      }
+      return out;
+    }
+    // Fallback if {} is used
+    return context.formatString(raw, args);
+  }
+
+  // ========= Activity Actions =========
+
+  void _onQuickActionSelected(String id) {
+    context.read<ActivityCubit>().logActivity(id);
+    final template = LocalData.homeActivityLoggedTemplate.getString(context);
+    final msg = _fmtTemplate(template, [id]);
+    _showSnack(msg);
+
+    _navigateToQuickAction(id);
+  }
+
+  void _navigateToQuickAction(String id) {
+    switch (id) {
+      case 'journal':
+        // Ensure route is registered in MaterialApp routes or onGenerateRoute
+        Navigator.pushNamed(context, '/journal');
+        break;
+      case 'breathing':
+        Navigator.pushNamed(context, '/box_breathing');
+        break;
+      case 'trackWins':
+        Navigator.pushNamed(context, '/win_tracker');
+        break;
+      case 'chatAI':
+        Navigator.pushNamed(context, '/chat');
+        break;
+      default:
+        _showSnack('Unknown action: $id');
+    }
+  }
+
+  void _onMoodSelected(String moodLabel) {
+    context.read<ActivityCubit>().logMood(moodLabel);
+    final template = LocalData.homeMoodLoggedTemplate.getString(context);
+    final msg = _fmtTemplate(template, [moodLabel]);
+    _showSnack(msg);
+  }
+
+  void _submitPrompt() {
+    final text = _promptCtrl.text.trim();
+    if (text.isEmpty) return;
+    // _promptCtrl.clear();
+    context.read<ActivityCubit>().logActivity('chatAI');
+    // _showSnack(LocalData.homePromptSent.getString(context));
+
+    Future.microtask(() {
+      if (!mounted) return;
+      Navigator.pushNamed(
+        context,
+        '/chat',
+        arguments: text
+      );
+    });
+  }
+
+  void _showSnack(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(milliseconds: 1000),
+        content: Text(msg),
+      ),
+    );
+  }
+
+  // ========= Page Switching =========
+
   Widget _pageFor(int index) {
     switch (index) {
       case 0:
         return _contentLayer();
       case 1:
-        return _stubPage(LocalData.homeStubJournal.getString(context));
-      case 2:
-        return _stubPage(LocalData.homeStubWins.getString(context));
-      case 3:
-        _heroSlideTimer?.cancel();
+        // Journal route
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (ModalRoute.of(context)?.settings.name != '/chat') {
-            Navigator.of(context).pushNamed('/chat');
+          if (mounted) {
+            Navigator.pushReplacementNamed(context, '/journal');
           }
         });
-        return Container();
+        return const SizedBox.shrink();
+      case 2:
+        // Offline toolkit
+        return const OfflineToolkitScreen();
+      case 3:
+        // Chat
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            Navigator.pushReplacementNamed(context, '/chat');
+          }
+        });
+        return const SizedBox.shrink();
       case 4:
-        return _stubPage(LocalData.homeStubProfile.getString(context));
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            Navigator.pushReplacementNamed(context, '/settings');
+          }
+        });
+        return const SizedBox.shrink();
       default:
         return _contentLayer();
     }
   }
 
-  Widget _stubPage(String label) => Center(
-        child: Text(
-          label,
-          style: const TextStyle(color: Colors.white70, fontSize: 18),
-        ),
-      );
+  // ========= Build =========
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +257,7 @@ class _HomePageState extends State<HomePage> {
       body: Stack(
         children: [
           if (showHero) _heroModulesBackground(isDarkMode),
-            if (showHero) _gradientOverlay(isDarkMode),
+          if (showHero) _gradientOverlay(isDarkMode),
           Positioned.fill(child: _pageFor(_currentTab)),
         ],
       ),
@@ -236,76 +265,51 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _currentTab,
         onTap: (i) {
           if (i == _currentTab) return;
-          switch (i) {
-            case 0:
-              setState(() => _currentTab = 0);
-              break;
-            case 1:
-              Navigator.pushReplacementNamed(context, '/journal');
-              break;
-            case 2:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const OfflineToolkitScreen(),
-                ),
-              );
-              break;
-            case 3:
-              Navigator.pushReplacementNamed(context, '/chat');
-              break;
-            case 4:
-              Navigator.pushReplacementNamed(context, '/settings');
-              break;
-          }
+          setState(() => _currentTab = i);
         },
       ),
     );
   }
 
-  // ================= HERO BACKGROUND =================
+  // ========= Hero (background module gallery) =========
 
   Widget _heroModulesBackground(bool isDarkMode) {
     final count = featuredAppServices.length;
-    return RepaintBoundary(
-      child: SizedBox(
-        height: _deviceHeight * 0.5,
-        width: _deviceWidth,
-        child: NotificationListener<UserScrollNotification>(
-          onNotification: (n) {
-            if (n.direction != ScrollDirection.idle) {
-              _heroSlideTimer?.cancel();
-            } else {
-              Future.delayed(const Duration(seconds: 2), () {
-                if (mounted) _startHeroAutoSlide();
-              });
-            }
-            return false;
+    return SizedBox(
+      height: _deviceHeight * 0.5,
+      width: _deviceWidth,
+      child: NotificationListener<UserScrollNotification>(
+        onNotification: (n) {
+          if (n.direction != ScrollDirection.idle) {
+            _heroSlideTimer?.cancel();
+          } else {
+            Future.delayed(const Duration(seconds: 2), () {
+              if (mounted) _startHeroAutoSlide();
+            });
+          }
+          return false;
+        },
+        child: PageView.builder(
+          controller: _heroPageController,
+          itemCount: count,
+          onPageChanged: (index) {
+            if (mounted) setState(() => _selectedModule = index);
           },
-          child: PageView.builder(
-            controller: _heroPageController,
-            itemCount: count,
-            onPageChanged: (index) {
-              if (mounted) {
-                setState(() => _selectedModule = index);
-              }
-            },
-            itemBuilder: (_, i) {
-              final img = _heroImages[i];
-              return DecoratedBox(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: img,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(isDarkMode ? 0.45 : 0.25),
-                      BlendMode.darken,
-                    ),
+          itemBuilder: (_, i) {
+            final img = _heroImages[i];
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: img,
+                  colorFilter: ColorFilter.mode(
+                    Colors.black.withOpacity(isDarkMode ? 0.45 : 0.25),
+                    BlendMode.darken,
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -331,7 +335,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // ================= FOREGROUND CONTENT =================
+  // ========= Foreground Content =========
 
   Widget _contentLayer() {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
@@ -362,9 +366,26 @@ class _HomePageState extends State<HomePage> {
               deviceHeight: _deviceHeight,
             ),
             SizedBox(height: _deviceHeight * 0.02),
-            // ProgressRow can still derive from _activityData (unique counts).
-            ProgressRow(isDarkMode: isDarkMode, activityData: _activityData),
+
+            // Progress summary (legacy style)
+            BlocBuilder<ActivityCubit, ActivityState>(
+              builder: (context, state) {
+                if (state is ActivityReady) {
+                  final legacyMap = {
+                    for (final d in state.daysByKey.values)
+                      DateTime(d.date.year, d.date.month, d.date.day):
+                          d.activities.length,
+                  };
+                  return ProgressRow(
+                    isDarkMode: isDarkMode,
+                    activityData: legacyMap,
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
             SizedBox(height: _deviceHeight * 0.02),
+
             QuickActionsRow(
               isDarkMode: isDarkMode,
               deviceHeight: _deviceHeight,
@@ -372,6 +393,7 @@ class _HomePageState extends State<HomePage> {
               onActionTap: _onQuickActionSelected,
             ),
             SizedBox(height: _deviceHeight * 0.02),
+
             DailyAffirmationCard(
               isDarkMode: isDarkMode,
               affirmation: _affirmationKeys[_affirmationIndex].getString(
@@ -379,41 +401,49 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: _deviceHeight * 0.02),
+
             AiPromptSection(
               isDarkMode: isDarkMode,
               deviceHeight: _deviceHeight,
               controller: _promptCtrl,
-              quickPrompts:
-                  _quickPromptKeys.map((k) => k.getString(context)).toList(),
+              quickPrompts: _quickPromptKeys
+                  .map((k) => k.getString(context))
+                  .toList(),
               onSubmit: _submitPrompt,
             ),
             SizedBox(height: _deviceHeight * 0.02),
+
             SafetyBanner(
               isDarkMode: isDarkMode,
               deviceHeight: _deviceHeight,
               deviceWidth: _deviceWidth,
-              image: (featuredAppServices[
-                          (featuredAppServices.length > 2 ? 2 : 0)]
+              image:
+                  (featuredAppServices[(featuredAppServices.length > 2 ? 2 : 0)]
                       .coverImage
                       .url
                       .isNotEmpty)
                   ? AssetImage(
-                      featuredAppServices[
-                              (featuredAppServices.length > 2 ? 2 : 0)]
+                      featuredAppServices[(featuredAppServices.length > 2
+                              ? 2
+                              : 0)]
                           .coverImage
                           .url,
                     )
                   : const AssetImage('assets/images/placeholder.png'),
               text: LocalData.homeSafetyBannerText.getString(context),
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(context, '/crisis_action');
+              },
             ),
             SizedBox(height: _deviceHeight * 0.025),
+
             MoodCheckInCard(
               isDarkMode: isDarkMode,
               deviceHeight: _deviceHeight,
               onMoodSelected: _onMoodSelected,
             ),
             SizedBox(height: _deviceHeight * 0.02),
+
             Text(
               LocalData.homeActivityTitle.getString(context),
               style: TextStyle(
@@ -423,29 +453,86 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 10),
-            WeeklyBarChart(
-              isDarkMode: isDarkMode,
-              activityData: _activityData,
-              // If WeeklyBarChart supports a max param, pass _kMaxDailyActivity.
-              // maxPerDay: _kMaxDailyActivity,
-            ),
-            const SizedBox(height: 14),
-            _activityRingsRow(isDarkMode),
-            const SizedBox(height: 8),
-            StreakBar(
-              isDarkMode: isDarkMode,
-              streak: computeStreak(_activityData),
-              label: context.formatString(
-                LocalData.homeStreakBarTemplate,
-                [computeStreak(_activityData).toString()],
-              ),
+
+            BlocBuilder<ActivityCubit, ActivityState>(
+              builder: (context, state) {
+                if (state is! ActivityReady) {
+                  return const SizedBox.shrink();
+                }
+                final activityData = {
+                  for (final d in state.daysByKey.values)
+                    DateTime(d.date.year, d.date.month, d.date.day):
+                        d.activities.length,
+                };
+                final todayCount = state.todayCount;
+                final weekTotal = state.totalLast7();
+                final streak = state.streak;
+                const dailyMax = ActivityCubit.dailyMax;
+                final weekMax = dailyMax * ActivityCubit.windowDays;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    WeeklyBarChart(
+                      isDarkMode: isDarkMode,
+                      activityData: activityData,
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ActivityRing(
+                          label: LocalData.homeRingToday.getString(context),
+                          percent: (todayCount / dailyMax).clamp(0, 1),
+                          centerText: '$todayCount',
+                          color: isDarkMode
+                              ? Colors.greenAccent
+                              : const Color.fromARGB(255, 9, 43, 71),
+                          isDarkMode: isDarkMode,
+                        ),
+                        ActivityRing(
+                          label: LocalData.homeRing7Days.getString(context),
+                          percent: (weekTotal / weekMax).clamp(0, 1),
+                          centerText: '$weekTotal',
+                          color: isDarkMode ? Colors.tealAccent : Colors.teal,
+                          isDarkMode: isDarkMode,
+                        ),
+                        ActivityRing(
+                          label: LocalData.homeRingStreak.getString(context),
+                          percent: (streak / 30).clamp(0, 1),
+                          centerText: '${streak}d',
+                          color: isDarkMode
+                              ? Colors.lightBlueAccent
+                              : Colors.lightBlue,
+                          isDarkMode: isDarkMode,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    StreakBar(
+                      isDarkMode: isDarkMode,
+                      streak: streak,
+                      label: _fmtTemplate(
+                        LocalData.homeStreakBarTemplate.getString(context),
+                        [streak.toString()],
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
             SizedBox(height: _deviceHeight * 0.04),
+
             ScrollableServicesWidget(
               height: _deviceHeight * 0.24,
               width: _deviceWidth,
               showTitle: true,
+              isDark: isDarkMode,
               servicesData: offlineTools,
+              onServiceTap: (service) {
+                final route = _routeForServiceTitle(service.title);
+                Navigator.pushNamed(context, route);
+              },
             ),
             SizedBox(height: _deviceHeight * 0.04),
           ],
@@ -454,65 +541,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _submitPrompt() {
-    final text = _promptCtrl.text.trim();
-    if (text.isEmpty) return;
-    setState(() {
-      _promptCtrl.clear();
-    });
-    _recordActivity('chatAI');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(LocalData.homePromptSent.getString(context)),
-        duration: const Duration(seconds: 1),
-      ),
-    );
-  }
-
-  // ================= ACTIVITY TRACKER (RINGS) =================
-
-  Widget _activityRingsRow(bool isDarkMode) {
-    final todayKey = _dayKey(DateTime.now());
-    final todayCount = (_activityData[todayKey] ?? 0).clamp(0, _kMaxDailyActivity);
-
-    // Sum last 7 days (including today)
-    final now = DateTime.now();
-    final weekTotal = _activityData.entries
-        .where((e) => now.difference(e.key).inDays < 7)
-        .fold<int>(0, (sum, e) => sum + e.value);
-
-    final streak = computeStreak(_activityData);
-
-    final weekMax = 7 * _kMaxDailyActivity;
-    final streakNormMax = _kVisualMaxStreak.toDouble();
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ActivityRing(
-          label: LocalData.homeRingToday.getString(context),
-          percent: todayCount / _kMaxDailyActivity,
-          centerText: '$todayCount',
-          color: isDarkMode
-              ? Colors.greenAccent
-              : const Color.fromARGB(255, 9, 43, 71),
-          isDarkMode: isDarkMode,
-        ),
-        ActivityRing(
-          label: LocalData.homeRing7Days.getString(context),
-          percent: (weekTotal / weekMax).clamp(0, 1),
-          centerText: '$weekTotal',
-          color: isDarkMode ? Colors.tealAccent : Colors.teal,
-          isDarkMode: isDarkMode,
-        ),
-        ActivityRing(
-          label: LocalData.homeRingStreak.getString(context),
-          percent: (streak / streakNormMax).clamp(0, 1),
-          centerText: '${streak}d',
-          color: isDarkMode ? Colors.lightBlueAccent : Colors.lightBlue,
-          isDarkMode: isDarkMode,
-        ),
-      ],
-    );
+  String _routeForServiceTitle(String title) {
+    switch (title.trim().toLowerCase()) {
+      case 'breathing timer':
+        return '/box_breathing';
+      case 'grounding 5-4-3-2-1':
+        return '/five_four';
+      case 'win tracker':
+        return '/win_tracker';
+      case 'journal':
+        return '/journal';
+      default:
+        return '/';
+    }
   }
 }

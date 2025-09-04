@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import 'core/connection/network_info.dart';
@@ -19,10 +20,46 @@ import 'features/action_card/domain/usecases/action_block_usecase.dart';
 import 'features/action_card/domain/usecases/action_card_usecase.dart';
 import 'features/action_card/domain/usecases/add_chat.dart';
 import 'features/action_card/presentation/bloc/chat_bloc.dart';
+import 'features/activity_tracking/data/datasources/activity_local_data_soruce.dart';
+import 'features/activity_tracking/data/models/activity_day_model.dart';
+import 'features/activity_tracking/data/repositories/activity_repository_impl.dart';
+import 'features/activity_tracking/domain/repositories/activity_repository.dart';
+import 'features/activity_tracking/domain/usecases/compute_streak_use_case.dart';
+import 'features/activity_tracking/domain/usecases/get_last_n_days_use_case.dart';
+import 'features/activity_tracking/domain/usecases/log_activity_use_case.dart';
+import 'features/activity_tracking/domain/usecases/log_mood_use_case.dart';
+import 'features/activity_tracking/presentation/cubit/activity_cubit.dart';
 
 final sl = GetIt.instance;
 
-void init() {
+Future<void> init() async {
+
+  await Hive.initFlutter();
+  if (!Hive.isAdapterRegistered(1)) {
+    Hive.registerAdapter(ActivityDayModelAdapter());
+  }
+
+  sl.registerLazySingleton<ActivityLocalDataSource>(
+      () => ActivityLocalDataSourceImpl());
+  sl.registerLazySingleton<ActivityRepository>(
+      () => ActivityRepositoryImpl(sl()));
+
+  // Use cases
+  sl.registerLazySingleton(() => LogActivityUseCase(sl()));
+  sl.registerLazySingleton(() => LogMoodUseCase(sl()));
+  sl.registerLazySingleton(() => GetLastNDaysUseCase(sl()));
+  sl.registerLazySingleton(() => ComputeStreakUseCase(sl()));
+
+  // Cubit
+  sl.registerFactory(() => ActivityCubit(
+        sl<LogActivityUseCase>(),
+        sl<LogMoodUseCase>(),
+        sl<GetLastNDaysUseCase>(),
+        sl<ComputeStreakUseCase>(),
+      ));
+
+
+
   // Bloc
   sl.registerFactory(
     () => ChatBloc(

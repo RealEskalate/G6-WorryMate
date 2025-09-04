@@ -9,7 +9,8 @@ class ChatExampleQuestionEvent extends ChatEvent{
 
 class SendChatMessageEvent extends ChatEvent{
   final ChatParams params;
-  SendChatMessageEvent( this.params);
+  final String language;
+  SendChatMessageEvent( this.params, this.language);
 }
 
 
