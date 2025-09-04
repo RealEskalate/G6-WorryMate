@@ -37,47 +37,18 @@ const Footer = () => {
                     <div>@{new Date().getFullYear()}</div>
                     <div className="text-sm">
                         Built by{' '}
-                        <Link
-                            href="https://github.com/DeadmanAbir"
-                            target="_blank"
-                            className="font-semibold hover:underline"
-                        >
-                            abir
-                        </Link>{' '}
-                        ,{' '}
-                        <Link
-                            href="https://github.com/faisal004"
-                            target="_blank"
-                            className="font-semibold hover:underline"
-                        >
-                            faisal
-                        </Link>{' '}
-                        and{' '}
-                        <Link
-                            href="https://github.com/Kirtikagoyal"
-                            target="_blank"
-                            className="font-semibold hover:underline"
-                        >
-                            kirtika
-                        </Link>
-                        .The source code is available on{' '}
-                        <Link
-                            href="/"
-                            target="_blank"
-                            className="font-semibold hover:underline"
-                        >
-                            Github
-                        </Link>
-                        .
+
+                        WorryMate team at A2SV
+
                     </div>
                 </div>
                 <div className="grid grid-cols-1  gap-10 items-start ">
                     <div className="flex md:flex-row flex-col  gap-4">
-                        <Link className="hover:underline" href="/components">
-                            Components
+                        <Link className="hover:underline" href="/vent">
+                            Chat
                         </Link>
-                        <Link className="hover:underline" href="/blogs">
-                            Blog
+                        <Link className="hover:underline" href="/journal">
+                            Journal
                         </Link>
                     </div>
                 </div>
