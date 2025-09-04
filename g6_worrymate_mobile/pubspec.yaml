@@ -54,6 +54,7 @@ dependencies:
 
   fl_chart: ^0.66.0
   percent_indicator: ^4.2.3
+  permission_handler: ^11.0.1
 
 
   # The following adds the Cupertino Icons font to your application.

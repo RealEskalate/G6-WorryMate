@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CrisisCard extends StatelessWidget {
   const CrisisCard({super.key});
@@ -287,15 +288,29 @@ class CrisisCard extends StatelessWidget {
 }
 
 Future<void> _makePhoneCall(String phoneNumber) async {
-  final Uri launchUri = Uri(
-    scheme: 'tel', // This tells the phone to use the dialer
-    path: phoneNumber, // The number to call
-  );
+  // Request CALL_PHONE permission
+  var status = await Permission.phone.request();
+  if (status.isGranted) {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
 
-  // Check if the device can make phone calls
-  if (await canLaunchUrl(launchUri)) {
-    await launchUrl(launchUri); // Open the phone app with the number
-  } else {
-    throw 'Could not launch $phoneNumber'; // Error handling
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      // If canLaunchUrl still fails after permission, something else is wrong
+      throw 'Could not launch $phoneNumber';
+    }
+  } else if (status.isDenied) {
+    // The user denied the permission. Handle this gracefully.
+    print('Phone permission denied');
+    // You might want to show a dialog explaining why the permission is needed
+    // and guide the user to app settings.
+  } else if (status.isPermanentlyDenied) {
+    // The user permanently denied the permission.
+    print('Phone permission permanently denied. Open app settings.');
+    // You might want to open app settings so the user can enable it manually.
+    openAppSettings();
   }
 }
