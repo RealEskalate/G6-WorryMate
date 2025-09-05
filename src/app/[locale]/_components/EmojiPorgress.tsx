@@ -58,7 +58,24 @@ function EmojiProgress() {
       const allEntries: DailyEmoji[] = await db.dailyemoji.toArray();
       setEntries(allEntries);
 
-      if (allEntries.length > 0) {
+      const today = new Date();
+      const currentWeekStart = startOfWeek(today, { weekStartsOn: 1 });
+      const currentWeekEnd = endOfWeek(today, { weekStartsOn: 1 });
+      const currentWeekLabel = `${format(currentWeekStart, "MMM d")} - ${format(currentWeekEnd, "MMM d")}`;
+
+      if (allEntries.length === 0) {
+        // Generate a single week (current week) with no data
+        setWeeks([{
+          label: currentWeekLabel,
+          start: currentWeekStart,
+          end: currentWeekEnd,
+        }]);
+        setSelectedWeek({
+          label: currentWeekLabel,
+          start: currentWeekStart,
+          end: currentWeekEnd,
+        });
+      } else {
         const dates = allEntries.map(e => new Date(e.date));
         const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
         const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
@@ -79,11 +96,15 @@ function EmojiProgress() {
 
         setWeeks(generatedWeeks);
 
-        const today = new Date();
         const currentWeek = generatedWeeks.find(w =>
           isWithinInterval(today, { start: w.start, end: w.end })
         );
-        if (currentWeek) setSelectedWeek(currentWeek);
+        if (currentWeek) {
+          setSelectedWeek(currentWeek);
+        } else {
+          // Fallback to the most recent week if today is outside the data range
+          setSelectedWeek(generatedWeeks[generatedWeeks.length - 1]);
+        }
       }
     }
     fetchEmojis();
@@ -92,7 +113,7 @@ function EmojiProgress() {
   useEffect(() => {
     if (!selectedWeek) return;
 
-    // always generate the week days, even if no entries exist
+    
     const days = eachDayOfInterval({ start: selectedWeek.start, end: selectedWeek.end }).map(d => {
       const dateStr = format(d, "yyyy-MM-dd");
       const entry = entries.find(e => e.date === dateStr);

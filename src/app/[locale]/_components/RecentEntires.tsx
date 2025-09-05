@@ -40,6 +40,7 @@ function RecentEntires() {
         </button>
       </div>
 
+
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
         {entries.length === 0 ? (
           <div className="px-6 py-8">
@@ -68,6 +69,7 @@ function RecentEntires() {
             </button>
           ))
         )}
+
       </div>
     </div>
   )
