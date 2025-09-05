@@ -1,3 +1,92 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import ContactCard from "./crisis-card/contactCard";
+import type {
+    CrisisCardData,
+    CrisisResource,
+    CrisisSafetyStep,
+} from "@/types";
+
+const CrisisCard: React.FC = () => {
+    const [data, setData] = useState<CrisisCardData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                const res = await fetch("/api/crisis-card", { method: "POST" });
+                const json = await res.json();
+                if (!res.ok) throw new Error(String(json?.message || "Failed to fetch"));
+                if (!cancelled) setData(json as CrisisCardData);
+            } catch (e) {
+                if (!cancelled) setError(e instanceof Error ? e.message : String(e));
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    if (loading) return <div className="p-4 bg-white rounded-lg shadow">Loading…</div>;
+    if (error) return <div className="p-4 bg-red-50 text-red-700 rounded-lg">Error: {error}</div>;
+    if (!data) return null;
+
+    const resources: CrisisResource[] = Array.isArray(data.resources) ? data.resources : [];
+    const steps: CrisisSafetyStep[] = Array.isArray(data.safety_plan) ? data.safety_plan : [];
+
+    return (
+        <div className="w-full max-w-2xl bg-white rounded-xl shadow border p-4 md:p-6">
+            <h2 className="text-xl md:text-2xl font-bold text-red-700 mb-2 text-center">Crisis Support</h2>
+            {data.region && (
+                <p className="text-sm text-gray-600 text-center mb-4">Region: {data.region}</p>
+            )}
+
+            {steps.length > 0 && (
+                <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-red-600 mb-2">Immediate Steps</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {steps.map((s, i) => (
+                            <div key={`${s.step ?? i}`} className="p-3 border rounded-lg bg-red-50 border-red-100">
+                                <p className="text-sm font-medium text-red-700">Step {String(s.step ?? i + 1)}</p>
+                                <p className="text-sm text-gray-700">{String(s.instruction ?? "")}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {resources.length > 0 && (
+                <div className="mt-4">
+                    <h3 className="text-lg font-semibold text-red-600 mb-2">Resources</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {resources.map((r, idx) => (
+                            <ContactCard
+                                key={idx}
+                                name={r.name ?? "Resource"}
+                                phone={r.contact?.phone}
+                                email={r.contact?.email}
+                                website={r.contact?.website}
+                                availability={r.contact?.availability}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {data.disclaimer && (
+                <p className="mt-4 text-xs text-gray-500 text-center">{data.disclaimer}</p>
+            )}
+        </div>
+    );
+};
+
+export default CrisisCard;
 // "use client";
 // import React from "react";
 // import InfoBox from "./InfoBox";
