@@ -36,11 +36,4 @@ export const features: FeatureCard[] = [
     buttonText: "Track Progress",
     buttonLink: "/progress",
   },
-  {
-    title: "Mood Tracker",
-    description: "Log your feelings and discover patterns in your emotional journey.",
-    image: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80",
-    buttonText: "Log Mood",
-    buttonLink: "/mood-tracker",
-  },
 ];
