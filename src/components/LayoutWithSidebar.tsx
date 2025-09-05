@@ -16,7 +16,13 @@ const LayoutWithSidebar: React.FC<LayoutWithSidebarProps> = ({ children }) => {
     }
 
     // Define app pages that should show the sidebar
-    const appPages = ['/dashboard', '/vent', '/journal', '/settings']
+    const appPages = [
+      "/dashboard",
+      "/vent",
+      "/journal",
+      "/settings",
+      "/progress",
+    ];
     const shouldShowSidebar = appPages.some(page => pathname.includes(page))
 
     // If it's the homepage, just render children without sidebar

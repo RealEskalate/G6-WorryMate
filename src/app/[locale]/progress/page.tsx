@@ -1,0 +1,265 @@
+"use client";
+import React, { Suspense, useEffect, useState } from "react";
+import RecentEntires from "../_components/RecentEntires";
+import { PageHeader } from "@/components/PageHeader";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { TrendingUp, Calendar, BookOpen, Target, Award } from "lucide-react";
+import { db, DailyEmoji, CheckIn, JournalEntry } from "@/app/lib/db";
+import { liveQuery } from "dexie";
+
+function formatDateOnly(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+
+const emojiLevels: Record<string, number> = {
+  "😞": 1,
+  "😐": 2,
+  "😊": 3,
+  "😄": 4,
+  "😍": 5,
+};
+
+function computeStreak(checkins: CheckIn[]): number {
+  const dateSet = new Set(
+    checkins.map((c) => formatDateOnly(new Date(c.date)))
+  );
+  let streak = 0;
+  let day = new Date();
+  while (dateSet.has(formatDateOnly(day))) {
+    streak += 1;
+    day.setDate(day.getDate() - 1);
+  }
+  return streak;
+}
+
+function countCheckinsThisMonth(checkins: CheckIn[]): number {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  return checkins.filter((c) => {
+    const d = new Date(c.date);
+    return d.getFullYear() === y && d.getMonth() === m;
+  }).length;
+}
+
+function countJournalsLast30(journals: JournalEntry[]): number {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 30);
+  return journals.filter((j) => new Date(j.date) >= cutoff).length;
+}
+
+function computeWellnessScore(
+  emojis: DailyEmoji[],
+  checkins: CheckIn[]
+): number {
+  if (emojis.length === 0 && checkins.length === 0) return 0;
+  // Average mood over last 14 days
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 14);
+  const recentMood = emojis.filter((e) => new Date(e.date) >= cutoff);
+  const avgMood = recentMood.length
+    ? recentMood.reduce((sum, e) => sum + (emojiLevels[e.emoji] || 3), 0) /
+      recentMood.length
+    : 3;
+  // Consistency: check-ins over last 14 days
+  const recentChecks = checkins.filter(
+    (c) => new Date(c.date) >= cutoff
+  ).length;
+  const consistency = Math.min(recentChecks / 14, 1);
+  // Weighted blend (60% mood, 40% consistency)
+  const normalizedMood = (avgMood - 1) / 4; // map 1..5 -> 0..1
+  const score = (normalizedMood * 0.6 + consistency * 0.4) * 100;
+  return Math.round(score);
+}
+
+export default function ProgressPage() {
+  const [streak, setStreak] = useState(0);
+  const [monthCheckins, setMonthCheckins] = useState(0);
+  const [recentJournals, setRecentJournals] = useState(0);
+  const [wellness, setWellness] = useState(0);
+
+  useEffect(() => {
+    const sub = liveQuery(async () => {
+      const [checkins, journals, emojis] = await Promise.all([
+        db.checkin.toArray(),
+        db.journals.toArray(),
+        db.dailyemoji.toArray(),
+      ]);
+      return { checkins, journals, emojis };
+    }).subscribe({
+      next: ({ checkins, journals, emojis }) => {
+        setStreak(computeStreak(checkins));
+        setMonthCheckins(countCheckinsThisMonth(checkins));
+        setRecentJournals(countJournalsLast30(journals));
+        setWellness(computeWellnessScore(emojis, checkins));
+      },
+      error: (err) => {
+        console.error("liveQuery error", err);
+      },
+    });
+    return () => sub.unsubscribe();
+  }, []);
+
+  const wellnessTip =
+    "Increase by logging daily check-ins and choosing positive moods.";
+
+  return (
+    <div className="flex flex-col bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen">
+      <PageHeader title="Your Progress" />
+
+      <div className="p-6 space-y-8 overflow-y-auto">
+        {/* Header Section */}
+        <div className="text-center space-y-4 max-w-4xl mx-auto">
+          <h1 className="text-4xl font-bold text-white">
+            Your Mental Health Journey
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-300">
+            Track your progress, celebrate your wins, and see how far you've
+            come on your wellness journey.
+          </p>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <Card className="border border-gray-200 dark:border-gray-700 shadow-sm bg-white/80 dark:bg-gray-800/80">
+            <CardContent className="p-6 text-center">
+              <div className="mx-auto mb-3 h-10 w-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                {streak}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                Day Streak
+              </div>
+              <div className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
+                Keep it up
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-gray-200 dark:border-gray-700 shadow-sm bg-white/80 dark:bg-gray-800/80">
+            <CardContent className="p-6 text-center">
+              <div className="mx-auto mb-3 h-10 w-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                {monthCheckins}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                Check-ins
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                This month
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-gray-200 dark:border-gray-700 shadow-sm bg-white/80 dark:bg-gray-800/80">
+            <CardContent className="p-6 text-center">
+              <div className="mx-auto mb-3 h-10 w-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                <BookOpen className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                {recentJournals}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                Journal Entries
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Last 30 days
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-gray-200 dark:border-gray-700 shadow-sm bg-white/80 dark:bg-gray-800/80">
+            <CardContent className="p-6 text-center">
+              <div className="mx-auto mb-3 h-10 w-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                <Award className="h-6 w-6 text-white" />
+              </div>
+              <div
+                className="text-3xl font-bold text-gray-900 dark:text-gray-100"
+                title={wellnessTip}
+              >
+                {wellness}%
+              </div>
+              <div
+                className="text-sm text-gray-600 dark:text-gray-300"
+                title={wellnessTip}
+              >
+                Wellness Score
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Mood + habit consistency
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content - Recent Journal Entries Only */}
+        <div className="max-w-5xl mx-auto">
+          <Card className="border-0 shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm h-fit">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <BookOpen className="h-6 w-6 text-emerald-500" />
+                Recent Entries
+              </CardTitle>
+              <CardDescription>
+                Your latest thoughts and reflections
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center h-32">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+                  </div>
+                }
+              >
+                <RecentEntires />
+              </Suspense>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Motivational Section */}
+        <div className="max-w-4xl mx-auto">
+          <Card className="border-0 shadow-xl bg-gradient-to-r from-indigo-50 via-emerald-50 to-pink-50 dark:from-indigo-900/20 dark:via-emerald-900/20 dark:to-pink-900/20">
+            <CardContent className="p-8 text-center">
+              <div className="space-y-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                  <Target className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                  You're Making Great Progress!
+                </h3>
+                <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                  Every check-in, every journal entry, and every moment of
+                  self-reflection is a step forward in your mental health
+                  journey. Keep going!
+                </p>
+                <div className="flex justify-center gap-4 mt-6">
+                  <div className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-full text-gray-600 dark:text-gray-400">
+                    {streak}-day streak
+                  </div>
+                  <div className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-full text-gray-600 dark:text-gray-400">
+                    {wellness}% wellness score
+                  </div>
+                  <div className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-full text-gray-600 dark:text-gray-400">
+                    {monthCheckins} check-ins
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
