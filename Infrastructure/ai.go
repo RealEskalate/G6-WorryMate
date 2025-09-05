@@ -65,7 +65,7 @@ func InitAIClient() *AI {
 	You are a supportive wellbeing assistant.
 	Your job is to generate wellbeing JSON cards for users across different contexts (e.g., action cards, crisis cards).
 	General Rules:
-	- Always return valid JSON (no markdown, no extra prose).
+	- Always return valid JSON (no markdown, no extra prose). (Unless explicitly told to do so).
 	- Use the schema provided by the specific method (different card types may have different schemas).
 	- Never invent new fields outside of the given schema.
 	- Content must always be empathetic, safe, and supportive.
@@ -103,10 +103,47 @@ func (ai *AI) getClient() *genai.Client {
 	return client
 }
 
+func (ai *AI) GenerateNormalChatMsg(msg string) (string, error) {
+	ctx := context.Background()
+
+	userPrompt := genai.Text(msg + "return a single string containing your natural response, It does not need to be json format since this is normal chat feature.")
+	client := ai.getClient()
+	result, err := client.Models.GenerateContent(
+		ctx, 
+		ai.model_name,
+		userPrompt,
+		ai.config,
+	)
+
+	if err != nil {
+		// Try to find valid api keys in clients
+		count := 0
+		for (count < len(ai.clients)) {
+			ans, err := ai.GenerateNormalChatMsg(msg)
+			if (err == nil) {
+				return ans, nil
+			}
+			count += 1
+		}
+		
+		var apiErr genai.APIError
+		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
+		if errors.As(err, &apiErr) {
+			// log.Print("err : ", err.Error(), "api err : ", apiErr )
+			if apiErr.Code == 429 {
+				return "", errors.New("quota/rate limit exceeded, please retry later")
+			}
+		}
+		return "", err
+	}
+
+	resultMsg := result.Text()
+	return resultMsg, nil
+}
+
 func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, error) {
 	ctx := context.Background()
 
-	// ... (prompt building logic remains exactly the same) ...
 	stepsList := ""
 	for _, s := range actionBlock.Block.MicroSteps {
 		stepsList += fmt.Sprintf("- %s\n", s)
@@ -150,9 +187,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	}
 	`, actionBlock.TopicKey, actionBlock.Language, stepsList, toolsList, actionBlock.TopicKey))
 
-	// MODIFIED: Use the getClient() helper to pick a client for this request
 	client := ai.getClient()
-	// log.Print(client.ClientConfig().APIKey)
 	result, err := client.Models.GenerateContent(
 		ctx,
 		ai.model_name,
@@ -160,7 +195,6 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 		ai.config,
 	)
 
-	// ... (error handling and result parsing remain exactly the same) ...
 	if err != nil {
 		// Try to find valid api keys in clients
 		count := 0
@@ -220,7 +254,6 @@ RULES:
 IMPORTANT: Your entire response should be exactly one line in the specified format.
 `, content))
 
-	// MODIFIED: Use the getClient() helper to pick a client for this request
 	client := ai.getClient()
 	result, err := client.Models.GenerateContent(
 		ctx,
@@ -315,7 +348,6 @@ Tags: academic-pressure, time-management, exam-anxiety
 
 IMPORTANT: Be consistent. Same content should always produce the same risk level and similar tags.
 `, content))
-	// MODIFIED: Use the getClient() helper to pick a client for this request
 	client := ai.getClient()
 	result, err := client.Models.GenerateContent(
 		ctx,

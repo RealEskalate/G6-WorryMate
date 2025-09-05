@@ -18,6 +18,23 @@ func NewChatController(uc domain.ChatUsecaseI) *ChatController {
 	}
 }
 
+func (cc *ChatController) NormalChatController(c *gin.Context) {
+	var chat ChatDTO
+
+	err := c.ShouldBindJSON(&chat)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error" : err.Error()})
+		return
+	}
+	response, err := cc.ChatUc.NormalChatUsecase(chat.Message)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"ai_response": response})
+}
+
 func (cc *ChatController) ComposeCardController(c *gin.Context) {
 	var actBlk ActionBlockDTO
 	err := c.ShouldBindJSON(&actBlk)
