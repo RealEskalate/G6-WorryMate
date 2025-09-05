@@ -41,6 +41,7 @@ export default function JournalEditor() {
   useEffect(() => {
     const fetchEntries = async () => {
       const all = await db.journals.toArray();
+      all.reverse();
       setEntries(all);
     };
     fetchEntries();
@@ -96,7 +97,7 @@ export default function JournalEditor() {
           <div className="mb-4 rounded-lg border border-gray-300 bg-white p-5">
             <EditorContent
               editor={editor}
-              className="min-h-[300px] text-[16px] text-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
+              className="min-h-[300px]  text-[16px] text-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
             />
           </div>
           <div className="flex gap-4">

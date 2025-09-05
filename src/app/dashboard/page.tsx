@@ -7,7 +7,7 @@ import Features from "../_components/Features";
 
 function Page() {
   return (
-    <div className="flex flex-col bg-white min-h-screen p-6 gap-8">
+    <div className="flex flex-col bg-white min-h-screen p-6 gap-8 dark:bg-[#04]">
 
       <div className="flex flex-col md:flex-row gap-8">
    

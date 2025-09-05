@@ -8,6 +8,7 @@ function RecentEntires() {
     useEffect(() => {
         const fetchEntries = async () => {
           const all = await db.journals.toArray();
+          all.reverse();
           setEntries(all);
         };
         fetchEntries();
