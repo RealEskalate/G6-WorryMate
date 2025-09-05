@@ -36,16 +36,17 @@ function Page() {
 
   if (!entry) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed bg-[#F7F9FB]">
+      <div className="min-h-screen flex items-center justify-center text-gray-900 dark:text-white font-sans text-base bg-gray-50 dark:bg-[#092B47]">
         Loading journal...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F9FB] py-12 px-6 flex justify-center">
-      <div className="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-10 border border-gray-200">
-        <p className="text-[#0D2A4B]/70 text-[14px] mb-4 italic font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed">
+    <div className="min-h-screen dark:text-white bg-gray-50 dark:bg-[#092B47] py-8 px-4 sm:px-6 lg:px-8 flex justify-center">
+      <div className="w-full max-w-3xl bg-white dark:bg-[#28445C] dark:border-[#10B981] shadow-xl rounded-2xl p-8 sm:p-10 border border-gray-200">
+        {/* Date */}
+        <p className="text-gray-500 dark:text-gray-300 text-sm mb-4 italic font-sans">
           {new Date(entry.date).toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
@@ -54,6 +55,7 @@ function Page() {
           })}
         </p>
 
+        {/* Title */}
         <div className="mb-6">
           {isEditingTitle ? (
             <input
@@ -62,18 +64,19 @@ function Page() {
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
               placeholder="Enter a title..."
-              className="w-full text-4xl font-bold text-[#0D2A4B] border-b border-[#0D2A4B]/50 bg-transparent focus:outline-none focus:border-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
+              className="w-full text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-400 bg-transparent focus:outline-none focus:border-gray-900 dark:focus:border-[#10B981] leading-snug"
             />
           ) : (
             <h1
               onDoubleClick={() => setIsEditingTitle(true)}
-              className="text-4xl font-bold text-[#0D2A4B] cursor-pointer hover:text-[#0D2A4B]/80 font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
+              className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white cursor-pointer hover:text-gray-700 dark:hover:text-[#10B981] leading-snug"
             >
               {title || 'Untitled Journal'}
             </h1>
           )}
         </div>
 
+        {/* Content */}
         <div>
           {isEditingContent ? (
             <textarea
@@ -82,32 +85,33 @@ function Page() {
               rows={12}
               autoFocus
               placeholder="Start writing your thoughts..."
-              className="w-full text-[16px] text-[#0D2A4B] leading-relaxed bg-transparent border border-[#0D2A4B]/50 rounded-lg p-4 focus:outline-none focus:border-[#0D2A4B] focus:ring-2 focus:ring-[#0D2A4B]/20 font-['Inter','Noto_Sans_Ethiopic'] shadow-inner"
+              className="w-full text-base sm:text-lg text-gray-900 dark:text-white leading-relaxed bg-transparent border border-gray-300 dark:border-gray-400 rounded-lg p-4 focus:outline-none focus:border-gray-900 dark:focus:border-[#10B981] focus:ring-2 focus:ring-gray-200 dark:focus:ring-[#10B981]/30 transition-shadow"
             />
           ) : (
             <p
               onClick={() => setIsEditingContent(true)}
-              className="text-[16px] text-[#0D2A4B] leading-relaxed whitespace-pre-line cursor-pointer hover:bg-[#0D2A4B]/5 rounded-lg p-3 font-['Inter','Noto_Sans_Ethiopic']"
+              className="text-base sm:text-lg text-gray-900 dark:text-white leading-relaxed whitespace-pre-line cursor-pointer hover:bg-gray-100 dark:hover:bg-[#10B981]/20 rounded-lg p-3 transition-colors"
             >
               {content || 'Click here to start writing your thoughts...'}
             </p>
           )}
         </div>
 
-        <div className="flex justify-end gap-4 mt-10">
+        {/* Buttons */}
+        <div className="flex justify-end gap-4 mt-8">
           <button
             onClick={async () => {
               await db.journals.delete(Number(id));
               router.push('/journal');
             }}
-            className="bg-[#EF4444] hover:bg-[#EF4444]/80 text-white rounded-xl px-6 py-2 shadow-md transition font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed"
+            className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-xl px-6 py-2 shadow transition-colors font-semibold"
           >
             Delete
           </button>
 
           <button
             onClick={handleUpdate}
-            className="bg-[#10B981] hover:bg-[#10B981]/80 text-white rounded-xl px-6 py-2 shadow-md transition font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed"
+            className="bg-green-500 hover:bg-green-600 dark:bg-[#10B981] dark:hover:bg-green-700 text-white rounded-xl px-6 py-2 shadow transition-colors font-semibold"
           >
             Update
           </button>
