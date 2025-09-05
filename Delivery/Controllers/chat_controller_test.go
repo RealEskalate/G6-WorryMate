@@ -6,7 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"sema/Delivery/Controllers/mocks"
+	"sema/Delivery/mocks"
 	domain "sema/Domain"
 	"testing"
 

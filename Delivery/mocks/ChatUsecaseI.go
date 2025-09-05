@@ -191,6 +191,34 @@ func (_m *ChatUsecaseI) IntentMappingUsecase(message string) (string, error) {
 	return r0, r1
 }
 
+// NormalChatUsecase provides a mock function with given fields: message
+func (_m *ChatUsecaseI) NormalChatUsecase(message string) (string, error) {
+	ret := _m.Called(message)
+
+	if len(ret) == 0 {
+		panic("no return value specified for NormalChatUsecase")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
+		return rf(message)
+	}
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(message)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(message)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // RiskCheckUsecase provides a mock function with given fields: message
 func (_m *ChatUsecaseI) RiskCheckUsecase(message string) (int, []string, error) {
 	ret := _m.Called(message)
