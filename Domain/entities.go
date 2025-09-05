@@ -1,7 +1,5 @@
 package domain
 
-import "time"
-
 type User struct {
 	Password string
 	Role     string
@@ -11,8 +9,8 @@ type User struct {
 
 type Chat struct {
 	Message        string
-	SenderIsAI     bool
-	TimeOfCreation time.Time
+	// SenderIsAI     bool
+	// TimeOfCreation time.Time
 }
 type ToolLink struct {
 	Title string

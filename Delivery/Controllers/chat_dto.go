@@ -2,13 +2,12 @@ package controllers
 
 import (
 	domain "sema/Domain"
-	"time"
 )
 
 type ChatDTO struct {
 	Message        string    `json:"message"`
-	SenderIsAI     bool      `json:"senderisai"`
-	TimeOfCreation time.Time `json:"timeofcreation"`
+	// SenderIsAI     bool      `json:"senderisai"`
+	// TimeOfCreation time.Time `json:"timeofcreation"`
 }
 
 type ToolLinkDTO struct {
@@ -105,5 +104,12 @@ func ChangeToChatDTO(ac *domain.ActionBlock) (*ActionBlockDTO) {
 		TopicKey: ac.TopicKey,
 		Block: block,
 		Language: ac.Language,
+	}
+}
+
+// Changes the chatdto to Domain.chat
+func ChangeChatToDomain(cht *ChatDTO) (*domain.Chat) {
+	return &domain.Chat{
+		Message: cht.Message,
 	}
 }
