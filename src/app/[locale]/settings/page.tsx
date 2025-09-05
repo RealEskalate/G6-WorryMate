@@ -2,7 +2,7 @@
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
-import { ArrowLeft, Globe, Plus, Minus, Trash2 } from 'lucide-react';
+import { Globe, Trash2 } from 'lucide-react';
 import { PageHeader } from '@/components/PageHeader';
 
 export default function SettingsPage() {

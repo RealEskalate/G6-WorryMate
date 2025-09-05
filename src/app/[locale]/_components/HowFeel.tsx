@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, use } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import image from "../../../../public/Chatbot.png"
 import EmojiSelection from './EmojiSelection'
@@ -61,15 +61,15 @@ function HowFeel() {
   }
 
   return (
-    <div className="w-[90%] relative flex flex-col md:flex-row items-start justify-between bg-[#F7F9FB] rounded-xl shadow-md  max-w-5xl mx-auto overflow-hidden p-6">
+    <div className="w-[90%] relative flex flex-col md:flex-row items-start justify-between bg-[#F7F9FB] dark:bg-[#092B47] rounded-xl shadow-md  max-w-5xl mx-auto overflow-hidden p-6">
 
-      <div className="flex flex-col gap-4 md:w-1/2 z-10 text-[#0D2A4B]">
+      <div className="flex flex-col gap-4 md:w-1/2 z-10 text-[#0D2A4B] dark:text-white">
         <h1 className='text-2xl font-semibold'>{quote?.text}</h1>
-        <h2 className="text-xl font-semibold">{`${timecheck()}, How do you feel?`}</h2>
-        <p className="text-base opacity-90">Please, mark your mood today</p>
+        <h2 className="text-xl font-semibold dark:text-[#10B981]">{`${timecheck()}, How do you feel?`}</h2>
+        <p className="text-base opacity-90 ">Please, mark your mood today</p>
         <button
           onClick={() => setShow(!show)}
-          className="bg-[#0D2A4B] text-white px-4 py-2 rounded-md font-medium hover:bg-[#0c2847] transition"
+          className="bg-[#0D2A4B] dark:bg-[#10B981] text-white px-4 py-2 rounded-md font-medium hover:bg-[#0c2847] transition"
         >
           {show ? 'Hide' : 'Mark now'}
         </button>
