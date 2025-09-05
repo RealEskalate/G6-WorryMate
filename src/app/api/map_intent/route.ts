@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const body = await request.text();
 
     const upstream = await fetch(
-      "https://g6-worrymate-zt0r.onrender.com/chat/intent_mapping",
+      "https://g6-worrymate-8osd.onrender.com/chat/intent_mapping",
       {
         method: "POST",
         headers: {

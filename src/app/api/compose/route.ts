@@ -1,150 +1,120 @@
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+// export async function POST(request: Request) {
+//   try {
+//     const url = new URL(request.url);
+//     const upstreamUrl = "https://g6-worrymate-8osd.onrender.com/chat/compose";
+//     const body = await request.text();
+
+//     const upstream = await fetch(upstreamUrl, {
+//       method: "POST",
+//       headers: {
+//         "content-type": "application/json",
+//         accept: "application/json",
+//       },
+//       cache: "no-store",
+//       body: body,
+//     });
+//     console.log("compose body", body);
+
+//     let upstreamBody;
+//     try {
+//       upstreamBody = await upstream.json();
+//       console.log("upstreamBody:", upstreamBody);
+//     } catch {
+//       upstreamBody = {};
+//     }
+
+//     // If upstream gave you a markdown-wrapped card string
+//     if (typeof upstreamBody.card === "string") {
+//       const stripped = upstreamBody.card
+//         .replace(/^```json\n?/i, "")
+//         .replace(/\n?```\s*$/i, "")
+//         .trim();
+
+//       try {
+//         const parsed = JSON.parse(stripped);
+//         const fixed = parsed[""] ? parsed[""] : parsed;
+
+//         upstreamBody = { ...upstreamBody, card: fixed };
+
+//         // Handle the case where AI puts everything under a random key like "study_stress"
+//         const firstKey = Object.keys(parsed)[0];
+//         if (firstKey) {
+//           upstreamBody = parsed[firstKey];
+//         } else {
+//           upstreamBody = parsed;
+//         }
+//       } catch (e) {
+//         console.error("Failed to parse upstream card string:", e);
+//       }
+//     }
+//     console.log("upstreamBody:", upstreamBody);
+//     return new Response(JSON.stringify(upstreamBody), {
+//       status: 200,
+//       headers: { "content-type": "application/json" },
+//     });
+//   } catch (e) {
+//     console.error("err:", e);
+//   }
+// }
+
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(request: NextRequest) {
+  const targetUrl = "https://g6-worrymate-8osd.onrender.com/chat/compose";
+
   try {
-    const url = new URL(request.url);
-    const search = url.search;
-    const upstreamUrl = `https://g6-worrymate-zt0r.onrender.com/chat/compose${
-      search || ""
-    }`;
+    const body = await request.json();
+    console.log("Incoming frontend request body:", body);
 
-    const upstream = await fetch(upstreamUrl, {
-      method: "GET",
-      // Forward minimal headers; customize if needed
-      headers: { accept: "application/json" },
-      // Ensure we don't cache in edge/CDN inadvertently
-      cache: "no-store",
-    });
+    // Transform into what backend expects
+    const payload = {
+      topic_key: body.topic || body.topic_key,
+      block: body.action_block || body.block,
+      language: body.language || "en", // default to English if not provided
+    };
 
-    const contentType = upstream.headers.get("content-type") || "";
-    const isJson = contentType.includes("application/json");
-    const body = isJson ? await upstream.json() : await upstream.text();
+    console.log("Proxying payload to backend:", payload);
 
-    if (!upstream.ok) {
-      // Fallback: some backends might require POST; we try it once
-      let fallbackBody: unknown = body;
-      try {
-        const prompt = url.searchParams.get("prompt");
-        const upstreamPost = await fetch(
-          "https://g6-worrymate-zt0r.onrender.com/chat/compose",
-          {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-              accept: "application/json",
-            },
-            cache: "no-store",
-            body: JSON.stringify(prompt ? { prompt } : {}),
-          }
-        );
-        const postContentType = upstreamPost.headers.get("content-type") || "";
-        const postIsJson = postContentType.includes("application/json");
-        fallbackBody = postIsJson
-          ? await upstreamPost.json()
-          : await upstreamPost.text();
-        if (upstreamPost.ok) {
-          const payload = postIsJson
-            ? fallbackBody
-            : { card: String(fallbackBody ?? ""), message: "ok" };
-          return new Response(JSON.stringify(payload), {
-            status: 200,
-            headers: { "content-type": "application/json" },
-          });
-        }
-      } catch {}
-
-      return new Response(
-        JSON.stringify({
-          ok: false,
-          status: upstream.status,
-          message: "Upstream compose returned an error",
-          body: fallbackBody,
-        }),
-        {
-          status: upstream.status,
-          headers: { "content-type": "application/json" },
-        }
-      );
-    }
-
-    // If JSON, pass through; if text, wrap as JSON
-    const payload = isJson ? body : { card: String(body ?? ""), message: "ok" };
-    return new Response(JSON.stringify(payload), {
-      status: 200,
-      headers: { "content-type": "application/json" },
-    });
-  } catch (e: unknown) {
-    return new Response(
-      JSON.stringify({
-        error: "Failed to fetch compose",
-        detail:
-          typeof e === "object" && e !== null && "message" in e
-            ? String((e as { message?: unknown }).message)
-            : String(e),
-      }),
-      {
-        status: 500,
-        headers: { "content-type": "application/json" },
-      }
-    );
-  }
-}
-
-export async function POST(request: Request) {
-  try {
-    const url = new URL(request.url);
-    const search = url.search;
-    const upstreamUrl = `https://g6-worrymate-zt0r.onrender.com/chat/compose${
-      search || ""
-    }`;
-    const body = await request.text();
-
-    const upstream = await fetch(upstreamUrl, {
+    const response = await fetch(targetUrl, {
       method: "POST",
       headers: {
-        "content-type": "application/json",
-        accept: "application/json",
+        "Content-Type": "application/json",
       },
-      cache: "no-store",
-      body: body || JSON.stringify({}),
+      body: JSON.stringify(payload),
     });
 
-    const contentType = upstream.headers.get("content-type") || "";
-    const isJson = contentType.includes("application/json");
-    const upstreamBody = isJson ? await upstream.json() : await upstream.text();
+    console.log("Backend response status:", response.status);
 
-    if (!upstream.ok) {
-      return new Response(
-        JSON.stringify({
-          ok: false,
-          status: upstream.status,
-          message: "Upstream compose error",
-          body: upstreamBody,
-        }),
-        {
-          status: upstream.status,
-          headers: { "content-type": "application/json" },
-        }
+    const text = await response.text();
+    let data: unknown;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { raw: text } as { raw: string };
+    }
+
+    if (!response.ok) {
+      console.error("Backend error:", data);
+      return NextResponse.json(
+        { error: "Backend error", details: data },
+        { status: response.status }
       );
     }
 
-    const payload = isJson
-      ? upstreamBody
-      : { card: String(upstreamBody ?? ""), message: "ok" };
-    return new Response(JSON.stringify(payload), {
-      status: 200,
-      headers: { "content-type": "application/json" },
-    });
-  } catch (e: unknown) {
-    return new Response(
-      JSON.stringify({
-        error: "Failed to fetch compose (POST)",
-        detail:
-          typeof e === "object" && e !== null && "message" in e
-            ? String((e as { message?: unknown }).message)
-            : String(e),
-      }),
-      { status: 500, headers: { "content-type": "application/json" } }
+    console.log("Backend response data:", data);
+
+    // ✅ Return clean JSON to the frontend
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("API route error:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to fetch action card",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
     );
   }
 }

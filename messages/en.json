@@ -1,0 +1,49 @@
+{
+  "Settings": {
+    "title": "Settings",
+    "header": "Language and Accessibility",
+    "language": "Language",
+    "english": "English",
+    "amharic": "Amharic",
+    "privacy": "Privacy and Security",
+    "saveChatHistory": "Save Chat History",
+    "saveChatDescription": "You can save your chats and see them later on.",
+    "enableChat": "Enable chat saving",
+    "deleteChat": "Delete Chat History",
+    "about": "About WorryMate",
+    "appInfo": "Application Information",
+    "appVersion": "Version and build details",
+    "versionTag": "Version 1.0 Demo",
+    "betaTag": "Beta Release"
+  },
+  "Workspace": {
+    "welcomePrefix": "Hey",
+    "welcomeMate": "Mate, what's worrying you?",
+    "sampleQuestions": [
+      "I'm really stressed about my exams",
+      "I lost my job and I'm worried about money",
+      "My family and I keep fighting"
+    ],
+    "listening": "Listening...",
+    "speakNow": "Speak now",
+    "close": "Close",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "disclaimer": "General wellbeing advice, not medical advice.",
+    "placeholder": "Tell me what's worrying you so I can help.."
+  },
+  "Sidebar": {
+    "ventingChat": "Venting Chat",
+    "toolkit": "Offline ToolKit",
+    "settings": "Settings",
+    "brand": "WorryMate"
+  },
+  "HomePage": {
+    "title": "Worry Mate"
+  },
+  "Header": {
+    "home": "Home",
+    "settings": "Settings",
+    "about": "About"
+  }
+}

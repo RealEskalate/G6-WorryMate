@@ -1,5 +1,5 @@
 
-export async function fetchActionCard(cardKey = "study_stress") {
+export async function fetchActionCard(cardKey : string) {
   try {
     console.log('Fetching action card for:', cardKey);
     const payload = { cardKey: cardKey };
