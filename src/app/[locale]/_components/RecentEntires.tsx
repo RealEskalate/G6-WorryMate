@@ -13,10 +13,10 @@ function RecentEntires() {
     fetchEntries();
   }, []);
   return (
-    <div className='shadow-xl rounded-xl pb-2 mt-8 bg-[#F7F9FB]'>
+    <div className='shadow-xl rounded-xl pb-2 mt-8 bg-[#F7F9FB] dark:bg-[#092B47]'>
       <div className="w-full  ">
         <div className='px-10 py-2 rounded-[10px] mb-6 '>
-          <h2 className="text-xl self-start font-semibold text-[#0D2A4B]">Recent Entries</h2>
+          <h2 className="text-xl self-start font-semibold text-[#0D2A4B] dark:text-[#10B981]">Recent Entries</h2>
         </div>
 
         <div className="max-h-[calc(100vh-520px)] overflow-y-auto space-y-3 pr-2">
@@ -29,13 +29,13 @@ function RecentEntires() {
               <button
                 key={entry.id}
                 onClick={() => router.push(`/journal/${entry.id}`)}
-                className="w-full cursor-pointer rounded-lg border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:bg-[#F7F9FB] font-['Inter','Noto_Sans_Ethiopic']"
+                className="w-full cursor-pointer rounded-lg border-2 dark:bg-[#092B47] border-gray-200 bg-[#F7F9FB] dark:border-[#10B981]  p-4 text-left shadow-sm transition hover:bg-[#F7F9FB] font-['Inter','Noto_Sans_Ethiopic']"
                 aria-label={`View journal entry: ${entry.title}`}
               >
-                <h4 className="font-semibold text-[#0D2A4B] text-[18px] leading-relaxed">
+                <h4 className="font-semibold text-[#0D2A4B] dark:text-white text-[18px] leading-relaxed">
                   {entry.title}
                 </h4>
-                <p className="text-[14px] text-[#0D2A4B]/70 leading-relaxed">
+                <p className="text-[14px] text-[#0D2A4B]/70 dark:text-white/70 leading-relaxed">
                   {new Date(entry.date).toLocaleString()}
                 </p>
               </button>

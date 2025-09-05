@@ -38,7 +38,7 @@ function EmojiSelection() {
   };
 
   return (
-    <div className="p-4 text-[#0D2A4B]">
+    <div className="p-4 text-[#0D2A4B] dark:text-white">
       <h1 className="text-2xl font-bold mb-4">Select your mood</h1>
       <div className="grid grid-cols-6 sm:grid-cols-8 gap-4">
         {emoji.map((item, i) => (
@@ -46,7 +46,7 @@ function EmojiSelection() {
             <div
               onClick={() => handleSelect(item.emoji, item.description)}
               className={`flex items-center justify-center cursor-pointer w-14 h-14 text-2xl m-2 rounded-full transition 
-                ${selectedEmoji === item.emoji ? 'bg-[#0D2A4B] text-white scale-110' : 'bg-[#F7F9FB] hover:bg-gray-100'}
+                ${selectedEmoji === item.emoji ? 'bg-[#0D2A4B] dark:bg-[#10B981] text-white scale-110' : 'bg-[#F7F9FB] hover:bg-gray-100'}
               `}
             >
               {item.emoji}
