@@ -2,15 +2,10 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Metadata } from 'next';
-import Header from '@/components/Header';
 import LayoutWithSidebar from '@/components/LayoutWithSidebar';
 import '@/app/globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 
-type Props = {
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
-};
 export const metadata: Metadata = {
   title: "WorryMate",
   description: "Your AI companion for mental wellness",

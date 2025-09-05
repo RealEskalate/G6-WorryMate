@@ -6,7 +6,6 @@ import { Globe } from "lucide-react";
 import Link from "next/link";
 
 export default function Header() {
-  const t = useTranslations("Header");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();

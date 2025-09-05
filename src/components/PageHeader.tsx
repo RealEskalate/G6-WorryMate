@@ -12,7 +12,7 @@ interface PageHeaderProps {
     showLanguageToggle?: boolean
 }
 
-export function PageHeader({ title, showLanguageToggle = true }: PageHeaderProps) {
+export function PageHeader({ showLanguageToggle = true }: PageHeaderProps) {
     const locale = useLocale()
     const router = useRouter()
     const pathname = usePathname()
