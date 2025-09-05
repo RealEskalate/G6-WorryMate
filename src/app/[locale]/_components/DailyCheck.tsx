@@ -42,25 +42,26 @@ function DailyCheck() {
     checkIn()
   }, [todayStr])
 
- const tileClassName = useCallback(
+  const tileClassName = useCallback(
   ({ date }: { date: Date }) => {
     const dateStr = formatDateOnly(date);
     const isChecked = checkedIn.includes(dateStr);
     const isToday = dateStr === todayStr;
 
     const classes = [
-      'rounded-full',
-      'transition-colors duration-200',
-      isChecked ? 'bg-green-500 text-white dark:bg-green-400 dark:text-black' : '',
+      'custom-tile',
+      isChecked ? 'bg-green-500 text-white dark:bg-green-400' : '',
       isChecked ? 'hover:bg-green-600 dark:hover:bg-green-500' : 'hover:bg-gray-100 dark:hover:bg-gray-700',
       isToday ? 'border-2 border-green-500 dark:border-green-400' : '',
+      'rounded-full',
+      'transition-colors',
+      'duration-200',
     ].filter(Boolean);
 
-    return classes.join(' ');
+    return classes;
   },
   [checkedIn, todayStr]
 );
-
 
   return (
     <div className="bg-[#F7F9FB] dark:bg-[#092B47] flex flex-col justify-center items-center shadow-xl rounded-xl pb-2 mt-0 max-w-2xl mx-auto">
