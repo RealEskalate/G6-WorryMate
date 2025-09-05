@@ -120,8 +120,8 @@ export default function ProgressPage() {
             Your Mental Health Journey
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">
-            Track your progress, celebrate your wins, and see how far you've
-            come on your wellness journey.
+            Track your progress&lsquo;s celebrate your wins&rsquo; and see how far you&apos;ve
+            come on your wellness journey
           </p>
         </div>
 
@@ -237,10 +237,10 @@ export default function ProgressPage() {
                   <Target className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                  You're Making Great Progress!
+                  You&apos;re Making Great Progress!
                 </h3>
                 <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                  Every check-in, every journal entry, and every moment of
+                  Every check-in&lsquo; every journal entry&lsquo; and every moment of
                   self-reflection is a step forward in your mental health
                   journey. Keep going!
                 </p>
