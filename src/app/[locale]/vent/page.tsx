@@ -14,7 +14,7 @@ import { useParams } from 'next/navigation'
 
 
 const Workspace = () => {
-   
+
     const t = useTranslations('Workspace')
     type ChatMessage = { role: 'user' | 'assistant', content: string }
     const [prompt, setPrompt] = useState('')
@@ -27,45 +27,48 @@ const Workspace = () => {
     const [hasStarted, setHasStarted] = useState(false)
     const [showRateLimit, setShowRateLimit] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const {locale}=useParams()
+    const { locale } = useParams()
+    // Speech recognition locale (browser)
     const language = locale === 'en' ? 'en-US' : 'am-ET'
-   const recognitionRef = useRef<SpeechRecognitionClass | null>(null);
+    // API language (server expects short code)
+    const apiLang = locale === 'am' ? 'am' : 'en'
+    const recognitionRef = useRef<SpeechRecognitionClass | null>(null);
 
-useEffect(() => {
-    if (typeof window === 'undefined') return;
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
 
-    const SpeechRecognition =window.SpeechRecognition ||window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
-    const rec = new SpeechRecognition();
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.lang = language;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return;
+        const rec = new SpeechRecognition();
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.lang = language;
 
-    rec.onresult = (event: SpeechRecognitionEvent) => {
-        let transcript = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript;
-        }
-        setPrompt(prompt+' '+transcript);
+        rec.onresult = (event: SpeechRecognitionEvent) => {
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+            setPrompt(prompt + ' ' + transcript);
+        };
+
+        rec.onend = () => {
+            if (isListening) rec.start();
+        };
+
+        recognitionRef.current = rec;
+    }, [language, isListening]);
+
+    const startListening = () => {
+        if (!recognitionRef.current) return alert('Your browser does not support speech recognition.');
+        setIsListening(true);
+        recognitionRef.current.start();
     };
 
-    rec.onend = () => {
-        if (isListening) rec.start();
+    const stopListening = () => {
+        recognitionRef.current?.stop();
+        setIsListening(false);
     };
-
-    recognitionRef.current = rec;
-}, [language, isListening]);
-
-const startListening = () => {
-    if (!recognitionRef.current) return alert('Your browser does not support speech recognition.');
-    setIsListening(true);
-    recognitionRef.current.start();
-};
-
-const stopListening = () => {
-    recognitionRef.current?.stop();
-    setIsListening(false);
-};
 
     const handleSend = async () => {
         const trimmed = prompt.trim()
@@ -82,7 +85,7 @@ const stopListening = () => {
             // 1. risk-check
             const riskRes = await fetch('/api/risk-check', {
                 method: 'POST',
-                headers: { 'content-type': 'application/json' },
+                headers: { 'content-type': 'application/json', 'x-locale': apiLang },
                 body: JSON.stringify({ content: trimmed })
             })
             const riskData = await riskRes.json()
@@ -100,7 +103,7 @@ const stopListening = () => {
                 try {
                     const resp = await fetch('/api/crisis-card', {
                         method: 'POST',
-                        headers: { 'content-type': 'application/json' },
+                        headers: { 'content-type': 'application/json', 'x-locale': apiLang },
                         body: JSON.stringify({ tags: riskTags })
                     })
                     const data = await resp.json().catch(() => ({}))
@@ -129,8 +132,9 @@ const stopListening = () => {
             // 2. map - intent
             const mapRes = await fetch('/api/map_intent', {
                 method: 'POST',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({ content: trimmed })
+                headers: { 'content-type': 'application/json', 'x-locale': apiLang },
+                // make sure backend knows the selected language
+                body: JSON.stringify({ content: trimmed, language: apiLang })
             })
 
             const mapData = await mapRes.json()
@@ -140,7 +144,8 @@ const stopListening = () => {
                 return
             }
             const topicKey = mapData?.topic_key
-            const lang = mapData?.language || 'en'
+            // Force language to the selected app locale to avoid backend defaulting to EN
+            const lang = apiLang
             if (!topicKey) {
                 setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I could not find a helpful topic yet.' }])
                 return
@@ -167,7 +172,7 @@ const stopListening = () => {
             }
 
             // 3. action-block by topic
-            const actionBlockRes = await fetch(`/api/action-block?topic=${encodeURIComponent(String(topicKey))}&locale=${encodeURIComponent(lang)}`, { method: 'GET' })
+            const actionBlockRes = await fetch(`/api/action-block?topic=${encodeURIComponent(String(topicKey))}&locale=${encodeURIComponent(lang)}`, { method: 'GET', headers: { 'x-locale': apiLang } })
             const actionBlockData = await actionBlockRes.json().catch(() => ({}))
             if (!actionBlockRes.ok) {
                 console.log('action-block error', actionBlockData)
@@ -179,7 +184,7 @@ const stopListening = () => {
             // 4. compose full card from backend
             const composeRes = await fetch('/api/compose', {
                 method: 'POST',
-                headers: { 'content-type': 'application/json' },
+                headers: { 'content-type': 'application/json', 'x-locale': apiLang },
                 body: JSON.stringify({ topic: topicKey, action_block: block, language: lang })
             })
             console.log('composeRes status:', composeRes)
@@ -381,7 +386,7 @@ const stopListening = () => {
                             <div className='w-full flex justify-start mb-4'>
                                 <div className='max-w-[85%] border rounded-lg px-3 py-2 bg-white dark:bg-gray-800 text-[#2a4461] dark:text-gray-100 border-gray-200 dark:border-gray-700 flex items-center gap-2'>
                                     <LoaderOne />
-                                    <span className='text-sm'>AI is thinking...</span>
+                                    {/* <span className='text-sm'></span> */}
                                 </div>
                             </div>
                         )}
@@ -498,7 +503,7 @@ const stopListening = () => {
                                 />
                             </div>
                             <button className={`${isListening ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'} text-blue-600 dark:text-blue-400 cursor-pointer p-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700`} onClick={
-                                isListening? stopListening: startListening
+                                isListening ? stopListening : startListening
                             }>
                                 <Mic className="w-5 h-5" />
                             </button>

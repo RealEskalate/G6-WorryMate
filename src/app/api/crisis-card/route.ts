@@ -1,14 +1,42 @@
+import { routing } from "@/i18n/routing";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
+    const url = new URL(request.url);
     const bodyText = await request.text();
     const body = bodyText ? bodyText : JSON.stringify({});
     console.log("request body", body);
 
-    // Post tags to upstream; adjust endpoint if backend differs
+    // Determine locale similar to action-block route
+    type Locale = (typeof routing)["locales"][number];
+    const toLocale = (val?: string | null): Locale | undefined => {
+      if (!val) return undefined;
+      const v = val.toLowerCase();
+      return (routing.locales as readonly string[]).includes(v)
+        ? (v as Locale)
+        : undefined;
+    };
+
+    const qpLocale = toLocale(url.searchParams.get("locale"));
+    const headerLocale = toLocale(request.headers.get("x-locale"));
+    let refererLocale: Locale | undefined;
+    const referer = request.headers.get("referer") ?? "";
+    if (referer) {
+      try {
+        const refUrl = new URL(referer);
+        const firstSeg = refUrl.pathname.split("/").filter(Boolean)[0];
+        refererLocale = toLocale(firstSeg ?? undefined);
+      } catch {
+        // ignore invalid referer
+      }
+    }
+
+    const locale: Locale =
+      qpLocale || headerLocale || refererLocale || routing.defaultLocale;
+
     const upstream = await fetch(
-      "https://g6-worrymate-8osd.onrender.com/chat/crisis_card?region=ET&lang=en",
+      `https://g6-worrymate-8osd.onrender.com/chat/crisis_card?region=ET&lang=${locale}`,
       {
         method: "POST",
         headers: {
