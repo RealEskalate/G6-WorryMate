@@ -80,7 +80,7 @@ export default function JournalEditor() {
   if (!editor) return null;
 
   return (
-    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 bg-[#F7F9FB] font-sans">
+    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 bg-[#F7F9FB] dark:bg-[rgba(255,9,43,0.28)] font-sans">
       <h2 className="mb-6 text-3xl font-bold text-[#0D2A4B] sm:text-4xl">
         My Journal
       </h2>

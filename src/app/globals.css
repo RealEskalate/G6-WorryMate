@@ -2,7 +2,12 @@
 /* @import "tw-animate-css"; */
 
 /* /@custom-variant dark (&:is(.dark *)); */
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant dark (&:is(.dark *)); */
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  /* ... other dark mode variables */
+}
 
 .react-calendar__tile {
   background: transparent !important;
