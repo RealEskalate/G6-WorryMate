@@ -152,7 +152,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 
 	// MODIFIED: Use the getClient() helper to pick a client for this request
 	client := ai.getClient()
-	log.Print(client.ClientConfig().APIKey)
+	// log.Print(client.ClientConfig().APIKey)
 	result, err := client.Models.GenerateContent(
 		ctx,
 		ai.model_name,
@@ -162,6 +162,16 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 
 	// ... (error handling and result parsing remain exactly the same) ...
 	if err != nil {
+		// Try to find valid api keys in clients
+		count := 0
+		for (count < len(ai.clients)) {
+			ans, err := ai.GenerateActionCard(actionBlock)
+			if (err == nil) {
+				return ans, err
+			}
+			count += 1
+		}
+		
 		var apiErr genai.APIError
 		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
 		if errors.As(err, &apiErr) {
@@ -220,6 +230,16 @@ IMPORTANT: Your entire response should be exactly one line in the specified form
 	)
 
 	if err != nil {
+		// Try to find valid api keys in clients
+		count := 0
+		for (count < len(ai.clients)) {
+			ans, err := ai.GenerateTopicKey(content)
+			if (err == nil) {
+				return ans, err
+			}
+			count += 1
+		}
+
 		var apiErr genai.APIError
 		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
 		if errors.As(err, &apiErr) {
@@ -306,6 +326,16 @@ IMPORTANT: Be consistent. Same content should always produce the same risk level
 
 
 	if err != nil {
+		// Try to find valid api keys in clients
+		count := 0
+		for (count < len(ai.clients)) {
+			num, ans, err := ai.GenerateRiskCheck(content)
+			if (err == nil) {
+				return num, ans, err
+			}
+			count += 1
+		}
+
 		var apiErr genai.APIError
 		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
 		if errors.As(err, &apiErr) {
@@ -468,6 +498,24 @@ JSON Structure Example:
 		ai.config,
 	)
 	if err != nil {
+		// Try to find valid api keys in clients
+		count := 0
+		for (count < len(ai.clients)) {
+			ans, err := ai.GenerateCrisisCard(lang, region, tags)
+			if (err == nil) {
+				return ans, err
+			}
+			count += 1
+		}
+
+		var apiErr genai.APIError
+		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
+		if errors.As(err, &apiErr) {
+			// log.Print("err : ", err.Error(), "api err : ", apiErr )
+			if apiErr.Code == 429 {
+				return nil, errors.New("quota/rate limit exceeded, please retry later")
+			}
+		}
 		return nil, err
 	}
 
