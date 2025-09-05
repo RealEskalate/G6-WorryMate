@@ -18,6 +18,9 @@
   --primary-blue: #0D2A4B;
   --secondary-blue: #eaf6ff;
   --text-blue: #2a4461;
+  /* Base radius token (needed for derived --radius-* vars used by rounded-* utilities) */
+  --radius: 0.5rem;
+  /* Adjust this value to globally change component corner rounding */
 }
 
 @theme inline {
@@ -188,6 +191,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  /* Mirror base radius in dark mode (optional, can differ if desired) */
+  --radius: 0.5rem;
 }
 
 @layer base {
