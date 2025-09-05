@@ -43,6 +43,66 @@ func (_m *ChatRepositoryI) GetActionBlock(topic_key string, lang string) (*domai
 	return r0, r1
 }
 
+// GetResource provides a mock function with given fields: region
+func (_m *ChatRepositoryI) GetResource(region string) ([]*domain.Crisis, bool) {
+	ret := _m.Called(region)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetResource")
+	}
+
+	var r0 []*domain.Crisis
+	var r1 bool
+	if rf, ok := ret.Get(0).(func(string) ([]*domain.Crisis, bool)); ok {
+		return rf(region)
+	}
+	if rf, ok := ret.Get(0).(func(string) []*domain.Crisis); ok {
+		r0 = rf(region)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.Crisis)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) bool); ok {
+		r1 = rf(region)
+	} else {
+		r1 = ret.Get(1).(bool)
+	}
+
+	return r0, r1
+}
+
+// GetoffPack provides a mock function with given fields: lang
+func (_m *ChatRepositoryI) GetoffPack(lang string) ([]*domain.ActionBlock, bool) {
+	ret := _m.Called(lang)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetoffPack")
+	}
+
+	var r0 []*domain.ActionBlock
+	var r1 bool
+	if rf, ok := ret.Get(0).(func(string) ([]*domain.ActionBlock, bool)); ok {
+		return rf(lang)
+	}
+	if rf, ok := ret.Get(0).(func(string) []*domain.ActionBlock); ok {
+		r0 = rf(lang)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.ActionBlock)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) bool); ok {
+		r1 = rf(lang)
+	} else {
+		r1 = ret.Get(1).(bool)
+	}
+
+	return r0, r1
+}
+
 // NewChatRepositoryI creates a new instance of ChatRepositoryI. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewChatRepositoryI(t interface {
