@@ -6,6 +6,7 @@ import FloatingIcons from '../components/FloatingIcons';
 import BlurIn from './magicui/blur-in';
 import Link from 'next/link';
 import { NavbarDemo } from './NavBar';
+import { TextAnimate } from './magicui/text-animate';
 const Hero = () => {
     return (
         <div className="min-h-screen dark:text-white font-sans">
@@ -38,9 +39,11 @@ const Hero = () => {
                     />
 
                     {/* Subheading */}
-                    <p className="text-xl sm:text-md mb-8 max-w-2xl text-[#0D2A4B] dark:text-white">
-                        Share your worries safely, find comfort in your own language, and take small steps toward a calmer mind with your AI-powered buddy.
-                    </p>
+                    <TextAnimate className='text-xl sm:text-md mb-8 max-w-2xl text-[#0D2A4B] dark:text-white' animation="blurInUp" by="character" once>
+                        Share your worries safely, find comfort in your own language, and take  small steps toward a calmer mind with your AI-powered buddy.
+                    </TextAnimate>
+                    {/* <p className="text-xl sm:text-md mb-8 max-w-2xl text-[#0D2A4B] dark:text-white">
+                    </p> */}
 
 
                     {/* CTA Button */}
