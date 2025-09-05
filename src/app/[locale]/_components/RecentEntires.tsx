@@ -28,9 +28,9 @@ function RecentEntires() {
   }, []);
 
   return (
-    <div className='bg-white/80 dark:bg-gray-800/60 rounded-2xl border border-gray-200 dark:border-gray-700'>
+    <div className='bg-white/80  dark:bg-[#092B47] rounded-2xl border border-gray-200 dark:border-gray-700'>
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-semibold text-[#0D2A4B] dark:text-gray-100">Recent Entries</h2>
+        <h2 className="text-xl font-semibold text-[#0D2A4B] dark:text-[#10B981]">Recent Entries</h2>
         <button
           onClick={() => router.push('/journal')}
           className="inline-flex items-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 transition-colors"
@@ -41,7 +41,7 @@ function RecentEntires() {
       </div>
 
 
-      <div className="divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="max-h-[calc(100vh-670px)] overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
         {entries.length === 0 ? (
           <div className="px-6 py-8">
             <p className="text-[#0D2A4B] dark:text-gray-300 font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed">
@@ -63,9 +63,7 @@ function RecentEntires() {
               <h4 className="text-[17px] md:text-[18px] font-medium text-gray-900 dark:text-gray-100 mb-1">
                 {entry.title}
               </h4>
-              <p className="text-[14px] text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-2">
-                {entry.content}
-              </p>
+      
             </button>
           ))
         )}
