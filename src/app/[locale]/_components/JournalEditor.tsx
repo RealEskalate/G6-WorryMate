@@ -80,42 +80,32 @@ export default function JournalEditor() {
   if (!editor) return null;
 
   return (
-    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 bg-[#F7F9FB] dark:bg-[#092B47] font-sans">
-      <h2 className="mb-6 text-3xl font-bold text-[#0D2A4B] sm:text-4xl">
+    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 bg-[white] dark:bg-[#092B47] font-sans">
+      <h2 className="mb-6 text-3xl font-bold text-[#0D2A4B] dark:text-[#10B981] sm:text-4xl">
         My Journal
       </h2>
       <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
-        <div className="w-full rounded-xl bg-white dark:bg p-6 shadow-md lg:w-3/4">
+        <div className="w-full rounded-xl bg-[#F7F9FB] dark:bg-[#28445C] p-6 shadow-md lg:w-3/4">
           <input
             type="text"
             placeholder="Entry Title"
             value={currentTitle}
             onChange={(e) => setCurrentTitle(e.target.value)}
-            className="mb-4 w-full rounded-lg border border-gray-300 px-5 py-3 text-[16px] text-[#0D2A4B] focus:border-[#0D2A4B] focus:outline-none focus:ring-2 focus:ring-[#0D2A4B]/20 font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
+            className="mb-4 w-full rounded-lg border border-gray-300 dark:border-[#72a795] px-5 py-3 text-[16px] text-[#0D2A4B] dark:text-[white] focus:border-[#0D2A4B] dark:focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#0D2A4B]/20 dark:focus:ring-[#10B981]/20 font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
             aria-label="Journal entry title"
           />
-          <div className="mb-4 rounded-lg border border-gray-300 bg-whi p-5">
+          <div className="mb-4 rounded-lg border border-gray-300 dark:border-[#10B981] bg-whi p-5">
             <EditorContent
               editor={editor}
-              className="min-h-[300px]  text-[16px] text-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
+              className="min-h-[300px]  text-[16px] text-[#0D2A4B] dark:text-white font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
             />
           </div>
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                editor.chain().focus().unsetAllMarks().clearNodes().run();
-              }}
-              className="rounded-lg cursor-pointer border border-[#EF4444] px-5 py-2.5 text-[#EF4444] font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed transition hover:bg-[#EF4444]/10"
-              aria-label="Clear editor content"
-            >
-              Clear
-            </button>
+          <div className="flex justify-center">
+        
             <button
               type="button"
               onClick={saveEntry}
-              className="rounded-lg cursor-pointer bg-[#10B981] px-5 py-2.5 text-white font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed transition hover:bg-[#10B981]/80"
+              className="rounded-lg cursor-pointer dark:bg-[#10B981] bg-[#0D2A4B] px-5 py-2.5 text-white font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed transition hover:bg-[#10B981]/80"
               aria-label="Save journal entry"
             >
               Save Entry
@@ -124,12 +114,12 @@ export default function JournalEditor() {
         </div>
 
         <div className="w-full lg:w-1/2">
-          <h3 className="mb-4 text-xl font-semibold text-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed">
+          <h3 className="mb-4 text-3xl font-semibold dark:text-[#10B981] text-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed">
             Recent Entries
           </h3>
-          <div className="max-h-[calc(100vh-200px)] overflow-y-auto space-y-3 pr-2">
+          <div className="max-h-[calc(100vh-200px)] overflow-y-auto space-y-3 pr-2 bg-[#F7F9FB] dark:bg-[#28445C] shadow-md ">
             {entries.length === 0 ? (
-              <p className="text-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed">
+              <p className="text-[#0D2A4B] dark:text-[#10B981] font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed">
                 No entries yet. Start writing!
               </p>
             ) : (
@@ -137,13 +127,13 @@ export default function JournalEditor() {
                 <button
                   key={entry.id}
                   onClick={() => router.push(`/journal/${entry.id}`)}
-                  className="w-full cursor-pointer rounded-lg border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:bg-[#F7F9FB] font-['Inter','Noto_Sans_Ethiopic']"
+                  className="w-full cursor-pointer rounded-lg border dark:border-[#10B981] dark:bg-[#28445C] border-gray-200 bg-[#F7F9FB] p-4 text-left shadow-sm transition hover:bg-[#f7f9f0cd] font-['Inter','Noto_Sans_Ethiopic']"
                   aria-label={`View journal entry: ${entry.title}`}
                 >
-                  <h4 className="font-semibold text-[#0D2A4B] text-[18px] leading-relaxed">
+                  <h4 className="font-semibold text-[#0D2A4B] dark:text-white text-[18px] leading-relaxed">
                     {entry.title}
                   </h4>
-                  <p className="text-[14px] text-[#0D2A4B]/70 leading-relaxed">
+                  <p className="text-[14px] text-[#0D2A4B]/70 dark:text-white/70 leading-relaxed">
                     {new Date(entry.date).toLocaleString()}
                   </p>
                 </button>
