@@ -2,6 +2,9 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
+
+import './calendar.css'
+
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
 import { db } from '@/app/lib/db'
 
@@ -39,35 +42,30 @@ function DailyCheck() {
     checkIn()
   }, [todayStr])
 
-  const tileClassName = useCallback(
-    ({ date }: { date: Date }) => {
-      const dateStr = formatDateOnly(date)
-      const isChecked = checkedIn.includes(dateStr)
-      const isToday = dateStr === todayStr
-      // console.log(`Tile: ${dateStr}, isChecked: ${isChecked}, isToday: ${isToday}`)
+ const tileClassName = useCallback(
+  ({ date }: { date: Date }) => {
+    const dateStr = formatDateOnly(date);
+    const isChecked = checkedIn.includes(dateStr);
+    const isToday = dateStr === todayStr;
 
-      const classes = [
+    const classes = [
+      'rounded-full',
+      'transition-colors duration-200',
+      isChecked ? 'bg-green-500 text-white dark:bg-green-400 dark:text-black' : '',
+      isChecked ? 'hover:bg-green-600 dark:hover:bg-green-500' : 'hover:bg-gray-100 dark:hover:bg-gray-700',
+      isToday ? 'border-2 border-green-500 dark:border-green-400' : '',
+    ].filter(Boolean);
 
-        'custom-tile',
-        isChecked ? 'bg-green-200' : '',
-        isChecked ? 'hover:bg-green-300' : 'hover:bg-gray-100',
-        isToday ? 'border-2 border-green-500' : '',
-        isChecked ? 'text-white' : '',
+    return classes.join(' ');
+  },
+  [checkedIn, todayStr]
+);
 
-        'rounded-full',
-        'transition-colors',
-        'duration-200',
-      ].filter(Boolean)
-
-      return classes
-    },
-    [checkedIn, todayStr]
-  )
 
   return (
-    <div className="bg-[#F7F9FB] flex flex-col justify-center items-center shadow-xl rounded-xl pb-2 mt-8 max-w-2xl mx-auto">
+    <div className="bg-[#F7F9FB] dark:bg-[#092B47] flex flex-col justify-center items-center shadow-xl rounded-xl pb-2 mt-0 max-w-2xl mx-auto">
       <div className="px-10 py-2 rounded-[10px] mb-6 self-start">
-        <h2 className="text-2xl font-semibold text-[#0D2A4B]">Daily Check-in</h2>
+        <h2 className="text-2xl font-semibold text-[#0D2A4B] dark:text-[#10B981]">Daily Check-in</h2>
       </div>
       {isLoading && <p>Loading check-in data...</p>}
       {error && <p className="text-red-500">{error}</p>}
@@ -79,7 +77,7 @@ function DailyCheck() {
           }
         }}
         tileClassName={tileClassName}
-        className="border-none shadow-sm rounded-lg p-4 bg-gray-50"
+        className=""
         navigationLabel={({ label }) => (
           <span className="text-lg font-semibold text-gray-700">{label}</span>
         )}
