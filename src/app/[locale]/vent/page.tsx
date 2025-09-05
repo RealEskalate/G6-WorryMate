@@ -3,18 +3,22 @@ import OtherCard from '@/components/OtherCard'
 import ActionCard from '@/components/ActionCard'
 import GeneralSupportCard from '@/components/GeneralSupportCard'
 import { Mic, Send } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ActionCardData, ActionStep, CrisisCardData } from '@/types'
 import { AuroraText } from '@/components/magicui/aurora-text'
 import { useTranslations } from 'next-intl'
 import { LoaderOne } from '@/components/ui/loader'
 import { PageHeader } from '@/components/PageHeader'
+import { useParams } from 'next/navigation'
+
+
+
 const Workspace = () => {
+   
     const t = useTranslations('Workspace')
     type ChatMessage = { role: 'user' | 'assistant', content: string }
     const [prompt, setPrompt] = useState('')
     const [isListening, setIsListening] = useState(false)
-    const [isMuted, setIsMuted] = useState(false)
     const [messages, setMessages] = useState<ChatMessage[]>([])
     const [actionCards, setActionCards] = useState<ActionCardData[]>([])
     const [isCrisisMode, setIsCrisisMode] = useState(false)
@@ -23,6 +27,46 @@ const Workspace = () => {
     const [hasStarted, setHasStarted] = useState(false)
     const [showRateLimit, setShowRateLimit] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const {locale}=useParams()
+    const language = locale === 'en' ? 'en-US' : 'am-ET'
+   const recognitionRef = useRef<SpeechRecognitionClass | null>(null);
+
+useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const SpeechRecognition =window.SpeechRecognition ||window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    const rec = new SpeechRecognition();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = language;
+
+    rec.onresult = (event: SpeechRecognitionEvent) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+        }
+        setPrompt(prompt+' '+transcript);
+    };
+
+    rec.onend = () => {
+        if (isListening) rec.start();
+    };
+
+    recognitionRef.current = rec;
+}, [language, isListening]);
+
+const startListening = () => {
+    if (!recognitionRef.current) return alert('Your browser does not support speech recognition.');
+    setIsListening(true);
+    recognitionRef.current.start();
+};
+
+const stopListening = () => {
+    recognitionRef.current?.stop();
+    setIsListening(false);
+};
+
     const handleSend = async () => {
         const trimmed = prompt.trim()
         if (!trimmed) return
@@ -357,36 +401,6 @@ const Workspace = () => {
                 </div>
             )}
 
-            {/* Listening overlay */}
-            {isListening && (
-                <div className="fixed inset-0 z-80 flex items-center justify-center bg-white dark:bg-gray-900">
-                    <div className="flex flex-col items-center gap-6 bg-white dark:bg-gray-800 rounded-xl p-8 border border-gray-200 dark:border-gray-700">
-                        <div className="relative h-24 w-24 flex items-center justify-center">
-                            <span className="absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-30 animate-ping"></span>
-                            <span className="relative inline-flex rounded-full h-20 w-20 bg-blue-500/80"></span>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-lg font-semibold text-gray-900 dark:text-white">{t('listening')}</p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{t('speakNow')}</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <button
-                                className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-gray-900 dark:text-gray-100"
-                                onClick={() => setIsListening(false)}
-                            >
-                                {t('close')}
-                            </button>
-                            <button
-                                className="px-4 py-2 rounded-md bg-blue-600 dark:bg-blue-500 text-white text-sm hover:bg-blue-700 dark:hover:bg-blue-600 cursor-pointer"
-                                onClick={() => setIsMuted((m) => !m)}
-                            >
-                                {isMuted ? t('unmute') : t('mute')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {/* Crisis Card Modal */}
             {isCrisisMode && (
                 <div className="fixed inset-0 z-90 flex items-center justify-center bg-black/50 animate-in fade-in duration-300">
@@ -483,7 +497,9 @@ const Workspace = () => {
                                     }}
                                 />
                             </div>
-                            <button className="text-blue-600 dark:text-blue-400 cursor-pointer p-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700" onClick={() => setIsListening(true)}>
+                            <button className={`${isListening ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'} text-blue-600 dark:text-blue-400 cursor-pointer p-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700`} onClick={
+                                isListening? stopListening: startListening
+                            }>
                                 <Mic className="w-5 h-5" />
                             </button>
                             <button className="text-blue-600 dark:text-blue-400 p-2 rounded-lg transition-colors cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" onClick={handleSend}>

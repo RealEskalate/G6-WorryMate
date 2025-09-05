@@ -41,6 +41,7 @@ export default function JournalEditor() {
   useEffect(() => {
     const fetchEntries = async () => {
       const all = await db.journals.toArray();
+      all.reverse();
       setEntries(all);
     };
     fetchEntries();
@@ -79,12 +80,12 @@ export default function JournalEditor() {
   if (!editor) return null;
 
   return (
-    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 bg-[#F7F9FB] font-sans">
+    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 bg-[#F7F9FB] dark:bg-[#092B47] font-sans">
       <h2 className="mb-6 text-3xl font-bold text-[#0D2A4B] sm:text-4xl">
         My Journal
       </h2>
       <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
-        <div className="w-full rounded-xl bg-white p-6 shadow-md lg:w-3/4">
+        <div className="w-full rounded-xl bg-white dark:bg p-6 shadow-md lg:w-3/4">
           <input
             type="text"
             placeholder="Entry Title"
@@ -93,10 +94,10 @@ export default function JournalEditor() {
             className="mb-4 w-full rounded-lg border border-gray-300 px-5 py-3 text-[16px] text-[#0D2A4B] focus:border-[#0D2A4B] focus:outline-none focus:ring-2 focus:ring-[#0D2A4B]/20 font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
             aria-label="Journal entry title"
           />
-          <div className="mb-4 rounded-lg border border-gray-300 bg-white p-5">
+          <div className="mb-4 rounded-lg border border-gray-300 bg-whi p-5">
             <EditorContent
               editor={editor}
-              className="min-h-[300px] text-[16px] text-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
+              className="min-h-[300px]  text-[16px] text-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
             />
           </div>
           <div className="flex gap-4">
