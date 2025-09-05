@@ -20,9 +20,8 @@ function RecentEntires() {
   useEffect(() => {
     const fetchEntries = async () => {
       const all = await db.journals.toArray();
-      // Sort by date desc
-      const sorted = all.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      setEntries(sorted);
+      all.reverse()
+      setEntries(all);
     };
     fetchEntries();
   }, []);

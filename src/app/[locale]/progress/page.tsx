@@ -30,7 +30,7 @@ function computeStreak(checkins: CheckIn[]): number {
     checkins.map((c) => formatDateOnly(new Date(c.date)))
   );
   let streak = 0;
-  let day = new Date();
+  const day = new Date();
   while (dateSet.has(formatDateOnly(day))) {
     streak += 1;
     day.setDate(day.getDate() - 1);
@@ -59,7 +59,7 @@ function computeWellnessScore(
   checkins: CheckIn[]
 ): number {
   if (emojis.length === 0 && checkins.length === 0) return 0;
-  // Average mood over last 14 days
+
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - 14);
   const recentMood = emojis.filter((e) => new Date(e.date) >= cutoff);
@@ -72,7 +72,7 @@ function computeWellnessScore(
     (c) => new Date(c.date) >= cutoff
   ).length;
   const consistency = Math.min(recentChecks / 14, 1);
-  // Weighted blend (60% mood, 40% consistency)
+  
   const normalizedMood = (avgMood - 1) / 4; // map 1..5 -> 0..1
   const score = (normalizedMood * 0.6 + consistency * 0.4) * 100;
   return Math.round(score);
