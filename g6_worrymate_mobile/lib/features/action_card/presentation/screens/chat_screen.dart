@@ -33,6 +33,8 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _hasSentFirstPrompt = false;
   late stt.SpeechToText _speech;
   bool _isListening = false;
+  String selectedOption = 'vent';
+  List<String> selectOptions = ['vent', 'seek advice'];
 
   @override
   void initState() {
@@ -109,7 +111,11 @@ class _ChatScreenState extends State<ChatScreen> {
             _hasSentFirstPrompt = true;
           });
           context.read<ChatBloc>().add(
-            SendChatMessageEvent(ChatParams(content: text), _selectedLang),
+            SendChatMessageEvent(
+              ChatParams(content: text),
+              _selectedLang,
+              selectedOption,
+            ),
           );
           _textController.clear();
         },
@@ -188,6 +194,7 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       child: Scaffold(
         backgroundColor: getBackgroundColor(),
+
         appBar: AppBar(
           backgroundColor: getBackgroundColor(),
           elevation: 0,
@@ -227,12 +234,59 @@ class _ChatScreenState extends State<ChatScreen> {
           actions: [
             Row(
               children: [
-                IconButton(
-                  tooltip: 'Save chat',
-                  onPressed: () {
-                    context.read<ChatBloc>().add(SaveChatTranscriptEvent());
+                PopupMenuButton<String>(
+                  onSelected: (String value) {
+                    setState(() {
+                      selectedOption = value;
+                    });
                   },
-                  icon: Icon(Icons.save_alt, color: getPrimaryColor()),
+                  itemBuilder: (BuildContext context) => [
+                    PopupMenuItem(value: 'vent', child: Text('Vent')),
+                    PopupMenuItem(
+                      value: 'seek advice',
+                      child: Text('Seek Advice'),
+                    ),
+                  ],
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDarkMode
+                          ? Colors.white.withOpacity(0.08)
+                          : const Color(0xFFE0E7EF),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isDarkMode
+                            ? Colors.greenAccent
+                            : const Color(0xFF22314A),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        // Icon(
+                        //   Icons.chat_bubble_outline,
+                        //   color: isDarkMode
+                        //       ? Colors.white70
+                        //       : const Color(0xFF22314A),
+                        //   size: 18,
+                        // ),
+                        const SizedBox(width: 6),
+                        Text(
+                          selectedOption == 'vent' ? 'Vent' : 'Seek Advice',
+                          style: TextStyle(
+                            color: isDarkMode
+                                ? Colors.white
+                                : const Color(0xFF22314A),
+                            fontSize: 14,
+                          ),
+                        ),
+                        const Icon(Icons.arrow_drop_down, size: 20),
+                      ],
+                    ),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
@@ -282,6 +336,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
+
         body: Column(
           children: [
             Padding(
@@ -329,9 +384,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: BlocBuilder<ChatBloc, ChatState>(
                 builder: (context, state) {
                   if (state is ChatError) {
-                    // return Center(
                     return const UpgradeToPremiumCard(); //   child: Padding(
-                    
                   }
 
                   final messages = state.messages;
@@ -478,6 +531,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             SendChatMessageEvent(
                               ChatParams(content: val.trim()),
                               _selectedLang,
+                              selectedOption,
                             ),
                           );
                           _textController.clear();
@@ -497,6 +551,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           SendChatMessageEvent(
                             ChatParams(content: text),
                             _selectedLang,
+                            selectedOption,
                           ),
                         );
                         _textController.clear();

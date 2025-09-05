@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+
 import '../../../../core/localization/locales.dart';
 import '../cubit/reminder_cubit.dart';
 import '../cubit/reminder_state.dart';
@@ -11,8 +12,9 @@ Future<void> showReminderSheet(BuildContext context) {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor:
-        isDark ? const Color(0xFF0B2F4E) : Theme.of(context).colorScheme.surface,
+    backgroundColor: isDark
+        ? const Color(0xFF0B2F4E)
+        : Theme.of(context).colorScheme.surface,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
     ),
@@ -44,7 +46,7 @@ class ReminderPage extends StatelessWidget {
           final enabled = state.isEnabled;
           final time = state.selectedTime;
 
-            return SingleChildScrollView(
+          return SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,7 +78,9 @@ class ReminderPage extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                      tooltip: MaterialLocalizations.of(
+                        context,
+                      ).closeButtonTooltip,
                       icon: const Icon(Icons.close_rounded),
                       onPressed: () => Navigator.pop(context),
                       color: scheme.onSurface.withOpacity(0.7),
@@ -96,7 +100,10 @@ class ReminderPage extends StatelessWidget {
 
                 // Enable switch
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: cardColor,
                     borderRadius: BorderRadius.circular(16),
@@ -150,12 +157,16 @@ class ReminderPage extends StatelessWidget {
                         border: Border.all(color: borderColor),
                       ),
                       child: ListTile(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        leading: Icon(Icons.alarm,
-                            color: isDark
-                                ? Colors.greenAccent
-                                : const Color.fromARGB(255, 9, 43, 71)),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        leading: Icon(
+                          Icons.alarm,
+                          color: isDark
+                              ? Colors.greenAccent
+                              : const Color.fromARGB(255, 9, 43, 71),
+                        ),
                         title: Text(
                           LocalData.reminderTimeLabel.getString(context),
                           style: TextStyle(
@@ -176,7 +187,9 @@ class ReminderPage extends StatelessWidget {
                         ),
                         trailing: TextButton.icon(
                           icon: const Icon(Icons.schedule_rounded, size: 18),
-                          label: Text(LocalData.reminderPickTime.getString(context)),
+                          label: Text(
+                            LocalData.reminderPickTime.getString(context),
+                          ),
                           onPressed: () async {
                             final picked = await showTimePicker(
                               context: context,
