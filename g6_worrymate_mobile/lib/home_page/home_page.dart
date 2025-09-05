@@ -15,7 +15,7 @@ import '../features/offline_toolkit/presentation/pages/offline_toolkit_screen.da
 import '../features/activity_tracking/presentation/cubit/activity_cubit.dart';
 import '../features/activity_tracking/presentation/cubit/activity_state.dart';
 
-// Page section + widget imports (already refactored)
+// Page section + widget imports
 import 'data.dart';
 import 'scrollable_services_widget.dart';
 import 'widgets/top_bar.dart';
@@ -72,10 +72,17 @@ class _HomePageState extends State<HomePage> {
   ];
   late final int _affirmationIndex;
 
+  // Scroll-driven hero visibility
+  late final ScrollController _contentScrollController;
+  bool _showHeroBackground = true;
+  static const double _heroVisibilityThreshold = 10;
+
   @override
   void initState() {
     super.initState();
     _heroPageController = PageController();
+    _contentScrollController = ScrollController()
+      ..addListener(_onContentScroll);
     _heroImages = featuredAppServices
         .map(
           (m) => (m.coverImage.url.isNotEmpty)
@@ -101,12 +108,24 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _heroSlideTimer?.cancel();
     _heroPageController.dispose();
+    _contentScrollController
+      ..removeListener(_onContentScroll)
+      ..dispose();
     _promptCtrl.dispose();
     super.dispose();
   }
 
-  // ========= Helpers =========
+  // ========= Scroll Listener =========
+  void _onContentScroll() {
+    if (_currentTab != 0) return;
+    final shouldShow =
+        _contentScrollController.offset <= _heroVisibilityThreshold;
+    if (shouldShow != _showHeroBackground) {
+      setState(() => _showHeroBackground = shouldShow);
+    }
+  }
 
+  // ========= Helpers =========
   void _startHeroAutoSlide() {
     _heroSlideTimer?.cancel();
     _heroSlideTimer = Timer.periodic(_heroSlideInterval, (_) {
@@ -137,20 +156,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   // ========= Activity Actions =========
-
   void _onQuickActionSelected(String id) {
     context.read<ActivityCubit>().logActivity(id);
-    final template = LocalData.homeActivityLoggedTemplate.getString(context);
+    final template =
+        LocalData.homeActivityLoggedTemplate.getString(context);
     final msg = _fmtTemplate(template, [id]);
     _showSnack(msg);
-
     _navigateToQuickAction(id);
   }
 
   void _navigateToQuickAction(String id) {
     switch (id) {
       case 'journal':
-        // Ensure route is registered in MaterialApp routes or onGenerateRoute
         Navigator.pushNamed(context, '/journal');
         break;
       case 'breathing':
@@ -169,7 +186,8 @@ class _HomePageState extends State<HomePage> {
 
   void _onMoodSelected(String moodLabel) {
     context.read<ActivityCubit>().logMood(moodLabel);
-    final template = LocalData.homeMoodLoggedTemplate.getString(context);
+    final template =
+        LocalData.homeMoodLoggedTemplate.getString(context);
     final msg = _fmtTemplate(template, [moodLabel]);
     _showSnack(msg);
   }
@@ -177,10 +195,7 @@ class _HomePageState extends State<HomePage> {
   void _submitPrompt() {
     final text = _promptCtrl.text.trim();
     if (text.isEmpty) return;
-    // _promptCtrl.clear();
     context.read<ActivityCubit>().logActivity('chatAI');
-    // _showSnack(LocalData.homePromptSent.getString(context));
-
     Future.microtask(() {
       if (!mounted) return;
       Navigator.pushNamed(context, '/chat', arguments: text);
@@ -198,13 +213,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   // ========= Page Switching =========
-
   Widget _pageFor(int index) {
     switch (index) {
       case 0:
         return _contentLayer();
       case 1:
-        // Journal route
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             Navigator.pushReplacementNamed(context, '/journal');
@@ -212,10 +225,8 @@ class _HomePageState extends State<HomePage> {
         });
         return const SizedBox.shrink();
       case 2:
-        // Offline toolkit
         return const OfflineToolkitScreen();
       case 3:
-        // Chat
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             Navigator.pushReplacementNamed(context, '/chat');
@@ -235,7 +246,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   // ========= Build =========
-
   @override
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
@@ -243,7 +253,10 @@ class _HomePageState extends State<HomePage> {
 
     _deviceWidth = MediaQuery.of(context).size.width;
     _deviceHeight = MediaQuery.of(context).size.height;
-    final bool showHero = _currentTab == 0;
+
+    final bool baseHeroCondition = _currentTab == 0;
+    final bool effectiveShowHero =
+        baseHeroCondition && _showHeroBackground;
 
     Color getBackgroundColor() =>
         isDarkMode ? const Color.fromARGB(255, 9, 43, 71) : Colors.white;
@@ -252,8 +265,18 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: getBackgroundColor(),
       body: Stack(
         children: [
-          if (showHero) _heroModulesBackground(isDarkMode),
-          if (showHero) _gradientOverlay(isDarkMode),
+          if (baseHeroCondition)
+            AnimatedOpacity(
+              opacity: effectiveShowHero ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeInOut,
+              child: Stack(
+                children: [
+                  _heroModulesBackground(isDarkMode),
+                  _gradientOverlay(isDarkMode),
+                ],
+              ),
+            ),
           Positioned.fill(child: _pageFor(_currentTab)),
         ],
       ),
@@ -261,14 +284,23 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _currentTab,
         onTap: (i) {
           if (i == _currentTab) return;
-          setState(() => _currentTab = i);
+          setState(() {
+            _currentTab = i;
+            if (i == 0) {
+              // Recompute visibility when returning to tab 0
+              final shouldShow = !_contentScrollController.hasClients
+                  ? true
+                  : _contentScrollController.offset <=
+                      _heroVisibilityThreshold;
+              _showHeroBackground = shouldShow;
+            }
+          });
         },
       ),
     );
   }
 
   // ========= Hero (background module gallery) =========
-
   Widget _heroModulesBackground(bool isDarkMode) {
     final count = featuredAppServices.length;
     return SizedBox(
@@ -276,7 +308,7 @@ class _HomePageState extends State<HomePage> {
       width: _deviceWidth,
       child: NotificationListener<UserScrollNotification>(
         onNotification: (n) {
-          if (n.direction != ScrollDirection.idle) {
+            if (n.direction != ScrollDirection.idle) {
             _heroSlideTimer?.cancel();
           } else {
             Future.delayed(const Duration(seconds: 2), () {
@@ -332,12 +364,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   // ========= Foreground Content =========
-
   Widget _contentLayer() {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
     final isDarkMode = themeManager.isDarkMode;
 
     return SingleChildScrollView(
+      controller: _contentScrollController,
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: _deviceWidth * 0.05,
@@ -352,9 +384,9 @@ class _HomePageState extends State<HomePage> {
               isDarkMode: isDarkMode,
               context: context,
             ),
-            SizedBox(height: _deviceHeight * 0.02),
+            SizedBox(height: _deviceHeight * 0.05),
             Greetings(isDarkMode: isDarkMode, deviceHeight: _deviceHeight),
-            SizedBox(height: _deviceHeight * 0.02),
+            SizedBox(height: _deviceHeight * 0.015),
             ModuleHeader(
               isDarkMode: isDarkMode,
               selectedIndex: _selectedModule,
@@ -363,7 +395,7 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: _deviceHeight * 0.02),
 
-            // Progress summary (legacy style)
+            // Progress summary
             BlocBuilder<ActivityCubit, ActivityState>(
               builder: (context, state) {
                 if (state is ActivityReady) {
@@ -392,9 +424,8 @@ class _HomePageState extends State<HomePage> {
 
             DailyAffirmationCard(
               isDarkMode: isDarkMode,
-              affirmation: _affirmationKeys[_affirmationIndex].getString(
-                context,
-              ),
+              affirmation:
+                  _affirmationKeys[_affirmationIndex].getString(context),
             ),
             SizedBox(height: _deviceHeight * 0.02),
 
@@ -402,9 +433,8 @@ class _HomePageState extends State<HomePage> {
               isDarkMode: isDarkMode,
               deviceHeight: _deviceHeight,
               controller: _promptCtrl,
-              quickPrompts: _quickPromptKeys
-                  .map((k) => k.getString(context))
-                  .toList(),
+              quickPrompts:
+                  _quickPromptKeys.map((k) => k.getString(context)).toList(),
               onSubmit: _submitPrompt,
             ),
             SizedBox(height: _deviceHeight * 0.02),
@@ -413,15 +443,14 @@ class _HomePageState extends State<HomePage> {
               isDarkMode: isDarkMode,
               deviceHeight: _deviceHeight,
               deviceWidth: _deviceWidth,
-              image:
-                  (featuredAppServices[(featuredAppServices.length > 2 ? 2 : 0)]
-                      .coverImage
-                      .url
-                      .isNotEmpty)
+              image: (featuredAppServices[
+                              (featuredAppServices.length > 2 ? 2 : 0)]
+                          .coverImage
+                          .url
+                          .isNotEmpty)
                   ? AssetImage(
-                      featuredAppServices[(featuredAppServices.length > 2
-                              ? 2
-                              : 0)]
+                      featuredAppServices[
+                              (featuredAppServices.length > 2 ? 2 : 0)]
                           .coverImage
                           .url,
                     )
@@ -478,7 +507,8 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ActivityRing(
-                          label: LocalData.homeRingToday.getString(context),
+                          label:
+                              LocalData.homeRingToday.getString(context),
                           percent: (todayCount / dailyMax).clamp(0, 1),
                           centerText: '$todayCount',
                           color: isDarkMode
@@ -487,14 +517,17 @@ class _HomePageState extends State<HomePage> {
                           isDarkMode: isDarkMode,
                         ),
                         ActivityRing(
-                          label: LocalData.homeRing7Days.getString(context),
+                          label:
+                              LocalData.homeRing7Days.getString(context),
                           percent: (weekTotal / weekMax).clamp(0, 1),
                           centerText: '$weekTotal',
-                          color: isDarkMode ? Colors.tealAccent : Colors.teal,
+                          color:
+                              isDarkMode ? Colors.tealAccent : Colors.teal,
                           isDarkMode: isDarkMode,
                         ),
                         ActivityRing(
-                          label: LocalData.homeRingStreak.getString(context),
+                          label:
+                              LocalData.homeRingStreak.getString(context),
                           percent: (streak / 30).clamp(0, 1),
                           centerText: '${streak}d',
                           color: isDarkMode
@@ -519,18 +552,18 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: _deviceHeight * 0.04),
 
-            ScrollableServicesWidget(
-              height: _deviceHeight * 0.24,
-              width: _deviceWidth,
-              showTitle: true,
-              isDark: isDarkMode,
-              servicesData: offlineTools,
-              onServiceTap: (service) {
-                final route = _routeForServiceTitle(service.title);
-                Navigator.pushNamed(context, route);
-              },
-            ),
-            SizedBox(height: _deviceHeight * 0.04),
+            // ScrollableServicesWidget(
+            //   height: _deviceHeight * 0.24,
+            //   width: _deviceWidth,
+            //   showTitle: true,
+            //   isDark: isDarkMode,
+            //   servicesData: offlineTools,
+            //   onServiceTap: (service) {
+            //     final route = _routeForServiceTitle(service.title);
+            //     Navigator.pushNamed(context, route);
+            //   },
+            // ),
+            // SizedBox(height: _deviceHeight * 0.04),
           ],
         ),
       ),

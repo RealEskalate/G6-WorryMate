@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ModuleHeader extends StatelessWidget {
   final bool isDarkMode;
@@ -15,13 +16,14 @@ class ModuleHeader extends StatelessWidget {
         Text(
           titles[selectedIndex],
           maxLines: 2,
-          style: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.black,
-            fontSize: deviceHeight * 0.028,
-            fontWeight: FontWeight.bold,
-          ),
+        style: GoogleFonts.manrope(
+          fontSize: deviceHeight * 0.025,    // slightly larger for presence
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+          height: 1.05,
         ),
-        SizedBox(height: deviceHeight * 0.008),
+        ),
+        SizedBox(height: deviceHeight * 0.02),
         Row(
           children: List.generate(titles.length, (i) {
             final active = i == selectedIndex;
