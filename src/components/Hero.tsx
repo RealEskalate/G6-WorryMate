@@ -1,12 +1,8 @@
 import React from 'react'
-import { Star } from 'lucide-react'
-import { Button } from "@/components/ui/button"
 import { Ripple } from "@/components/magicui/ripple";
 import { ShinyButton } from '@/components/magicui/shiny-button';
-import { ShimmerButton } from '@/components/magicui/shimmer-button';
 import FloatingIcons from '../components/FloatingIcons';
 
-import { Moon, Sun } from "lucide-react"
 import BlurIn from './magicui/blur-in';
 import Link from 'next/link';
 import { NavbarDemo } from './NavBar';

@@ -169,7 +169,7 @@ export default function BreathingExercise() {
         {cycleCount >= totalCycles && !isActive && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-6">
             <div className="text-lg font-semibold text-green-700">Well Done!</div>
-            <p className="text-sm text-green-600 mt-1">You've completed your breathing exercise.</p>
+            <p className="text-sm text-green-600 mt-1">You&apos;ve completed your breathing exercise.</p>
           </div>
         )}
       </div>

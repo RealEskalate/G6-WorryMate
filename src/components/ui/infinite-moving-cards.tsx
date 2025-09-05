@@ -85,7 +85,7 @@ export const InfiniteMovingCards = ({
         {items.map((item, idx) => (
           <li
             key={idx}
-            className="relative w-[300px] md:w-[400px] lg:w-[450px] flex-shrink-0 rounded-2xl overflow-hidden shadow-lg"
+            className="border-[#0D2A4B] border-2 dark:border-[#10B981] relative w-[300px] md:w-[400px] lg:w-[450px] flex-shrink-0 rounded-2xl overflow-hidden shadow-lg"
           >
             
             <div
@@ -100,7 +100,7 @@ export const InfiniteMovingCards = ({
               <p className="mt-2 text-sm md:text-base">{item.description}</p>
               <Link
                 href={item.buttonLink}
-                className="mt-4 inline-block rounded-2xl bg-[#0D2A4B] px-4 py-2 text-sm font-medium hover:bg-[#0b294a] transition"
+                className="mt-4 inline-block rounded-2xl bg-[#0D2A4B] dark:bg-[#10B981] px-4 py-2 text-sm font-medium hover:bg-[#0b294a] transition"
               >
                 {item.buttonText}
               </Link>

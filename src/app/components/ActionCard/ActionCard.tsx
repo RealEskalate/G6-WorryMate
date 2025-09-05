@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { ActionCardData, ActionStep } from "../types"
+import { ActionCardData, ActionStep } from "@/types"
 
 interface ActionCardProps {
   data?: ActionCardData
