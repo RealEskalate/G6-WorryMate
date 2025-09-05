@@ -44,7 +44,7 @@ const Hero = () => {
 
 
                     {/* CTA Button */}
-                    <Link href="/vent">
+                    <Link href="/dashboard">
                         <ShinyButton className=" bg-[#0D2A4B] dark:bg-[#10B981] text-white rounded-3xl hover:bg-[#071b32] dark:hover:bg-[#059669]">
                             <span className='text-white'>Get Started</span>
                             <span className="ml-2 text-white">→</span>
