@@ -190,7 +190,7 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-/* @layer base {
+@layer base {
   * {
     @apply border-border outline-ring/50;
   }
@@ -202,7 +202,7 @@
     --text-blue: var(--text-blue);
   }
 
-} */
+}
 
 
 
