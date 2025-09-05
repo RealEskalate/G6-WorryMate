@@ -47,7 +47,7 @@ func (cu *ChatUsecase) GetResourcesUseCase(region string) ([]*domain.Crisis, err
 		return nil, errors.New("can not find resources for region: " + region)
 	}
 	return res, nil
-}
+} 
 
 func (cu *ChatUsecase) GetOffLinePackUseCase(lang string) ([]*domain.ActionBlock, error) {
 	res, ok := cu.ChatRepo.GetoffPack(lang)

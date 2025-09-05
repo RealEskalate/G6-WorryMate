@@ -43,6 +43,64 @@ func (_m *AIService) GenerateActionCard(actionBlock *domain.ActionBlock) (*strin
 	return r0, r1
 }
 
+// GenerateCrisisCard provides a mock function with given fields: lang, region, tags
+func (_m *AIService) GenerateCrisisCard(lang string, region string, tags []string) (*string, error) {
+	ret := _m.Called(lang, region, tags)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GenerateCrisisCard")
+	}
+
+	var r0 *string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string, []string) (*string, error)); ok {
+		return rf(lang, region, tags)
+	}
+	if rf, ok := ret.Get(0).(func(string, string, []string) *string); ok {
+		r0 = rf(lang, region, tags)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*string)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string, []string) error); ok {
+		r1 = rf(lang, region, tags)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GenerateNormalChatMsg provides a mock function with given fields: msg
+func (_m *AIService) GenerateNormalChatMsg(msg string) (string, error) {
+	ret := _m.Called(msg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GenerateNormalChatMsg")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
+		return rf(msg)
+	}
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(msg)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(msg)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GenerateRiskCheck provides a mock function with given fields: content
 func (_m *AIService) GenerateRiskCheck(content string) (int, []string, error) {
 	ret := _m.Called(content)
