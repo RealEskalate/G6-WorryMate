@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/localization/locales.dart';
+import '../../features/reminder/presentation/pages/reminder_page.dart';
 
 class TopBar extends StatelessWidget {
   final double deviceHeight;
@@ -59,11 +60,14 @@ class TopBar extends StatelessWidget {
                 semanticLabel: 'Settings',
               ),
               SizedBox(width: deviceWidth * 0.03),
-              Icon(
-                Icons.notifications,
-                size: 30,
-                color: isDarkMode ? Colors.white : Colors.black,
-                semanticLabel: 'Notifications',
+              IconButton(
+                onPressed: () => showReminderSheet(context),
+                icon: Icon(
+                  Icons.timer_sharp,
+                  size: 30,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+                tooltip: LocalData.reminderTitle.getString(context),
               ),
             ],
           ),

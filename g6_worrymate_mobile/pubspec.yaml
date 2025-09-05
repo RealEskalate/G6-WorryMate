@@ -51,7 +51,9 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_localization:
 
-
+  flutter_local_notifications: ^19.4.1
+  timezone: ^0.10.0
+  flutter_timezone:
 
   fl_chart: ^0.66.0
   percent_indicator: ^4.2.3

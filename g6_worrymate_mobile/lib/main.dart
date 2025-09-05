@@ -15,6 +15,9 @@ import 'features/offline_toolkit/presentation/pages/daily_journal_screen.dart';
 import 'features/offline_toolkit/presentation/pages/five_four_screen.dart';
 import 'features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
 import 'features/offline_toolkit/presentation/pages/win_tracker_screen.dart';
+import 'features/reminder/presentation/cubit/reminder_cubit.dart';
+import 'features/reminder/presentation/pages/reminder_page.dart';
+import 'features/reminder/services/notification_service.dart';
 import 'features/setting/settings.dart';
 import 'home_page/home_page.dart';
 import 'injection_container.dart';
@@ -27,6 +30,8 @@ Future<void> main() async {
 
   await init();
   await Hive.openBox('journalBox');
+
+  await sl<NotificationService>().init();
 
   runApp(const MyApp());
 }
@@ -59,7 +64,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (_) => sl<ActivityCubit>()..load())],
+      providers: [BlocProvider(create: (_) => sl<ActivityCubit>()..load()),
+      BlocProvider(create: (_) => sl<ReminderCubit>()),
+      ],
       child: ChangeNotifierProvider(
         create: (context) => ThemeManager(),
         child: Consumer<ThemeManager>(
@@ -92,6 +99,9 @@ class _MyAppState extends State<MyApp> {
                 '/win_tracker': (context) => const WinTrackerScreen(),
                 '/box_breathing': (context) => const BoxBreathingScreen(),
                 '/five_four': (context) => const FiveFourScreen(),
+
+
+                // '/notification': (context) => const ReminderPage()
               },
             );
           },

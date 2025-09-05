@@ -183,11 +183,7 @@ class _HomePageState extends State<HomePage> {
 
     Future.microtask(() {
       if (!mounted) return;
-      Navigator.pushNamed(
-        context,
-        '/chat',
-        arguments: text
-      );
+      Navigator.pushNamed(context, '/chat', arguments: text);
     });
   }
 

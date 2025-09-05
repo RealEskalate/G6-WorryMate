@@ -143,7 +143,17 @@ mixin LocalData {
   static const String homeRingStreak = 'home_ring_streak';
   static const String homeStreakBarTemplate = 'home_streak_bar_template';
 
-
+  // +++ Reminder +++
+  static const String reminderTitle = 'reminder_title';
+  static const String reminderDescription = 'reminder_description';
+  static const String reminderEnableLabel = 'reminder_enable_label';
+  static const String reminderTimeLabel = 'reminder_time_label';
+  static const String reminderPickTime = 'reminder_pick_time';
+  static const String reminderSet = 'reminder_set';
+  static const String reminderCancel = 'reminder_cancel';
+  static const String reminderSaved = 'reminder_saved';
+  static const String reminderDisabled = 'reminder_disabled';
+  static const String reminderError = 'reminder_error';
 
   // (Optional legacy keys)
   static const String title = 'title';
@@ -270,6 +280,18 @@ mixin LocalData {
   actionCardDisclaimerLabel: 'Disclaimer',
   actionCardTools: 'Tools:',
   actionCardLaunchError: 'Could not launch URL',
+
+      // Reminder (EN)
+    reminderTitle: 'Daily Reminder',
+    reminderDescription: 'Get a gentle nudge each day to reflect or check in.',
+    reminderEnableLabel: 'Enable reminder',
+    reminderTimeLabel: 'Scheduled time',
+    reminderPickTime: 'Pick time',
+    reminderSet: 'Save',
+    reminderCancel: 'Cancel',
+    reminderSaved: 'Reminder saved',
+    reminderDisabled: 'Reminder disabled',
+    reminderError: 'Could not schedule reminder',
     // Legacy
     title: 'Settings',
     body: 'Manage your preferences'
@@ -396,6 +418,18 @@ mixin LocalData {
   actionCardDisclaimerLabel: 'ማስታወሻ',
   actionCardTools: 'መሣሪያዎች:',
   actionCardLaunchError: 'URL መክፈት አልተቻለም',
+
+    // Reminder (AM)
+    reminderTitle: 'ዕለታዊ አስታዋሽ',
+    reminderDescription: 'በየቀኑ ለእንባብ ወይም ለመመርመር የሚያስታውስ ቀላል እንኳን.',
+    reminderEnableLabel: 'አስታዋሽ አቃል',
+    reminderTimeLabel: 'የታቀደ ጊዜ',
+    reminderPickTime: 'ጊዜ ምረጥ',
+    reminderSet: 'አስቀምጥ',
+    reminderCancel: 'ተወው',
+    reminderSaved: 'አስታዋሽ ተመዝግቧል',
+    reminderDisabled: 'አስታዋሽ አጥፋል',
+    reminderError: 'አስታዋሽ መመዝገብ አልተቻለም',
 
     // Legacy
     title: 'ቅንብሮች',

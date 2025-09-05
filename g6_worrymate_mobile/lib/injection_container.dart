@@ -31,6 +31,8 @@ import 'features/activity_tracking/domain/usecases/get_last_n_days_use_case.dart
 import 'features/activity_tracking/domain/usecases/log_activity_use_case.dart';
 import 'features/activity_tracking/domain/usecases/log_mood_use_case.dart';
 import 'features/activity_tracking/presentation/cubit/activity_cubit.dart';
+import 'features/reminder/presentation/cubit/reminder_cubit.dart';
+import 'features/reminder/services/notification_service.dart';
 
 final sl = GetIt.instance;
 
@@ -127,4 +129,10 @@ Future<void> init() async {
   sl.registerLazySingleton<InternetConnectionChecker>(
     () => InternetConnectionChecker.createInstance(),
   );
+
+
+  //notification
+  sl.registerLazySingleton(() => NotificationService());
+  sl.registerFactory(() => ReminderCubit(sl<NotificationService>()));
+
 }
