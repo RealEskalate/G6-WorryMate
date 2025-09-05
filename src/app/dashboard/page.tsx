@@ -1,9 +1,9 @@
 import React from "react";
-import HowFeel from "../_components/HowFeel";
-import EmojiProgress from "../_components/EmojiPorgress";
-import DailyCheck from "../_components/DailyCheck";
-import RecentEntires from "../_components/RecentEntires";
-import Features from "../_components/Features";
+import HowFeel from "../[locale]/_components/HowFeel";
+import EmojiProgress from "../[locale]//_components/EmojiPorgress";
+import DailyCheck from "../[locale]/_components/DailyCheck";
+import RecentEntires from "../[locale]//_components/RecentEntires";
+import Features from "../[locale]/_components/Features";
 
 function Page() {
   return (
@@ -16,7 +16,7 @@ function Page() {
           <EmojiProgress />
         </div>
 
-        <div className="hidden md:block w-1/3 bg-white shadow-md rounded-lg p-6 flex flex-col gap-6">
+        <div className="md:block w-1/3 bg-white shadow-md rounded-lg p-6 flex flex-col gap-6">
           <DailyCheck />
           <RecentEntires />
         </div>

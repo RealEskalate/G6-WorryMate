@@ -1,13 +1,17 @@
 @import "tailwindcss";
+/* @import "tw-animate-css"; */
+/* @import "tw-animate-css"; */
 
 .react-calendar__tile {
-  background: transparent !important; 
-  border: none !important; 
-  padding: 8px; 
+  background: transparent !important;
+  border: none !important;
+  padding: 8px;
 }
+
 .react-calendar__tile.custom-tile {
-  position: relative; 
+  position: relative;
 }
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -98,6 +102,59 @@
       transform: translateZ(0) rotate(360deg);
     }
   }
+
+  --animate-marquee: marquee var(--duration) infinite linear;
+
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+
+  @keyframes marquee-vertical {
+    from {
+      transform: translateY(0);
+    }
+
+    to {
+      transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+
+  --animate-aurora: aurora 8s ease-in-out infinite alternate;
+
+  @keyframes aurora {
+    0% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+
+    25% {
+      background-position: 50% 100%;
+      transform: rotate(5deg) scale(1.1);
+    }
+
+    50% {
+      background-position: 100% 50%;
+      transform: rotate(-3deg) scale(0.95);
+    }
+
+    75% {
+      background-position: 50% 0%;
+      transform: rotate(3deg) scale(1.05);
+    }
+
+    100% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+  }
 }
 
 :root {
@@ -182,27 +239,36 @@
   }
 
 }
+
 .react-calendar__tile.bg-green-200 {
   background-color: #0D2A4B !important;
 }
+
 .react-calendar__tile.border-blue-500 {
-  border: 2px solid #09d73d !important; 
+  border: 2px solid #09d73d !important;
 }
+
 .react-calendar__tile:hover.bg-green-300 {
   background-color: #4ade80 !important;
 }
+
 .react-calendar__tile:hover.bg-gray-100 {
-  background-color: #f3f4f6 !important; 
+  background-color: #f3f4f6 !important;
 }
+
 .container:hover .animate-scroll {
   animation-play-state: paused;
 }
+
 .scroller {
   pointer-events: auto;
 }
+
 .scroller * {
-  pointer-events: none; /* Prevent child elements from capturing hover */
+  pointer-events: none;
+  /* Prevent child elements from capturing hover */
 }
+
 .scroller a {
-  pointer-events: auto; 
+  pointer-events: auto;
 }

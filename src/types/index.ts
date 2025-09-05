@@ -2,7 +2,7 @@ export type ActionStep =
   | string
   | { step: string }
   | { text: string }
-  | { description: string }
+  | { description: string };
 
 export interface ActionCardData {
   title: string;
@@ -16,6 +16,7 @@ export interface ActionCardData {
   scripts?: string[];
   uiTools?: unknown[];
   __crisis?: boolean;
+  __isGeneralSupport?: boolean;
 }
 
 // export interface MiniTool {
