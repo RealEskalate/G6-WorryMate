@@ -1,4 +1,4 @@
-"use client"
+'use client'
 import OtherCard from '@/components/OtherCard'
 import ActionCard from '@/components/ActionCard'
 import GeneralSupportCard from '@/components/GeneralSupportCard'
@@ -27,11 +27,12 @@ const Workspace = () => {
     const [hasStarted, setHasStarted] = useState(false)
     const [showRateLimit, setShowRateLimit] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const { locale } = useParams()
-    // Speech recognition locale (browser)
+    const  {locale}  = useParams()
+
     const language = locale === 'en' ? 'en-US' : 'am-ET'
-    // API language (server expects short code)
+
     const apiLang = locale === 'am' ? 'am' : 'en'
+
     const recognitionRef = useRef<SpeechRecognitionClass | null>(null);
 
     useEffect(() => {
