@@ -1,4 +1,4 @@
-/* @import "tailwindcss";
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -266,8 +266,8 @@
 .scroller * {
   pointer-events: none;
   /* Prevent child elements from capturing hover */
-/* }
+}
 
 .scroller a {
   pointer-events: auto;
-} */
+}
