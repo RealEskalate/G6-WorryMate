@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* @import "tw-animate-css"; */
+/* @import "tw-animate-css"; */
 
 .react-calendar__tile {
   background: transparent !important;
@@ -10,7 +12,7 @@
   position: relative;
 }
 
-/* @custom-variant dark (&:is(.dark *)); */
+@custom-variant dark (&:is(.dark *));
 
 :root {
   --background: #ffffff;
