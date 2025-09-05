@@ -1,35 +1,30 @@
-name: Go Unit Tests
+name: Go Tests
 
 on:
     push:
-        branches: [backend_main]
+        branches: ["backend_main"]
     pull_request:
-        branches: [backend_main]
+        branches: ["backend_main"]
 
 jobs:
     test:
         runs-on: ubuntu-latest
 
         steps:
-            - name: 📥 Checkout code
+            - name: Checkout code
               uses: actions/checkout@v3
 
-            - name: 🔧 Set up Go
+            - name: Set up Go
               uses: actions/setup-go@v4
               with:
-                  go-version: "1.22"
-                  cache-dependency-path: Testify/task-manager/go.sum
+                  go-version: "1.21"
 
-            - name: 📦 Install dependencies
-              working-directory: Testify/task-manager
+            - name: Install dependencies
               run: go mod tidy
+              working-directory: . # 👈 repo root (where go.mod is)
 
-            - name: 🧪 Run Unit Tests
-              working-directory: Testify/task-manager
-              run: go test -v ./...
+            - name: Run Unit Tests
+              run: go test ./... -v
 
-            - name: 📊 Generate Coverage Report
-              working-directory: Testify/task-manager
-              run: |
-                  go test -coverprofile=coverage.out ./...
-                  go tool cover -func=coverage.out
+            - name: Generate Coverage Report
+              run: go test ./... -coverprofile=coverage.out
