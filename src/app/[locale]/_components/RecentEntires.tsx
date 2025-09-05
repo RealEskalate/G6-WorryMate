@@ -2,46 +2,72 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { db, JournalEntry } from '@/app/lib/db';
+import { format } from 'date-fns'
+
+function getRelativeLabel(dateString: string) {
+  const d = new Date(dateString)
+  const today = new Date()
+  const dayDiff = Math.floor((today.setHours(0,0,0,0) as unknown as number) - (new Date(d).setHours(0,0,0,0) as unknown as number)) / (1000 * 60 * 60 * 24)
+  if (dayDiff === 0) return 'Today'
+  if (dayDiff === 1) return 'Yesterday'
+  return format(d, 'PP')
+}
+
 function RecentEntires() {
   const router = useRouter();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
+
   useEffect(() => {
     const fetchEntries = async () => {
       const all = await db.journals.toArray();
-      setEntries(all);
+      // Sort by date desc
+      const sorted = all.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      setEntries(sorted);
     };
     fetchEntries();
   }, []);
-  return (
-    <div className='shadow-xl rounded-xl pb-2 mt-8 bg-[#F7F9FB]'>
-      <div className="w-full  ">
-        <div className='px-10 py-2 rounded-[10px] mb-6 '>
-          <h2 className="text-xl self-start font-semibold text-[#0D2A4B]">Recent Entries</h2>
-        </div>
 
-        <div className="max-h-[calc(100vh-520px)] overflow-y-auto space-y-3 pr-2">
-          {entries.length === 0 ? (
-            <p className="text-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed">
+  return (
+    <div className='bg-white/80 dark:bg-gray-800/60 rounded-2xl border border-gray-200 dark:border-gray-700'>
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-semibold text-[#0D2A4B] dark:text-gray-100">Recent Entries</h2>
+        <button
+          onClick={() => router.push('/journal')}
+          className="inline-flex items-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 transition-colors"
+        >
+          <span className="text-base leading-none">+</span>
+          New Entry
+        </button>
+      </div>
+
+      <div className="divide-y divide-gray-200 dark:divide-gray-700">
+        {entries.length === 0 ? (
+          <div className="px-6 py-8">
+            <p className="text-[#0D2A4B] dark:text-gray-300 font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed">
               No entries yet.
             </p>
-          ) : (
-            entries.map((entry) => (
-              <button
-                key={entry.id}
-                onClick={() => router.push(`/journal/${entry.id}`)}
-                className="w-full cursor-pointer rounded-lg border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:bg-[#F7F9FB] font-['Inter','Noto_Sans_Ethiopic']"
-                aria-label={`View journal entry: ${entry.title}`}
-              >
-                <h4 className="font-semibold text-[#0D2A4B] text-[18px] leading-relaxed">
-                  {entry.title}
-                </h4>
-                <p className="text-[14px] text-[#0D2A4B]/70 leading-relaxed">
-                  {new Date(entry.date).toLocaleString()}
-                </p>
-              </button>
-            ))
-          )}
-        </div>
+          </div>
+        ) : (
+          entries.map((entry) => (
+            <button
+              key={entry.id}
+              onClick={() => router.push(`/journal/${entry.id}`)}
+              className="w-full text-left px-6 py-5 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors"
+              aria-label={`View journal entry: ${entry.title}`}
+            >
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-300 mb-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
+                <span>{getRelativeLabel(entry.date)}</span>
+              </div>
+              <h4 className="text-[17px] md:text-[18px] font-medium text-gray-900 dark:text-gray-100 mb-1">
+                {entry.title}
+              </h4>
+              <p className="text-[14px] text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-2">
+                {entry.content}
+              </p>
+            </button>
+          ))
+        )}
       </div>
     </div>
   )
