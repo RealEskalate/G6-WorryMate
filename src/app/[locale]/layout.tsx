@@ -27,7 +27,7 @@ export default async function RootLayout({
     notFound();
   }
   return (
-    <html>
+    <html lang={locale} suppressHydrationWarning>
       <body>
         <NextIntlClientProvider>
           {/* <Header /> */}

@@ -130,10 +130,10 @@ export function GridPattern({ width, height, x, y, squares, ...props }: GridPatt
             />
             {squares && (
                 <svg x={x} y={y} className="overflow-visible">
-                    {squares.map(([x, y]: [number, number]) => (
+                    {squares.map(([x, y]: [number, number], i: number) => (
                         <rect
                             strokeWidth="0"
-                            key={`${x}-${y}`}
+                            key={`${x}-${y}-${i}`}
                             width={width + 1}
                             height={height + 1}
                             x={x * width}
