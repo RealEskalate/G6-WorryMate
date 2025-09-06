@@ -1,15 +1,14 @@
 // lib/features/setting/settings.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:g6_worrymate_mobile/features/action_card/presentation/bloc/chat_bloc.dart';
-import 'package:g6_worrymate_mobile/features/action_card/presentation/bloc/chat_event.dart';
-import 'package:g6_worrymate_mobile/features/action_card/data/datasources/chat_prefs_local_data_source.dart';
-import 'package:provider/provider.dart';
+import 'package:g6_worrymate_mobile/core/localization/locales.dart';
 import 'package:g6_worrymate_mobile/core/theme/theme_manager.dart';
 import 'package:g6_worrymate_mobile/core/widgets/custom_bottom_nav_bar.dart';
-import 'package:g6_worrymate_mobile/core/localization/locales.dart';
+import 'package:g6_worrymate_mobile/features/action_card/data/datasources/chat_prefs_local_data_source.dart';
+import 'package:g6_worrymate_mobile/features/action_card/presentation/bloc/chat_bloc.dart';
+import 'package:g6_worrymate_mobile/features/action_card/presentation/bloc/chat_event.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -43,10 +42,12 @@ class _SettingsPageState extends State<SettingsPage> {
     final themeManager = Provider.of<ThemeManager>(context);
     final isDarkMode = themeManager.isDarkMode;
 
-    Color getPrimaryColor() => isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71);
+    Color getPrimaryColor() =>
+        isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71);
     Color getTextColor() => isDarkMode ? Colors.white : Colors.black;
     Color getContainerColor() => isDarkMode ? Colors.white10 : Colors.grey[50]!;
-    Color getBorderColor() => isDarkMode ? Colors.transparent : Colors.grey[200]!;
+    Color getBorderColor() =>
+        isDarkMode ? Colors.transparent : Colors.grey[200]!;
 
     return Scaffold(
       backgroundColor: isDarkMode
@@ -75,7 +76,10 @@ class _SettingsPageState extends State<SettingsPage> {
             title: LocalData.appearance.getString(context),
             children: [
               SwitchListTile(
-                title: Text(LocalData.darkMode.getString(context), style: TextStyle(color: getTextColor())),
+                title: Text(
+                  LocalData.darkMode.getString(context),
+                  style: TextStyle(color: getTextColor()),
+                ),
                 value: isDarkMode,
                 activeColor: getPrimaryColor(),
                 onChanged: (value) => themeManager.setTheme(value),
@@ -88,7 +92,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
           const SizedBox(height: 16),
 
-            // Language & Font Section
+          // Language & Font Section
           _buildSection(
             title: LocalData.language.getString(context),
             children: [
@@ -104,7 +108,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     selectedColor: getPrimaryColor(),
-                    backgroundColor: isDarkMode ? Colors.white12 : Colors.grey[300],
+                    backgroundColor: isDarkMode
+                        ? Colors.white12
+                        : Colors.grey[300],
                     selected: _currentLocale == 'en',
                     onSelected: (_) {
                       _flutterLocalization.translate('en');
@@ -122,7 +128,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     selectedColor: getPrimaryColor(),
-                    backgroundColor: isDarkMode ? Colors.white12 : Colors.grey[300],
+                    backgroundColor: isDarkMode
+                        ? Colors.white12
+                        : Colors.grey[300],
                     selected: _currentLocale == 'am',
                     onSelected: (_) {
                       _flutterLocalization.translate('am');
@@ -132,36 +140,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
               const SizedBox(height: 20),
-              // Text(
-              //   LocalData.fontSize.getString(context),
-              //   style: TextStyle(
-              //     color: getTextColor(),
-              //     fontWeight: FontWeight.w500,
-              //   ),
-              // ),
-              // Row(
-              //   children: [
-              //     IconButton(
-              //       icon: Icon(Icons.remove_circle, color: getPrimaryColor()),
-              //       onPressed: () => setState(() {
-              //         if (fontSize > 12) fontSize -= 2;
-              //       }),
-              //     ),
-              //     Text(
-              //       "A",
-              //       style: TextStyle(
-              //         fontSize: fontSize,
-              //         color: getTextColor(),
-              //       ),
-              //     ),
-              //     IconButton(
-              //       icon: Icon(Icons.add_circle, color: getPrimaryColor()),
-              //       onPressed: () => setState(() {
-              //         if (fontSize < 30) fontSize += 2;
-              //       }),
-              //     ),
-              //   ],
-              // ),
             ],
             isDarkMode: isDarkMode,
             containerColor: getContainerColor(),
@@ -170,7 +148,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
           const SizedBox(height: 16),
 
-          // About Section
+
           _buildSection(
             title: LocalData.aboutTitle.getString(context),
             children: [
@@ -202,7 +180,10 @@ class _SettingsPageState extends State<SettingsPage> {
             title: LocalData.privacyTitle.getString(context),
             children: [
               SwitchListTile(
-                title: Text(LocalData.saveChat.getString(context), style: TextStyle(color: getTextColor())),
+                title: Text(
+                  LocalData.saveChat.getString(context),
+                  style: TextStyle(color: getTextColor()),
+                ),
                 value: saveChat,
                 activeColor: getPrimaryColor(),
                 onChanged: (value) async {
@@ -220,7 +201,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
                 child: Text(
                   LocalData.deleteChatHistory.getString(context),
-                  style: TextStyle(color: isDarkMode ? Colors.red : Colors.red[700]),
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.red : Colors.red[700],
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -265,8 +248,8 @@ class _SettingsPageState extends State<SettingsPage> {
         currentIndex: 4,
         onTap: (index) {
           if (index == 4) return;
-            final routes = ['/', '/journal', '/offlinetoolkit', '/chat'];
-            Navigator.pushReplacementNamed(context, routes[index]);
+          final routes = ['/', '/journal', '/offlinetoolkit', '/chat'];
+          Navigator.pushReplacementNamed(context, routes[index]);
         },
       ),
     );

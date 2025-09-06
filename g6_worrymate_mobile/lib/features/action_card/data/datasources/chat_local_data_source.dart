@@ -112,6 +112,22 @@ class ChatLocalDataSource {
       transcripts.clear(),
     ]);
   }
+
+Future<String> getLastFiveUserMessagesConcatenated() async {
+  final box = await Hive.openBox(transcriptBoxName);
+  if (box.isEmpty) return '';
+  final Map<dynamic, dynamic> last = box.getAt(box.length - 1);
+  final List<dynamic> rawMessages = (last['messages'] as List?) ?? [];
+  final userMessages = rawMessages
+      .where((raw) => (raw['sender'] == 'user'))
+      .toList();
+  final lastFive = userMessages.length > 5
+      ? userMessages.sublist(userMessages.length - 5)
+      : userMessages;
+  final concatenated = lastFive.map((m) => m['text'] ?? '').join(' ');
+  return concatenated;
+}
+
 }
 
 
