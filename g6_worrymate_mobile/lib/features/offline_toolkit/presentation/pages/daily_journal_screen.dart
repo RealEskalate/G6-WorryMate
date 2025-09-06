@@ -24,7 +24,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
   ];
 
   final TextEditingController _controller = TextEditingController();
-  final TextEditingController _titleController = TextEditingController(); // ✅ new
+  final TextEditingController _titleController = TextEditingController();
 
   int? _selectedPromptIdx;
 
@@ -45,25 +45,19 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
     });
   }
 
-  // FIX 1: The remove function now accepts the entry object itself.
   void _removeEntry(Map<String, String> entryToRemove) {
-    // Find the actual index of the item in the Hive box before removing it from the UI list.
     final int originalIndex = _entries.indexOf(entryToRemove);
-    if (originalIndex == -1) return; // Item not found, do nothing.
+    if (originalIndex == -1) return;
 
-    // Optimistically remove from the UI state list first for a responsive feel.
     setState(() {
       _entries.remove(entryToRemove);
     });
 
-    // Now, delete from the Hive database at the correct index.
     _journalBox.deleteAt(originalIndex).catchError((error) {
-      // If the deletion fails, add the entry back to the UI to stay in sync.
       if (mounted) {
         setState(() {
           _entries.insert(originalIndex, entryToRemove);
         });
-        // Optionally, show an error message to the user.
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error: Could not delete entry.')),
         );
@@ -73,10 +67,16 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
 
   void _saveEntry(Map<String, String> entry) {
     _journalBox.add(entry);
-    // FIX 2: Performance improvement. Instead of reloading all entries,
-    // just add the new one to the current state list.
     setState(() {
       _entries.add(entry);
+    });
+  }
+
+  // New function to update an existing entry
+  void _updateEntry(int index, Map<String, String> updatedEntry) {
+    _journalBox.putAt(index, updatedEntry);
+    setState(() {
+      _entries[index] = updatedEntry;
     });
   }
 
@@ -86,7 +86,6 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
 
     if (text.isEmpty) return;
 
-    // ✅ If user types a custom title, use it. Else fallback to prompt. Else "Untitled".
     final title = customTitle.isNotEmpty
         ? customTitle
         : (_selectedPromptIdx != null
@@ -97,7 +96,7 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
       'id': DateTime.now().millisecondsSinceEpoch.toString(),
       'title': title,
       'response': text,
-      'createdAt': DateTime.now().toIso8601String(), // ✅ save date/time
+      'createdAt': DateTime.now().toIso8601String(),
     };
 
     _saveEntry(entry);
@@ -109,7 +108,125 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
     });
   }
 
-  @override
+  // New method to show the edit dialog
+  void _showEditDialog(int index, Map<String, String> entry) {
+    // Determine if the title is a localization key or a custom title for editing
+    final bool isPromptTitle = _promptKeys.contains(entry['title']);
+    final String initialTitle = isPromptTitle
+        ? (entry['title'] ?? 'Untitled').getString(context) // Resolve localized title
+        : entry['title'] ?? 'Untitled'; // Use custom title directly
+
+    final TextEditingController editTitleController = TextEditingController(text: initialTitle);
+    final TextEditingController editResponseController = TextEditingController(text: entry['response']);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final themeManager = Provider.of<ThemeManager>(context, listen: false);
+        final isDarkMode = themeManager.isDarkMode;
+
+        Color getTextColor() => isDarkMode ? Colors.white : Colors.black87;
+        Color getInputBackgroundColor() =>
+            isDarkMode ? Colors.white.withOpacity(0.05) : const Color(0xFFF7F9FB);
+        Color getBorderColor() => isDarkMode
+            ? Colors.greenAccent.withOpacity(0.3)
+            : const Color(0xFFE0E6ED);
+        Color getPrimaryColor() =>
+            isDarkMode ? Colors.greenAccent : const Color.fromARGB(255, 9, 43, 71);
+
+        return AlertDialog(
+          backgroundColor: isDarkMode ? const Color.fromARGB(255, 9, 43, 71) : Colors.white,
+          title: Text("Edit Journal Entry", style: GoogleFonts.poppins(color: getTextColor())),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: editTitleController,
+                  style: GoogleFonts.poppins(color: getTextColor()),
+                  decoration: InputDecoration(
+                    labelText: "Title",
+                    labelStyle: GoogleFonts.poppins(color: getTextColor().withOpacity(0.7)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: getBorderColor()),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: getBorderColor()),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: getPrimaryColor(), width: 2),
+                    ),
+                    filled: true,
+                    fillColor: getInputBackgroundColor(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: editResponseController,
+                  minLines: 3,
+                  maxLines: 6,
+                  style: GoogleFonts.poppins(color: getTextColor()),
+                  decoration: InputDecoration(
+                    labelText: "Response",
+                    labelStyle: GoogleFonts.poppins(color: getTextColor().withOpacity(0.7)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: getBorderColor()),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: getBorderColor()),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: getPrimaryColor(), width: 2),
+                    ),
+                    filled: true,
+                    fillColor: getInputBackgroundColor(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel", style: GoogleFonts.poppins(color: getPrimaryColor())),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final updatedTitle = editTitleController.text.trim();
+                final updatedResponse = editResponseController.text.trim();
+
+                if (updatedResponse.isNotEmpty) {
+                  // If the original title was a prompt key, we might want to store the edited title
+                  // as a custom title, unless the user explicitly re-selects a prompt.
+                  // For simplicity, we'll store the edited text as the new title.
+                  final updatedEntry = {
+                    ...entry,
+                    'title': updatedTitle.isNotEmpty ? updatedTitle : 'Untitled',
+                    'response': updatedResponse,
+                  };
+                  _updateEntry(index, updatedEntry);
+                  Navigator.pop(context);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: getPrimaryColor(),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: Text("Save", style: GoogleFonts.poppins()),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context, listen: true);
@@ -157,7 +274,8 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
       ),
       body: Center(
         child: Container(
-          width: 420,
+          width: double.infinity, // FIXED: Allow container to expand,
+          // but `maxWidth` will cap it.
           constraints: const BoxConstraints(maxWidth: 480),
           padding: const EdgeInsets.all(24),
           margin: const EdgeInsets.all(16),
@@ -178,17 +296,6 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // TextField(
-                //   controller: _titleController,
-                //   decoration: InputDecoration(
-                //     labelText: "Custom Title (optional)",
-                //     border: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(10),
-                //     ),
-                //     filled: true,
-                //     fillColor: getInputBackgroundColor(),
-                //   ),
-                // ),
                 const SizedBox(height: 18),
 
                 Row(
@@ -314,6 +421,10 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(color: getBorderColor()),
                           ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: getPrimaryColor(), width: 2),
+                          ),
                           filled: true,
                           fillColor: getInputBackgroundColor(),
                         ),
@@ -344,7 +455,6 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                 ),
                 const SizedBox(height: 18),
                 if (_entries.isNotEmpty) ...[
-                  // UI ENHANCEMENT: Add a hint for the swipe-to-delete action.
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -397,44 +507,76 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
                         ),
                         direction: DismissDirection.endToStart,
                         onDismissed: (_) => _removeEntry(entry),
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: getEntryBackgroundColor(),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: getBorderColor()),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                displayTitle, // Use the corrected display title
-                                style: GoogleFonts.poppins(
-                                  color: getPrimaryColor(),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              if (createdAt != null) ...[
-                                const SizedBox(height: 4),
+                        child: GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return SafeArea(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      ListTile(
+                                        leading: const Icon(Icons.edit),
+                                        title: const Text('Edit Entry'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          _showEditDialog(i, entry);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: const Icon(Icons.delete_forever, color: Colors.red),
+                                        title: const Text('Delete Entry', style: TextStyle(color: Colors.red)),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          _removeEntry(entry);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: getEntryBackgroundColor(),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: getBorderColor()),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Text(
-                                  '${createdAt.toLocal()}'.split('.')[0], // yyyy-MM-dd hh:mm:ss
+                                  displayTitle,
                                   style: GoogleFonts.poppins(
-                                    color: getSubtitleColor(),
-                                    fontSize: 12,
+                                    color: getPrimaryColor(),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                if (createdAt != null) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${createdAt.toLocal()}'.split('.')[0],
+                                    style: GoogleFonts.poppins(
+                                      color: getSubtitleColor(),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(height: 6),
+                                Text(
+                                  response,
+                                  style: GoogleFonts.poppins(
+                                    color: getTextColor(),
+                                    fontSize: 14,
                                   ),
                                 ),
                               ],
-                              const SizedBox(height: 6),
-                              Text(
-                                response,
-                                style: GoogleFonts.poppins(
-                                  color: getTextColor(),
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       );
@@ -457,7 +599,6 @@ class _DailyJournalScreenState extends State<DailyJournalScreen> {
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 1,
         onTap: (i) {
-          // if (i == 4) return;
           switch (i) {
             case 0:
               Navigator.pushReplacementNamed(context, '/');

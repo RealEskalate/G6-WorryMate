@@ -201,7 +201,7 @@ class ActionCardWidget extends StatelessWidget {
                     switch (tool) {
                       case 'box_breathing':
                         label = 'Box Breathing';
-                        onPressed = () => Navigator.pushNamed(context, '/boxbreathing');
+                        onPressed = () => Navigator.pushNamed(context, '/box_breathing');
                         break;
                       case 'daily_journal':
                         label = 'Daily Journal';
@@ -209,7 +209,7 @@ class ActionCardWidget extends StatelessWidget {
                         break;
                       case 'win_tracker' || 'tracker':
                       label = 'Win Tracker';
-                      onPressed = ()=> Navigator.pushNamed(context, '/wint_racker');
+                      onPressed = ()=> Navigator.pushNamed(context, '/win_tracker');
                       case 'five_four' || 'grounding':
                       label = '5-4-3-2 grounding';
                       onPressed = () => Navigator.pushNamed(context, '/five_four');

@@ -40,14 +40,20 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   speech_to_text: ^7.3.0
+
+  introduction_screen: ^3.1.6
+
   # Removed flutter_launcher_icons from here - it should only be in dev_dependencies
 
+
 dev_dependencies:
+
   flutter_test:
     sdk: flutter
   mockito:
   hive_generator:
   build_runner:
+
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.4  # Only keep it here
 
@@ -61,6 +67,9 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/worrymatefinallogo.png
+    - assets/images/worrymatelogo-removebg-preview.png
+    - assets/images/worrymatelogo.png
     - assets/images/Chat bot.png
     - assets/images/breathing.png
     - assets/images/journal.png
