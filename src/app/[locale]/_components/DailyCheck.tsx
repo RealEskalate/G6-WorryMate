@@ -25,6 +25,7 @@ const DailyCheck: React.FC = () => {
   const today = new Date();
   const todayStr = formatDateOnly(today);
   const [checkedIn, setCheckedIn] = useState<string[]>([]);
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
