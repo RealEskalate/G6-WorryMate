@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/localization/locales.dart';
 
@@ -21,13 +22,17 @@ class Greetings extends StatelessWidget {
         ? LocalData.homeGreetingAfternoon
         : LocalData.homeGreetingEvening;
     final text = key.getString(context);
+
+
+    
     return Text(
       '$text 👋',
-      style: TextStyle(
-        color: isDarkMode ? Colors.white : Colors.black,
-        fontSize: deviceHeight * 0.04,
-        fontWeight: FontWeight.w600,
-      ),
+        style: GoogleFonts.manrope(
+          fontSize: deviceHeight * 0.032,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+          height: 1.05,
+        ),
     );
   }
 }

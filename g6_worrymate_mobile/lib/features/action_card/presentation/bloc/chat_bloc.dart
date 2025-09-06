@@ -1,13 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/entities/chat_message_entity.dart';
 import '../../data/datasources/chat_local_data_source.dart';
+import '../../data/datasources/chat_prefs_local_data_source.dart';
+import '../../domain/entities/chat_message_entity.dart';
 import '../../domain/usecases/action_block_usecase.dart';
 import '../../domain/usecases/action_card_usecase.dart';
 import '../../domain/usecases/add_chat.dart';
+import '../../domain/usecases/normal_chat_usecase.dart';
 import 'chat_event.dart';
 import 'chat_state.dart';
-import '../../data/datasources/chat_prefs_local_data_source.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final AddChatUsecase addChatUsecase;
@@ -16,8 +17,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final ComposeActionCardUsecase composeActionCardUsecase;
   final ChatLocalDataSource chatLocalDataSource;
   final ChatPrefsLocalDataSource chatPrefsLocalDataSource;
+  final NormalChatUseCase normalChatUseCase;
 
   ChatBloc({
+    required this.normalChatUseCase,
     required this.composeActionCardUsecase,
     required this.addChatUsecase,
     required this.getActionBlockUsecase,
@@ -30,10 +33,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<LoadChatTranscriptEvent>(_onLoadTranscript);
     on<DeleteAllChatHistoryEvent>(_onDeleteAll);
   }
-
-
-
-
 
   Future<void> _onSendChatMessage(
     SendChatMessageEvent event,
@@ -54,16 +53,42 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         },
         (risk) async {
           if (risk == 3) {
-            // Persist crisis and full transcript when toggle is on
             if (await chatPrefsLocalDataSource.isSaveEnabled()) {
               await chatLocalDataSource.saveCrisis(
                 userText: event.params.content,
               );
-              await chatLocalDataSource.saveTranscript(messages: currentMessages);
+              await chatLocalDataSource.saveTranscript(
+                messages: currentMessages,
+              );
             }
             emit(ChatCrisis(messages: currentMessages));
             return;
           } else if (risk == 2 || risk == 1) {
+            final String selectedOption = event.option;
+            if (selectedOption == 'vent') {
+              emit(ChatLoading(messages: currentMessages));
+              final result = await normalChatUseCase.call(event.params);
+              print("result from usecase: $result");
+              await result.fold(
+                (failure) async {
+                  emit(
+                    ChatError(failure.toString(), messages: currentMessages),
+                  );
+                },
+                (responseText) async {
+                  currentMessages.add(
+                    ChatMessage(text: responseText, sender: ChatSender.bot),
+                  );
+                  if (await chatPrefsLocalDataSource.isSaveEnabled()) {
+                    await chatLocalDataSource.saveTranscript(
+                      messages: currentMessages,
+                    );
+                  }
+                  emit(ChatSuccess(risk: risk, messages: currentMessages));
+                },
+              );
+              return;
+            }
             emit(ChatLoading(messages: currentMessages));
             final topicKeyResult = await getTopicKeyUsecase.call(event.params);
             await topicKeyResult.fold(
@@ -72,7 +97,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               },
               (topicKey) async {
                 emit(ChatLoading(messages: currentMessages));
-
 
                 final lang = event.language;
 
@@ -130,7 +154,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                           ),
                         );
                         if (await chatPrefsLocalDataSource.isSaveEnabled()) {
-                          await chatLocalDataSource.saveTranscript(messages: currentMessages);
+                          await chatLocalDataSource.saveTranscript(
+                            messages: currentMessages,
+                          );
                         }
                         emit(
                           ChatSuccess(risk: risk, messages: currentMessages),
@@ -156,10 +182,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
   }
 
-
-
-  
-
   Future<void> _onSaveTranscript(
     SaveChatTranscriptEvent event,
     Emitter<ChatState> emit,
@@ -169,12 +191,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       if (await chatPrefsLocalDataSource.isSaveEnabled()) {
         await chatLocalDataSource.saveTranscript(messages: currentMessages);
       }
-      emit(ChatSuccess(risk: state is ChatSuccess ? (state as ChatSuccess).risk : 0, messages: currentMessages));
+      emit(
+        ChatSuccess(
+          risk: state is ChatSuccess ? (state as ChatSuccess).risk : 0,
+          messages: currentMessages,
+        ),
+      );
     } catch (e) {
       emit(ChatError(e.toString(), messages: currentMessages));
     }
   }
-  
+
   Future<void> _onLoadTranscript(
     LoadChatTranscriptEvent event,
     Emitter<ChatState> emit,

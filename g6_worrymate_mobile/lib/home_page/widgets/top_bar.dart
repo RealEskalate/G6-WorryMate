@@ -20,58 +20,50 @@ class TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: deviceHeight * 0.10,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: '${LocalData.appBrandPart1.getString(this.context)} ',
-                  style: GoogleFonts.poppins(
-                    color: isDarkMode ? Colors.white : Colors.black,
-                    fontSize: deviceHeight * 0.035,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
+    return Padding(
+      padding: EdgeInsets.only(top:deviceHeight*0.01),
+      child: SizedBox(
+        height: deviceHeight * 0.10,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: '${LocalData.appBrandPart1.getString(this.context)} ',
+                    style: GoogleFonts.poppins(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: deviceHeight * 0.035,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
                   ),
-                ),
-                TextSpan(
-                  text: LocalData.appBrandPart2.getString(this.context),
-                  style: GoogleFonts.poppins(
-                    color: isDarkMode
-                        ? Colors.greenAccent
-                        : const Color.fromARGB(255, 9, 43, 71),
-                    fontSize: deviceHeight * 0.035,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.0,
+                  TextSpan(
+                    text: LocalData.appBrandPart2.getString(this.context),
+                    style: GoogleFonts.poppins(
+                      color: isDarkMode
+                          ? Colors.greenAccent
+                          : const Color.fromARGB(255, 9, 43, 71),
+                      fontSize: deviceHeight * 0.035,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.0,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Row(
-            children: [
-              Icon(
-                Icons.settings_rounded,
+            IconButton(
+              onPressed: () => showReminderSheet(context),
+              icon: Icon(
+                Icons.edit_calendar_rounded,
                 size: 30,
                 color: isDarkMode ? Colors.white : Colors.black,
-                semanticLabel: 'Settings',
               ),
-              SizedBox(width: deviceWidth * 0.03),
-              IconButton(
-                onPressed: () => showReminderSheet(context),
-                icon: Icon(
-                  Icons.timer_sharp,
-                  size: 30,
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-                tooltip: LocalData.reminderTitle.getString(context),
-              ),
-            ],
-          ),
-        ],
+              tooltip: LocalData.reminderTitle.getString(context),
+            ),
+          ],
+        ),
       ),
     );
   }

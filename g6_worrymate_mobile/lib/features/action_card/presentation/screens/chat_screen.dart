@@ -33,6 +33,8 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _hasSentFirstPrompt = false;
   late stt.SpeechToText _speech;
   bool _isListening = false;
+  String selectedOption = 'vent';
+  List<String> selectOptions = ['vent', 'seek advice'];
 
   @override
   void initState() {
@@ -109,7 +111,11 @@ class _ChatScreenState extends State<ChatScreen> {
             _hasSentFirstPrompt = true;
           });
           context.read<ChatBloc>().add(
-            SendChatMessageEvent(ChatParams(content: text), _selectedLang),
+            SendChatMessageEvent(
+              ChatParams(content: text),
+              _selectedLang,
+              selectedOption,
+            ),
           );
           _textController.clear();
         },
@@ -166,10 +172,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
     Color getHintColor() => isDarkMode ? Colors.white60 : Colors.grey[600]!;
 
-    // final promptFromHomePage = ModalRoute.of(context)?.settings.arguments;
-    // if (promptFromHomePage is String && _textController.text.isEmpty) {
-    //   _textController.text = promptFromHomePage;
-    // }
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         if (state is ChatCrisis) {
@@ -188,6 +190,7 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       child: Scaffold(
         backgroundColor: getBackgroundColor(),
+
         appBar: AppBar(
           backgroundColor: getBackgroundColor(),
           elevation: 0,
@@ -201,9 +204,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 borderRadius: BorderRadius.circular(30),
                 border: Border.all(width: 1, color: getPrimaryColor()),
               ),
-              child: Icon(
-                Icons.favorite_border_rounded,
-                color: isDarkMode ? Colors.black : Colors.white,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: Image.asset(
+                  'assets/images/logo1.jpg',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
@@ -225,63 +231,80 @@ class _ChatScreenState extends State<ChatScreen> {
             ],
           ),
           actions: [
-            Row(
-              children: [
-                IconButton(
-                  tooltip: 'Save chat',
-                  onPressed: () {
-                    context.read<ChatBloc>().add(SaveChatTranscriptEvent());
-                  },
-                  icon: Icon(Icons.save_alt, color: getPrimaryColor()),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  child: TextButton(
-                    onPressed: () {
-                      _flutterLocalization.translate('en');
-                      setState(() => _selectedLang = 'en');
-                    },
-                    style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      side: BorderSide(width: 1, color: getPrimaryColor()),
-                      backgroundColor: _selectedLang == 'en'
-                          ? getPrimaryColor()
-                          : Colors.transparent,
-                      foregroundColor: _selectedLang == 'en'
-                          ? (isDarkMode ? Colors.black : Colors.white)
-                          : getPrimaryColor(),
-                    ),
-                    child: const Text('EN'),
+            PopupMenuButton<String>(
+              onSelected: (String value) {
+                if (value == 'en') {
+                  _flutterLocalization.translate('en');
+                } else {
+                  _flutterLocalization.translate('am');
+                }
+                setState(() => _selectedLang = value);
+              },
+              itemBuilder: (BuildContext context) => [
+                PopupMenuItem(
+                  value: 'en',
+                  child: Row(
+                    children: [
+                      const Text('EN'),
+                      if (_selectedLang == 'en')
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Icon(Icons.check, size: 18),
+                        ),
+                    ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  child: TextButton(
-                    onPressed: () {
-                      _flutterLocalization.translate('am');
-                      setState(() => _selectedLang = 'am');
-                    },
-                    style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      side: BorderSide(width: 1, color: getPrimaryColor()),
-                      backgroundColor: _selectedLang == 'am'
-                          ? getPrimaryColor()
-                          : Colors.transparent,
-                      foregroundColor: _selectedLang == 'am'
-                          ? (isDarkMode ? Colors.black : Colors.white)
-                          : getPrimaryColor(),
-                    ),
-                    child: const Text('አማ'),
+                PopupMenuItem(
+                  value: 'am',
+                  child: Row(
+                    children: [
+                      const Text('አማ'),
+                      if (_selectedLang == 'am')
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Icon(Icons.check, size: 18),
+                        ),
+                    ],
                   ),
                 ),
               ],
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: isDarkMode
+                      ? Colors.white.withOpacity(0.08)
+                      : const Color(0xFFE0E7EF),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isDarkMode
+                        ? Colors.greenAccent
+                        : const Color(0xFF22314A),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _selectedLang == 'en' ? 'EN' : 'አማ',
+                      style: TextStyle(
+                        color: isDarkMode
+                            ? Colors.white
+                            : const Color(0xFF22314A),
+                        fontSize: 14,
+                      ),
+                    ),
+                    const Icon(Icons.arrow_drop_down, size: 20),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
+
         body: Column(
           children: [
             Padding(
@@ -329,9 +352,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: BlocBuilder<ChatBloc, ChatState>(
                 builder: (context, state) {
                   if (state is ChatError) {
-                    // return Center(
                     return const UpgradeToPremiumCard(); //   child: Padding(
-                    
                   }
 
                   final messages = state.messages;
@@ -406,7 +427,6 @@ class _ChatScreenState extends State<ChatScreen> {
                           );
                         }
                       } else {
-                        // Show typing indicator at the end if loading
                         return const Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
@@ -451,10 +471,65 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20,
-                          vertical: 16,
+                          vertical: 23,
                         ),
                         fillColor: getInputBackgroundColor(),
                         filled: true,
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(left: 8, right: 4),
+                          child: PopupMenuButton<String>(
+                            onSelected: (String value) {
+                              setState(() {
+                                selectedOption = value;
+                              });
+                            },
+                            itemBuilder: (BuildContext context) => [
+                              const PopupMenuItem(
+                                value: 'vent',
+                                child: Text('Vent'),
+                              ),
+                              const PopupMenuItem(
+                                value: 'seek advice',
+                                child: Text('Seek Advice'),
+                              ),
+                            ],
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDarkMode
+                                    ? Colors.white.withOpacity(0.08)
+                                    : const Color(0xFFE0E7EF),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isDarkMode
+                                      ? Colors.greenAccent
+                                      : const Color(0xFF22314A),
+                                  // width: ,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    selectedOption == 'vent'
+                                        ? 'Vent'
+                                        : 'Seek Advice',
+                                    style: TextStyle(
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : const Color(0xFF22314A),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const Icon(Icons.arrow_drop_down, size: 20),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isListening ? Icons.mic : Icons.mic_none,
@@ -478,6 +553,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             SendChatMessageEvent(
                               ChatParams(content: val.trim()),
                               _selectedLang,
+                              selectedOption,
                             ),
                           );
                           _textController.clear();
@@ -497,6 +573,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           SendChatMessageEvent(
                             ChatParams(content: text),
                             _selectedLang,
+                            selectedOption,
                           ),
                         );
                         _textController.clear();

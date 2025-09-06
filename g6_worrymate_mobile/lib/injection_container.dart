@@ -12,15 +12,19 @@ import 'features/action_card/data/datasources/action_card_remote_data_source.dar
 import 'features/action_card/data/datasources/chat_local_data_source.dart';
 import 'features/action_card/data/datasources/chat_prefs_local_data_source.dart';
 import 'features/action_card/data/datasources/chat_remote_data_source.dart';
+import 'features/action_card/data/datasources/normal_chat_remote_data_source.dart';
 import 'features/action_card/data/repositories/action_block_repository_impl.dart';
 import 'features/action_card/data/repositories/action_card_repository_impl.dart';
 import 'features/action_card/data/repositories/chat_repository_impl.dart';
+import 'features/action_card/data/repositories/normal_chat_repository_impl.dart';
 import 'features/action_card/domain/repositories/action_block_repository.dart';
 import 'features/action_card/domain/repositories/action_card_repository.dart';
 import 'features/action_card/domain/repositories/chat_repository.dart';
+import 'features/action_card/domain/repositories/normal_chat_repository.dart';
 import 'features/action_card/domain/usecases/action_block_usecase.dart';
 import 'features/action_card/domain/usecases/action_card_usecase.dart';
 import 'features/action_card/domain/usecases/add_chat.dart';
+import 'features/action_card/domain/usecases/normal_chat_usecase.dart';
 import 'features/action_card/presentation/bloc/chat_bloc.dart';
 import 'features/activity_tracking/data/datasources/activity_local_data_soruce.dart';
 import 'features/activity_tracking/data/models/activity_day_model.dart';
@@ -37,32 +41,38 @@ import 'features/reminder/services/notification_service.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
-
   await Hive.initFlutter();
   if (!Hive.isAdapterRegistered(1)) {
     Hive.registerAdapter(ActivityDayModelAdapter());
   }
 
   sl.registerLazySingleton<ActivityLocalDataSource>(
-      () => ActivityLocalDataSourceImpl());
+    () => ActivityLocalDataSourceImpl(),
+  );
   sl.registerLazySingleton<ActivityRepository>(
-      () => ActivityRepositoryImpl(sl()));
+    () => ActivityRepositoryImpl(sl()),
+  );
+
+  sl.registerLazySingleton<NormalChatRemoteDataSource>(
+    () => NormalChatRemoteDataSource(chatLocalDataSource: sl()),
+  );
 
   // Use cases
   sl.registerLazySingleton(() => LogActivityUseCase(sl()));
   sl.registerLazySingleton(() => LogMoodUseCase(sl()));
   sl.registerLazySingleton(() => GetLastNDaysUseCase(sl()));
   sl.registerLazySingleton(() => ComputeStreakUseCase(sl()));
+  // sl.registerLazySingleton(() => NormalChatUseCase(sl()));
 
   // Cubit
-  sl.registerFactory(() => ActivityCubit(
-        sl<LogActivityUseCase>(),
-        sl<LogMoodUseCase>(),
-        sl<GetLastNDaysUseCase>(),
-        sl<ComputeStreakUseCase>(),
-      ));
-
-
+  sl.registerFactory(
+    () => ActivityCubit(
+      sl<LogActivityUseCase>(),
+      sl<LogMoodUseCase>(),
+      sl<GetLastNDaysUseCase>(),
+      sl<ComputeStreakUseCase>(),
+    ),
+  );
 
   // Bloc
   sl.registerFactory(
@@ -73,6 +83,7 @@ Future<void> init() async {
       composeActionCardUsecase: sl(),
       chatLocalDataSource: sl(),
       chatPrefsLocalDataSource: sl(),
+      normalChatUseCase: sl(),
     ),
   );
 
@@ -88,6 +99,8 @@ Future<void> init() async {
     () => ComposeActionCardUsecase(sl()),
   );
 
+  sl.registerLazySingleton<NormalChatUseCase>(() => NormalChatUseCase(sl()));
+
   // Repository
   sl.registerLazySingleton<ChatRepository>(
     () => ChatRepositoryImpl(
@@ -96,6 +109,11 @@ Future<void> init() async {
       networkInfo: sl(),
     ),
   );
+
+  sl.registerLazySingleton<NormalChatRepository>(
+    () => NormalChatRepositoryImpl(normalChatRemoteDataSource: sl()),
+  );
+
   sl.registerLazySingleton<ActionBlockRepository>(
     () => ActionBlockRepositoryImpl(sl()),
   );
@@ -108,9 +126,7 @@ Future<void> init() async {
   sl.registerLazySingleton<ActionCardLocalDataSource>(
     () => ActionCardLocalDataSource(),
   );
-  sl.registerLazySingleton<ChatLocalDataSource>(
-    () => ChatLocalDataSource(),
-  );
+  sl.registerLazySingleton<ChatLocalDataSource>(() => ChatLocalDataSource());
   sl.registerLazySingleton<ChatPrefsLocalDataSource>(
     () => ChatPrefsLocalDataSource(),
   );
@@ -130,9 +146,7 @@ Future<void> init() async {
     () => InternetConnectionChecker.createInstance(),
   );
 
-
   //notification
   sl.registerLazySingleton(() => NotificationService());
   sl.registerFactory(() => ReminderCubit(sl<NotificationService>()));
-
 }
