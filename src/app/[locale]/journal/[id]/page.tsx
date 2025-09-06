@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { db, JournalEntry } from '@/app/lib/db';
+import { useTranslations } from 'next-intl';
 
 function Page() {
+  const t=useTranslations('JournalEditor');
   const [entry, setEntry] = useState<JournalEntry>();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingContent, setIsEditingContent] = useState(false);
@@ -37,7 +39,7 @@ function Page() {
   if (!entry) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-900 dark:text-white font-sans text-base bg-gray-50 dark:bg-[#092B47]">
-        Loading journal...
+        {t('loadingJournal')}
       </div>
     );
   }
@@ -63,7 +65,7 @@ function Page() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
-              placeholder="Enter a title..."
+              placeholder={t('enterTitle')}
               className="w-full text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-400 bg-transparent focus:outline-none focus:border-gray-900 dark:focus:border-[#10B981] leading-snug"
             />
           ) : (
@@ -71,7 +73,7 @@ function Page() {
               onDoubleClick={() => setIsEditingTitle(true)}
               className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white cursor-pointer hover:text-gray-700 dark:hover:text-[#10B981] leading-snug"
             >
-              {title || 'Untitled Journal'}
+              {title || t('untitledJournal')}
             </h1>
           )}
         </div>
@@ -84,7 +86,7 @@ function Page() {
               onChange={(e) => setContent(e.target.value)}
               rows={12}
               autoFocus
-              placeholder="Start writing your thoughts..."
+              placeholder={t('startWriting')}
               className="w-full text-base sm:text-lg text-gray-900 dark:text-white leading-relaxed bg-transparent border border-gray-300 dark:border-gray-400 rounded-lg p-4 focus:outline-none focus:border-gray-900 dark:focus:border-[#10B981] focus:ring-2 focus:ring-gray-200 dark:focus:ring-[#10B981]/30 transition-shadow"
             />
           ) : (
@@ -92,7 +94,7 @@ function Page() {
               onClick={() => setIsEditingContent(true)}
               className="text-base sm:text-lg text-gray-900 dark:text-white leading-relaxed whitespace-pre-line cursor-pointer hover:bg-gray-100 dark:hover:bg-[#10B981]/20 rounded-lg p-3 transition-colors"
             >
-              {content || 'Click here to start writing your thoughts...'}
+              {content || t('clickToWrite')}
             </p>
           )}
         </div>
@@ -106,14 +108,14 @@ function Page() {
             }}
             className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-xl px-6 py-2 shadow transition-colors font-semibold"
           >
-            Delete
+            {t('delete')}
           </button>
 
           <button
             onClick={handleUpdate}
             className="bg-green-500 hover:bg-green-600 dark:bg-[#10B981] dark:hover:bg-green-700 text-white rounded-xl px-6 py-2 shadow transition-colors font-semibold"
           >
-            Update
+            {t('update')}
           </button>
         </div>
       </div>

@@ -110,6 +110,12 @@
     "noEntries": "ጽሁፎች የሉም። መጻፍ ይጀምሩ!",
     "viewEntry": "ጽሁፍ እይ",
     "placeholder": "እዚህ ላይ ስሜትዎን ይጻፉ...",
-    "startWriting": "ጽሑፍ ጀምር"
+    "startWriting": "ጽሑፍ ጀምር",
+    "loadingJournal": "የጀርናል መረጃ እየጫነ ነው...",
+    "untitledJournal": "ማስታወሻ ስም የለውም",
+    "enterTitle": "ርዕስ ያስገቡ...",
+    "delete": "ሰርዝ",
+    "update": "አዘምን",
+    "clickToWrite": "እዚህ ጠቅ ያድርጉ እና ሃሳቦችዎን ጀምር ይጻፉ..."
   }
 }
