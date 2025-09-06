@@ -204,9 +204,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 borderRadius: BorderRadius.circular(30),
                 border: Border.all(width: 1, color: getPrimaryColor()),
               ),
-              child: Icon(
-                Icons.favorite_border_rounded,
-                color: isDarkMode ? Colors.black : Colors.white,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: Image.asset(
+                  'assets/images/logo1.png',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
