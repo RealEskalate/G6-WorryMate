@@ -1,43 +1,17 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Bold from '@tiptap/extension-bold';
-import Italic from '@tiptap/extension-italic';
-import Underline from '@tiptap/extension-underline';
-import Strike from '@tiptap/extension-strike';
-import Heading from '@tiptap/extension-heading';
-import BulletList from '@tiptap/extension-bullet-list';
-import OrderedList from '@tiptap/extension-ordered-list';
-import Link from '@tiptap/extension-link';
-import Placeholder from '@tiptap/extension-placeholder';
-import { useRouter } from 'next/navigation';
 import { db, JournalEntry } from '@/app/lib/db';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function JournalEditor() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [currentTitle, setCurrentTitle] = useState('');
-  const [editorState, setEditorState] = useState(0);
+  const [content, setContent] = useState('');
   const router = useRouter();
+  const t = useTranslations('JournalEditor');
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({ heading: false }),
-      Bold,
-      Italic,
-      Underline,
-      Strike,
-      Heading.configure({ levels: [1, 2, 3] }),
-      BulletList,
-      OrderedList,
-      Link,
-      Placeholder.configure({ placeholder: 'Write your thoughts here...' }),
-    ],
-    content: '',
-    immediatelyRender: false,
-  });
-
-
+  // Fetch recent entries
   useEffect(() => {
     const fetchEntries = async () => {
       const all = await db.journals.toArray();
@@ -47,24 +21,9 @@ export default function JournalEditor() {
     fetchEntries();
   }, []);
 
-
-  useEffect(() => {
-    if (!editor) return;
-
-    const rerender = () => setEditorState((prev) => prev + 1);
-    editor.on('selectionUpdate', rerender);
-    editor.on('update', rerender);
-
-    return () => {
-      editor.off('selectionUpdate', rerender);
-      editor.off('update', rerender);
-    };
-  }, [editor]);
-
-
+  // Save journal entry
   const saveEntry = async () => {
-    if (!editor) return;
-    const content = editor.getText();
+    if (!content.trim()) return; // don't save empty
     const entry: JournalEntry = {
       title: currentTitle || new Date().toLocaleString(),
       content,
@@ -72,55 +31,59 @@ export default function JournalEditor() {
     };
     await db.journals.add(entry);
     setCurrentTitle('');
-    editor.commands.clearContent();
+    setContent('');
     const all = await db.journals.toArray();
     setEntries(all);
   };
 
-  if (!editor) return null;
-
   return (
-    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 bg-[white] dark:bg-[#092B47] font-sans">
+    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 bg-white dark:bg-[#092B47] font-sans">
       <h2 className="mb-6 text-3xl font-bold text-[#0D2A4B] dark:text-[#10B981] sm:text-4xl">
-        My Journal
+        {t('myJournal')}
       </h2>
+
       <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+        {/* Editor section */}
         <div className="w-full rounded-xl bg-[#F7F9FB] dark:bg-[#28445C] p-6 shadow-md lg:w-3/4">
           <input
             type="text"
-            placeholder="Entry Title"
+            placeholder={t('entryTitle')}
             value={currentTitle}
             onChange={(e) => setCurrentTitle(e.target.value)}
-            className="mb-4 w-full rounded-lg border border-gray-300 dark:border-[#72a795] px-5 py-3 text-[16px] text-[#0D2A4B] dark:text-[white] focus:border-[#0D2A4B] dark:focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#0D2A4B]/20 dark:focus:ring-[#10B981]/20 font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
-            aria-label="Journal entry title"
+            className="mb-4 w-full rounded-lg border border-gray-300 dark:border-[#72a795] px-5 py-3 text-[16px] text-[#0D2A4B] dark:text-white focus:border-[#0D2A4B] dark:focus:border-[#10B981] focus:outline-none focus:ring-2 focus:ring-[#0D2A4B]/20 dark:focus:ring-[#10B981]/20 font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
+            aria-label={t('entryTitle')}
           />
-          <div className="mb-4 rounded-lg border border-gray-300 dark:border-[#10B981] bg-whi p-5">
-            <EditorContent
-              editor={editor}
-              className="min-h-[300px]  text-[16px] text-[#0D2A4B] dark:text-white font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed"
-            />
-          </div>
-          <div className="flex justify-center">
-        
+
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={12}
+            autoFocus
+            placeholder={t('startWriting')}
+            className="w-full text-base sm:text-lg text-gray-900 dark:text-white leading-relaxed bg-transparent border border-gray-300 dark:border-gray-400 rounded-lg p-4 focus:outline-none focus:border-gray-900 dark:focus:border-[#10B981] focus:ring-2 focus:ring-gray-200 dark:focus:ring-[#10B981]/30 transition-shadow"
+          />
+
+          <div className="flex justify-center mt-4">
             <button
               type="button"
               onClick={saveEntry}
               className="rounded-lg cursor-pointer dark:bg-[#10B981] bg-[#0D2A4B] px-5 py-2.5 text-white font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed transition hover:bg-[#10B981]/80"
-              aria-label="Save journal entry"
+              aria-label={t('saveEntry')}
             >
-              Save Entry
+              {t('saveEntry')}
             </button>
           </div>
         </div>
 
+        {/* Recent entries */}
         <div className="w-full lg:w-1/2">
           <h3 className="mb-4 text-3xl font-semibold dark:text-[#10B981] text-[#0D2A4B] font-['Inter','Noto_Sans_Ethiopic'] leading-relaxed">
-            Recent Entries
+            {t('recentEntries')}
           </h3>
-          <div className="max-h-[calc(100vh-200px)] overflow-y-auto space-y-3 pr-2 bg-[#F7F9FB] dark:bg-[#28445C] shadow-md ">
+          <div className="max-h-[calc(100vh-200px)] overflow-y-auto space-y-3 pr-2 bg-[#F7F9FB] dark:bg-[#28445C] shadow-md">
             {entries.length === 0 ? (
               <p className="text-[#0D2A4B] dark:text-[#10B981] font-['Inter','Noto_Sans_Ethiopic'] text-[16px] leading-relaxed">
-                No entries yet. Start writing!
+                {t('noEntries')}
               </p>
             ) : (
               entries.map((entry) => (

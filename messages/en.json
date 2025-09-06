@@ -108,6 +108,16 @@
     "Progress Tracker": "Progress Tracker",
     "Visualize your growth and milestones over time.": "Visualize your growth and milestones over time.",
     "Track Progress": "Track Progress"
+  },
+  "JournalEditor": {
+    "myJournal": "My Journal",
+    "entryTitle": "Entry Title",
+    "saveEntry": "Save Entry",
+    "recentEntries": "Recent Entries",
+    "noEntries": "No entries yet. Start writing!",
+    "viewEntry": "View journal entry",
+    "placeholder": "Write your thoughts here...",
+    "startWriting": "Start Writing"
   }
 
 }

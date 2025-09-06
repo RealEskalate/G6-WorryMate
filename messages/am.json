@@ -101,5 +101,15 @@
     "Progress Tracker": "የእድገት ተከታታይ",
     "Visualize your growth and milestones over time.": "በጊዜ ላይ የእድገትዎን እና ነጥቦች ያሳዩ።",
     "Track Progress": "እድገትን ተከታትሉ"
+  },
+  "JournalEditor": {
+    "myJournal": "የግል መጽሔት",
+    "entryTitle": "የጽሁፍ ርዕስ",
+    "saveEntry": "ጽሁፍ አስቀምጥ",
+    "recentEntries": "የቅርብ ጊዜ ጽሁፎች",
+    "noEntries": "ጽሁፎች የሉም። መጻፍ ይጀምሩ!",
+    "viewEntry": "ጽሁፍ እይ",
+    "placeholder": "እዚህ ላይ ስሜትዎን ይጻፉ...",
+    "startWriting": "ጽሑፍ ጀምር"
   }
 }
