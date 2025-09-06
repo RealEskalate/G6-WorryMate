@@ -27,6 +27,8 @@ const Workspace = () => {
     const [hasStarted, setHasStarted] = useState(false)
     const [showRateLimit, setShowRateLimit] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [isWorryBuddyMode, setIsWorryBuddyMode] = useState(true)
+
     const  {locale}  = useParams()
 
     const language = locale === 'en' ? 'en-US' : 'am-ET'
@@ -77,10 +79,26 @@ const Workspace = () => {
         setMessages(prev => [...prev, { role: 'user', content: trimmed }])
         setPrompt('')
         if (!hasStarted) setHasStarted(true)
-        // Reset rate limit state when user sends a new message
         setShowRateLimit(false)
-        // Start loading
         setIsLoading(true)
+       if (!isWorryBuddyMode) {
+    try {
+        const response = await fetch('/api/normal', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', 'x-locale': apiLang },
+            body: JSON.stringify({ message: trimmed,context:"" })
+        });
+        const data = await response.json();
+        setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+    } catch (err) {
+        console.error(err);
+        setMessages(prev => [...prev, { role: 'assistant', content: 'Network error. Please try again.' }]);
+    } finally {
+        setIsLoading(false);
+    }
+    return;
+}
+
 
         try {
             // 1. risk-check
@@ -282,7 +300,23 @@ const Workspace = () => {
         <div className='flex flex-col flex-1 relative items-stretch h-screen min-h-0 bg-white dark:bg-gray-900'>
             <PageHeader title="Vent" />
             {!hasStarted && messages.length === 0 && (
+                
                 <div className='flex flex-col gap-3 justify-center items-center flex-1 pt-16 px-4'>
+                    <div className="flex justify-center gap-2 mt-2">
+  <button
+    onClick={() => setIsWorryBuddyMode(true)}
+    className={`px-4 py-1 rounded-md font-medium transition-colors ${isWorryBuddyMode ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}`}
+  >
+    Worry Buddy
+  </button>
+  <button
+    onClick={() => setIsWorryBuddyMode(false)}
+    className={`px-4 py-1 rounded-md font-medium transition-colors ${!isWorryBuddyMode ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}`}
+  >
+    AI Agent
+  </button>
+</div>
+
                     <h1 className='font-bold text-xl md:text-2xl text-center text-gray-900 dark:text-white'>
                         {t('welcomePrefix')} <AuroraText>{t('welcomeMate')}</AuroraText>
                     </h1>
