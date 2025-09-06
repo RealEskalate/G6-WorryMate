@@ -1,0 +1,79 @@
+name: g6_worrymate_mobile
+description: "A new Flutter project."
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  get_it: ^8.2.0
+  flutter_bloc: ^8.1.3  # Added version constraint
+  equatable: ^2.0.7
+  dartz: ^0.10.1
+  http: ^1.5.0
+  shared_preferences: ^2.5.3
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.1
+
+  flutter_gen_ai_chat_ui: ^2.3.6
+  internet_connection_checker: ^3.0.1
+  dio: ^5.9.0
+  logger: ^2.6.1
+  jwt_decoder: ^2.0.1
+  google_fonts: ^6.3.0
+  url_launcher: ^6.3.2
+  flutter_localization:
+
+  flutter_local_notifications: ^19.4.1
+  timezone: ^0.10.0
+  flutter_timezone:
+
+  fl_chart: ^0.66.0
+  percent_indicator: ^4.2.3
+  permission_handler: ^11.0.1
+
+  cupertino_icons: ^1.0.8
+  speech_to_text: ^7.3.0
+
+  introduction_screen: ^3.1.6
+
+  # Removed flutter_launcher_icons from here - it should only be in dev_dependencies
+
+
+dev_dependencies:
+
+  flutter_test:
+    sdk: flutter
+  mockito:
+  hive_generator:
+  build_runner:
+
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4  # Only keep it here
+
+# Move this to the root level (not under dependencies or dev_dependencies)
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo1.jpg"  # Changed to match your assets
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/worrymatefinallogo.png
+    - assets/images/worrymatelogo-removebg-preview.png
+    - assets/images/worrymatelogo.png
+    - assets/images/Chat bot.png
+    - assets/images/breathing.png
+    - assets/images/journal.png
+    - assets/images/meditation.png
+    - assets/images/progress.png
+    - assets/images/preferences_image.png
+    - assets/images/logo1.jpg  # This matches your image_path above
