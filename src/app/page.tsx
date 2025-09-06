@@ -1,9 +1,9 @@
 import React from 'react'
-import ActionCard from './components/ActionCard/ActionCard'
+import Grounding from '../app/components/grounding/grounding'
 
 const page = () => {
   return (
-    <ActionCard/>
+    <Grounding/>
   )
 }
 
