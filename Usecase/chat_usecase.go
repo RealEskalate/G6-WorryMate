@@ -17,8 +17,8 @@ func NewChatUsecase(chtrp domain.ChatRepositoryI, ai domain.AIService) *ChatUsec
 	}
 }
 
-func (cu *ChatUsecase) NormalChatUsecase(message string) (string, error) {
-	return cu.aiServ.GenerateNormalChatMsg(message)
+func (cu *ChatUsecase) NormalChatUsecase(message, context string) (string, error) {
+	return cu.aiServ.GenerateNormalChatMsg(message, context)
 }
 
 func (cu *ChatUsecase) ComposeCardUsecase(actBlk *domain.ActionBlock) (*string, error) {
@@ -59,4 +59,8 @@ func (cu *ChatUsecase) GetOffLinePackUseCase(lang string) ([]*domain.ActionBlock
 
 func (cu *ChatUsecase) GenerateCrisisCard(lang, region string, tags []string) (*string, error) {
 	return cu.aiServ.GenerateCrisisCard(lang, region, tags)
+}
+
+func (cu *ChatUsecase) SummarizeUsecase(content string) (string, error) {
+	return cu.aiServ.GenerateSummary(content)
 }

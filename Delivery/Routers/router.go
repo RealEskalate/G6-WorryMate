@@ -20,6 +20,7 @@ func SetupRouter(ChtCtrl *controllers.ChatController) {
 		chatRoutes.GET("/offline_pack", ChtCtrl.OfflinePackController)
 		chatRoutes.GET("/action_block/:topic_key/:lang", ChtCtrl.ActionBlockController)
 		chatRoutes.POST("/crisis_card", ChtCtrl.CrisisCardController)
+		chatRoutes.POST("/summarize", ChtCtrl.SummarizeContextController)
 	}
 
 	// Run the app

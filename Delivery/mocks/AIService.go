@@ -73,9 +73,9 @@ func (_m *AIService) GenerateCrisisCard(lang string, region string, tags []strin
 	return r0, r1
 }
 
-// GenerateNormalChatMsg provides a mock function with given fields: msg
-func (_m *AIService) GenerateNormalChatMsg(msg string) (string, error) {
-	ret := _m.Called(msg)
+// GenerateNormalChatMsg provides a mock function with given fields: msg, content
+func (_m *AIService) GenerateNormalChatMsg(msg string, content string) (string, error) {
+	ret := _m.Called(msg, content)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GenerateNormalChatMsg")
@@ -83,17 +83,17 @@ func (_m *AIService) GenerateNormalChatMsg(msg string) (string, error) {
 
 	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
-		return rf(msg)
+	if rf, ok := ret.Get(0).(func(string, string) (string, error)); ok {
+		return rf(msg, content)
 	}
-	if rf, ok := ret.Get(0).(func(string) string); ok {
-		r0 = rf(msg)
+	if rf, ok := ret.Get(0).(func(string, string) string); ok {
+		r0 = rf(msg, content)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(msg)
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(msg, content)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -136,6 +136,34 @@ func (_m *AIService) GenerateRiskCheck(content string) (int, []string, error) {
 	}
 
 	return r0, r1, r2
+}
+
+// GenerateSummary provides a mock function with given fields: content
+func (_m *AIService) GenerateSummary(content string) (string, error) {
+	ret := _m.Called(content)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GenerateSummary")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
+		return rf(content)
+	}
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(content)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(content)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // GenerateTopicKey provides a mock function with given fields: content

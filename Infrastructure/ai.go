@@ -103,10 +103,56 @@ func (ai *AI) getClient() *genai.Client {
 	return client
 }
 
-func (ai *AI) GenerateNormalChatMsg(msg string) (string, error) {
+func (ai *AI) GenerateSummary(content string) (string, error) {
 	ctx := context.Background()
 
-	userPrompt := genai.Text(msg + "return a single string containing your natural response, It does not need to be json format since this is normal chat feature.")
+	userPrompt := genai.Text(fmt.Sprintf(`
+	- You are to make a summary of these Sentences in under 100 words.
+	- Try to understand what the conversation is generally about.
+	- The information will be used as context for next questions. 
+	- Do not answer the questions if there are any.
+	- This context will be used when sending other questions so that the AI wont forget what was their previous topic
+	- You should retun a normal string and not json format.
+	- Use this Content : %s`, content))
+	client := ai.getClient()
+	result, err := client.Models.GenerateContent(
+		ctx, 
+		ai.model_name, 
+		userPrompt,
+		ai.config,
+	)
+
+	if err != nil {
+		// Try to find valid api keys in clients
+		count := 0
+		for (count < len(ai.clients)) {
+			ans, err := ai.GenerateSummary(content)
+			if (err == nil) {
+				return ans, nil
+			}
+			count += 1
+		}
+		
+		var apiErr genai.APIError
+		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
+		if errors.As(err, &apiErr) {
+			// log.Print("err : ", err.Error(), "api err : ", apiErr )
+			if apiErr.Code == 429 {
+				return "", errors.New("quota/rate limit exceeded, please retry later")
+			}
+		}
+		return "", err
+	}
+	resultMsg := result.Text()
+	return resultMsg, nil
+}
+
+func (ai *AI) GenerateNormalChatMsg(msg, content string) (string, error) {
+	ctx := context.Background()
+	userPrompt := genai.Text(fmt.Sprintf(`
+	- You are to return a single string containint your natural response to this text/question : %s.
+	- The return format is normal string and not json format. 
+	- Use this to understand what the conversation was about and as context : %s`, msg ,content))
 	client := ai.getClient()
 	result, err := client.Models.GenerateContent(
 		ctx, 
@@ -119,7 +165,7 @@ func (ai *AI) GenerateNormalChatMsg(msg string) (string, error) {
 		// Try to find valid api keys in clients
 		count := 0
 		for (count < len(ai.clients)) {
-			ans, err := ai.GenerateNormalChatMsg(msg)
+			ans, err := ai.GenerateNormalChatMsg(msg, content)
 			if (err == nil) {
 				return ans, nil
 			}

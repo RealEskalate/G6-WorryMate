@@ -6,6 +6,7 @@ import (
 
 type ChatDTO struct {
 	Message        string    `json:"message"`
+	Extra_context  string `json:"context"`
 	// SenderIsAI     bool      `json:"senderisai"`
 	// TimeOfCreation time.Time `json:"timeofcreation"`
 }
