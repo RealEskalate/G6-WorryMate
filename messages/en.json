@@ -45,5 +45,69 @@
     "home": "Home",
     "settings": "Settings",
     "about": "About"
+  },
+
+
+
+  "start":{
+
+  },
+  "EmojiSelection":{
+    "selectMood":"Select Your Mood",
+    "low":"Low",
+    "meh":"High",
+    "okay":"Okay",
+    "good":"Good",
+    "great":"Great"
+  },
+  
+  "HowFeel": {
+    "morning": "Good Morning 🌅",
+    "afternoon": "Good Afternoon 🌞",
+    "evening": "Good Evening 🌇",
+    "night": "Burning the midnight oil? 🌃",
+    "howDoYouFeel": "How do you feel",
+    "markMood": "Please, mark your mood today",
+    "markNow": "Mark now",
+    "hide": "Hide",
+    "chatbotIllustration": "Chatbot Illustration"
+  },
+  "EmojiProgress": {
+    "moodTracker": "Mood Tracker",
+    "trackMood": "Track your mood over time",
+    "selectWeek": "Select a week",
+    "low": "Low",
+    "meh": "Meh",
+    "okay": "Okay",
+    "good": "Good",
+    "great": "Great",
+    "mood": "Mood",
+    "noData": "No data",
+    "date": "Date"
+  },
+  "RecentEntries": {
+    "recentEntries": "Recent Entries",
+    "newEntry": "New Entry",
+    "noEntriesYet": "No entries yet.",
+    "viewEntry": "View journal entry"
+  },
+  "Features":{
+    "features":"Features",
+    "AI Chat": "AI Chat",
+    "Get personalized guidance and answers from our intelligent assistant.": "Get personalized guidance and answers from our intelligent assistant.",
+    "Chat Now": "Chat Now",
+
+    "Write Journal": "Write Journal",
+    "Reflect on your thoughts and emotions with daily journaling.": "Reflect on your thoughts and emotions with daily journaling.",
+    "Start Writing": "Start Writing",
+
+    "Wellness Kits": "Wellness Kits",
+    "Explore curated resources to support your mental and emotional well-being.": "Explore curated resources to support your mental and emotional well-being.",
+    "Explore Kits": "Explore Kits",
+
+    "Progress Tracker": "Progress Tracker",
+    "Visualize your growth and milestones over time.": "Visualize your growth and milestones over time.",
+    "Track Progress": "Track Progress"
   }
+
 }

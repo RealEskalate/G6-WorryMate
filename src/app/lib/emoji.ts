@@ -1,21 +1,21 @@
 export const emoji=[
     {
         emoji:"😞",
-        description:"Low"
+        description:"low"
     },
     {
         emoji:"😐",
-        description:"Meh"
+        description:"meh"
     },
     {
         emoji:"😊",
-        description:"Okay"
+        description:"okay"
     },{
         emoji:"😄",
-        description:"Good"
+        description:"good"
     },{
         emoji:"😍",
-        description:"Great"
+        description:"great"
     }
     
 ]

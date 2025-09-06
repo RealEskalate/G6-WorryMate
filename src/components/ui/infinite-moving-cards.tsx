@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import  {useTranslations} from 'next-intl'
 
 export interface FeatureCard {
   title: string;
@@ -27,6 +28,7 @@ export const InfiniteMovingCards = ({
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const scrollerRef = React.useRef<HTMLUListElement>(null);
+  const t=useTranslations('Features')
   const [start, setStart] = useState(false);
 
   useEffect(() => {
@@ -96,13 +98,13 @@ export const InfiniteMovingCards = ({
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
       
             <div className="relative z-10 p-6 flex flex-col justify-end h-full text-[#F7F9FB]">
-              <h3 className="text-lg md:text-xl font-bold">{item.title}</h3>
-              <p className="mt-2 text-sm md:text-base">{item.description}</p>
+              <h3 className="text-lg md:text-xl font-bold">{t(item.title)}</h3>
+              <p className="mt-2 text-sm md:text-base">{t(item.description)}</p>
               <Link
                 href={item.buttonLink}
                 className="mt-4 inline-block rounded-2xl bg-[#0D2A4B] dark:bg-[#10B981] px-4 py-2 text-sm font-medium hover:bg-[#0b294a] transition"
               >
-                {item.buttonText}
+                {t(item.buttonText)}
               </Link>
             </div>
           </li>
