@@ -16,6 +16,8 @@ import 'features/offline_toolkit/presentation/pages/daily_journal_screen.dart';
 import 'features/offline_toolkit/presentation/pages/five_four_screen.dart';
 import 'features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
 import 'features/offline_toolkit/presentation/pages/win_tracker_screen.dart';
+import 'features/onboarding/presentation/cubit/preferences_cubit.dart';
+import 'features/onboarding/presentation/pages/preferences_page.dart';
 import 'features/reminder/presentation/cubit/reminder_cubit.dart';
 import 'features/reminder/presentation/pages/reminder_page.dart';
 import 'features/reminder/services/notification_service.dart';
@@ -72,6 +74,7 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (_) => sl<ActivityCubit>()..load()),
       BlocProvider(create: (_) => sl<ReminderCubit>()),
+      BlocProvider(create: (_) => sl<PreferencesCubit>()),
       ],
       child: ChangeNotifierProvider(
         create: (context) => ThemeManager(),
@@ -109,7 +112,7 @@ class _MyAppState extends State<MyApp> {
                 '/win_tracker': (context) => const WinTrackerScreen(),
                 '/box_breathing': (context) => const BoxBreathingScreen(),
                 '/five_four': (context) => const FiveFourScreen(),
-
+                '/preferences' : (context) => const PreferencesPage(),
 
                 // '/notification': (context) => const ReminderPage()
               },

@@ -155,6 +155,12 @@ mixin LocalData {
   static const String reminderDisabled = 'reminder_disabled';
   static const String reminderError = 'reminder_error';
 
+  //preferences
+  static const String preferencesTitle = 'preferences_title';
+  static const String preferencesSubtitle = 'preferences_subtitle';
+  static const String preferencesContinue = 'preferences_continue';
+  static const String preferencesSaved = 'preferences_saved';
+
   // (Optional legacy keys)
   static const String title = 'title';
   static const String body = 'body';
@@ -292,6 +298,14 @@ mixin LocalData {
     reminderSaved: 'Reminder saved',
     reminderDisabled: 'Reminder disabled',
     reminderError: 'Could not schedule reminder',
+
+
+    //preferences
+    preferencesTitle: 'Set your preferences',
+    preferencesSubtitle: 'Adjust theme, language and how chats are stored.',
+    preferencesContinue: 'Continue',
+    preferencesSaved: 'Preferences saved',
+
     // Legacy
     title: 'Settings',
     body: 'Manage your preferences'
@@ -431,6 +445,12 @@ mixin LocalData {
     reminderDisabled: 'አስታዋሽ አጥፋል',
     reminderError: 'አስታዋሽ መመዝገብ አልተቻለም',
 
+
+    //preferences
+    preferencesTitle: 'ምርጫዎችን ያዋቅሩ',
+    preferencesSubtitle: 'ጨለማ/ብርሃን፣ ቋንቋ እና ውይይቶች እንዴት እንዲቀመጡ ያቀናብሩ።',
+    preferencesContinue: 'ቀጥል',
+    preferencesSaved: 'ምርጫዎች ተቀምጠዋል',
     // Legacy
     title: 'ቅንብሮች',
     body: 'ምርጫዎችን ያቀናብሩ'

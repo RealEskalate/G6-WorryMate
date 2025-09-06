@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/connection/network_info.dart';
 import 'core/databases/api/api_consumer.dart';
@@ -35,12 +36,29 @@ import 'features/activity_tracking/domain/usecases/get_last_n_days_use_case.dart
 import 'features/activity_tracking/domain/usecases/log_activity_use_case.dart';
 import 'features/activity_tracking/domain/usecases/log_mood_use_case.dart';
 import 'features/activity_tracking/presentation/cubit/activity_cubit.dart';
+import 'features/onboarding/data/datasources/preferences_local_data_source.dart';
+import 'features/onboarding/data/repositories/preferences_repository_impl.dart';
+import 'features/onboarding/domain/repositories/preferences_repository.dart';
+import 'features/onboarding/domain/usecases/get_preferences.dart';
+import 'features/onboarding/domain/usecases/save_preferences.dart';
+import 'features/onboarding/presentation/cubit/preferences_cubit.dart';
 import 'features/reminder/presentation/cubit/reminder_cubit.dart';
 import 'features/reminder/services/notification_service.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
+
+    final sharedPrefs = await SharedPreferences.getInstance();
+  sl.registerLazySingleton<PreferencesLocalDataSource>(
+      () => PreferencesLocalDataSourceImpl(sharedPrefs));
+  sl.registerLazySingleton<PreferencesRepository>(
+      () => PreferencesRepositoryImpl(sl()));
+  sl.registerLazySingleton(() => GetPreferences(sl()));
+  sl.registerLazySingleton(() => SavePreferences(sl()));
+  sl.registerFactory(() => PreferencesCubit(sl(), sl()));
+
+
   await Hive.initFlutter();
   if (!Hive.isAdapterRegistered(1)) {
     Hive.registerAdapter(ActivityDayModelAdapter());

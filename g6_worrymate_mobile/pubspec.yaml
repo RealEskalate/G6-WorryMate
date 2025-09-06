@@ -75,4 +75,5 @@ flutter:
     - assets/images/journal.png
     - assets/images/meditation.png
     - assets/images/progress.png
+    - assets/images/preferences_image.png
     - assets/images/logo1.jpg  # This matches your image_path above
