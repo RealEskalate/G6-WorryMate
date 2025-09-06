@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react"
 import { ActionCardData, ActionStep } from "../types"
 import Link from "next/link";
+import { Dice1 } from "lucide-react";
 
 interface ActionCardProps {
   data?: ActionCardData
@@ -139,15 +140,33 @@ export default function ActionCard({ data: propData }: ActionCardProps) {
                   </div>
               ))}
         </div>
-         <div className="flex space-x-8 justify-center mt-5 font-medium mt-8">
-           <Link href="/box-breathing">
+         {/* <div className="flex space-x-8 justify-center mt-5 font-medium mt-8">
+          <Link href="/box-breathing">
                <button className="bg-gray-200 text-lg text-gray-700 px-8 py-3 rounded-3xl hover:text-[#132A4F] hover:bg-gray-100">Box Breathing</button>
            </Link>
            <Link href="/daily-journal">
                <button className="bg-gray-200 text-lg text-gray-700 px-8 py-3 rounded-4xl hover:text-[#132A4F] hover:bg-gray-100">Daily Journal</button>
            </Link>
-        </div>
-      </div>
+        </div> */}
+        <div className="flex space-x-8 justify-center mt-5 font-medium mt-8">
+          {data.uiTools?.map((tool, idx) => {
+                const formatted = tool
+                  .split("_")                 
+                  .map(word => word.charAt(0).toUpperCase() + word.slice(1)) 
+                  .join(" ");              
+
+                return (
+                  <div key={idx} >
+                    <Link href={`/${tool}`}>
+                      <button className="bg-gray-200 text-lg text-gray-700 px-8 py-3 rounded-3xl hover:text-[#132A4F] hover:bg-gray-100">
+                        {formatted}
+                      </button>
+                    </Link>
+                  </div>
+                )
+              })}
+              </div>
+</div>
   )
   }
 
