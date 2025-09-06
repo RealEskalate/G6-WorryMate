@@ -54,7 +54,7 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<NormalChatRemoteDataSource>(
-    () => NormalChatRemoteDataSource(),
+    () => NormalChatRemoteDataSource(chatLocalDataSource: sl()),
   );
 
   // Use cases

@@ -10,26 +10,22 @@ import 'package:provider/provider.dart';
 import '../core/localization/locales.dart';
 import '../core/theme/theme_manager.dart';
 import '../core/widgets/custom_bottom_nav_bar.dart';
-
-import '../features/offline_toolkit/presentation/pages/offline_toolkit_screen.dart';
 import '../features/activity_tracking/presentation/cubit/activity_cubit.dart';
 import '../features/activity_tracking/presentation/cubit/activity_state.dart';
-
 // Page section + widget imports
 import 'data.dart';
-import 'scrollable_services_widget.dart';
-import 'widgets/top_bar.dart';
+import 'widgets/activity_ring.dart';
+import 'widgets/ai_prompt_section.dart';
+import 'widgets/daily_affirmation_card.dart';
 import 'widgets/greetings.dart';
 import 'widgets/module_header.dart';
+import 'widgets/mood_checkin_card.dart';
 import 'widgets/progress_row.dart';
 import 'widgets/quick_actions_row.dart';
-import 'widgets/daily_affirmation_card.dart';
-import 'widgets/ai_prompt_section.dart';
 import 'widgets/safety_banner.dart';
-import 'widgets/mood_checkin_card.dart';
-import 'widgets/weekly_bar_chart.dart';
-import 'widgets/activity_ring.dart';
 import 'widgets/streak_bar.dart';
+import 'widgets/top_bar.dart';
+import 'widgets/weekly_bar_chart.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -158,8 +154,7 @@ class _HomePageState extends State<HomePage> {
   // ========= Activity Actions =========
   void _onQuickActionSelected(String id) {
     context.read<ActivityCubit>().logActivity(id);
-    final template =
-        LocalData.homeActivityLoggedTemplate.getString(context);
+    final template = LocalData.homeActivityLoggedTemplate.getString(context);
     final msg = _fmtTemplate(template, [id]);
     _showSnack(msg);
     _navigateToQuickAction(id);
@@ -186,8 +181,7 @@ class _HomePageState extends State<HomePage> {
 
   void _onMoodSelected(String moodLabel) {
     context.read<ActivityCubit>().logMood(moodLabel);
-    final template =
-        LocalData.homeMoodLoggedTemplate.getString(context);
+    final template = LocalData.homeMoodLoggedTemplate.getString(context);
     final msg = _fmtTemplate(template, [moodLabel]);
     _showSnack(msg);
   }
@@ -225,7 +219,13 @@ class _HomePageState extends State<HomePage> {
         });
         return const SizedBox.shrink();
       case 2:
-        return const OfflineToolkitScreen();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            Navigator.pushReplacementNamed(context, '/offlinetoolkit');
+          }
+        });
+        return const SizedBox.shrink();
+
       case 3:
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
@@ -255,8 +255,7 @@ class _HomePageState extends State<HomePage> {
     _deviceHeight = MediaQuery.of(context).size.height;
 
     final bool baseHeroCondition = _currentTab == 0;
-    final bool effectiveShowHero =
-        baseHeroCondition && _showHeroBackground;
+    final bool effectiveShowHero = baseHeroCondition && _showHeroBackground;
 
     Color getBackgroundColor() =>
         isDarkMode ? const Color.fromARGB(255, 9, 43, 71) : Colors.white;
@@ -290,8 +289,7 @@ class _HomePageState extends State<HomePage> {
               // Recompute visibility when returning to tab 0
               final shouldShow = !_contentScrollController.hasClients
                   ? true
-                  : _contentScrollController.offset <=
-                      _heroVisibilityThreshold;
+                  : _contentScrollController.offset <= _heroVisibilityThreshold;
               _showHeroBackground = shouldShow;
             }
           });
@@ -308,7 +306,7 @@ class _HomePageState extends State<HomePage> {
       width: _deviceWidth,
       child: NotificationListener<UserScrollNotification>(
         onNotification: (n) {
-            if (n.direction != ScrollDirection.idle) {
+          if (n.direction != ScrollDirection.idle) {
             _heroSlideTimer?.cancel();
           } else {
             Future.delayed(const Duration(seconds: 2), () {
@@ -424,8 +422,9 @@ class _HomePageState extends State<HomePage> {
 
             DailyAffirmationCard(
               isDarkMode: isDarkMode,
-              affirmation:
-                  _affirmationKeys[_affirmationIndex].getString(context),
+              affirmation: _affirmationKeys[_affirmationIndex].getString(
+                context,
+              ),
             ),
             SizedBox(height: _deviceHeight * 0.02),
 
@@ -433,8 +432,9 @@ class _HomePageState extends State<HomePage> {
               isDarkMode: isDarkMode,
               deviceHeight: _deviceHeight,
               controller: _promptCtrl,
-              quickPrompts:
-                  _quickPromptKeys.map((k) => k.getString(context)).toList(),
+              quickPrompts: _quickPromptKeys
+                  .map((k) => k.getString(context))
+                  .toList(),
               onSubmit: _submitPrompt,
             ),
             SizedBox(height: _deviceHeight * 0.02),
@@ -443,14 +443,15 @@ class _HomePageState extends State<HomePage> {
               isDarkMode: isDarkMode,
               deviceHeight: _deviceHeight,
               deviceWidth: _deviceWidth,
-              image: (featuredAppServices[
-                              (featuredAppServices.length > 2 ? 2 : 0)]
-                          .coverImage
-                          .url
-                          .isNotEmpty)
+              image:
+                  (featuredAppServices[(featuredAppServices.length > 2 ? 2 : 0)]
+                      .coverImage
+                      .url
+                      .isNotEmpty)
                   ? AssetImage(
-                      featuredAppServices[
-                              (featuredAppServices.length > 2 ? 2 : 0)]
+                      featuredAppServices[(featuredAppServices.length > 2
+                              ? 2
+                              : 0)]
                           .coverImage
                           .url,
                     )
@@ -507,8 +508,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ActivityRing(
-                          label:
-                              LocalData.homeRingToday.getString(context),
+                          label: LocalData.homeRingToday.getString(context),
                           percent: (todayCount / dailyMax).clamp(0, 1),
                           centerText: '$todayCount',
                           color: isDarkMode
@@ -517,17 +517,14 @@ class _HomePageState extends State<HomePage> {
                           isDarkMode: isDarkMode,
                         ),
                         ActivityRing(
-                          label:
-                              LocalData.homeRing7Days.getString(context),
+                          label: LocalData.homeRing7Days.getString(context),
                           percent: (weekTotal / weekMax).clamp(0, 1),
                           centerText: '$weekTotal',
-                          color:
-                              isDarkMode ? Colors.tealAccent : Colors.teal,
+                          color: isDarkMode ? Colors.tealAccent : Colors.teal,
                           isDarkMode: isDarkMode,
                         ),
                         ActivityRing(
-                          label:
-                              LocalData.homeRingStreak.getString(context),
+                          label: LocalData.homeRingStreak.getString(context),
                           percent: (streak / 30).clamp(0, 1),
                           centerText: '${streak}d',
                           color: isDarkMode
