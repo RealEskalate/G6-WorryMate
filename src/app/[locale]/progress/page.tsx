@@ -12,6 +12,7 @@ import {
 import { TrendingUp, Calendar, BookOpen, Target, Award } from "lucide-react";
 import { db, DailyEmoji, CheckIn, JournalEntry } from "@/app/lib/db";
 import { liveQuery } from "dexie";
+import { useTranslations } from "next-intl";
 
 function formatDateOnly(date: Date): string {
   return date.toISOString().split("T")[0];
@@ -76,6 +77,8 @@ function computeWellnessScore(
 }
 
 export default function ProgressPage() {
+  const t = useTranslations("ProgressPage");
+
   const [streak, setStreak] = useState(0);
   const [monthCheckins, setMonthCheckins] = useState(0);
   const [recentJournals, setRecentJournals] = useState(0);
@@ -103,21 +106,20 @@ export default function ProgressPage() {
     return () => sub.unsubscribe();
   }, []);
 
-  const wellnessTip =
-    "Increase by logging daily check-ins and choosing positive moods.";
+  const wellnessTip = t("wellnessTip");
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-white via-[#F7F9FB] to-white dark:from-[#092B47] dark:via-[#28445C] dark:to-[#092B47] text-[#0D2A4B] dark:text-white">
-      <PageHeader title="Your Progress" />
+      <PageHeader title={t("pageHeader")} />
 
       <div className="p-6 space-y-8 overflow-y-auto">
         {/* Header Section */}
         <div className="text-center space-y-4 max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-[#0D2A4B] dark:text-[#10B981]">
-            Your Mental Health Journey
+            {t("title")}
           </h1>
           <p className="text-lg text-[#0D2A4B]/70 dark:text-white/80">
-            Track your progress&lsquo; celebrate your wins&lsquo; and see how far you&apos;ve come on your wellness journey
+            {t("subtitle")}
           </p>
         </div>
 
@@ -130,8 +132,8 @@ export default function ProgressPage() {
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
               <div className="text-3xl font-bold text-[#0D2A4B] dark:text-white">{streak}</div>
-              <div className="text-sm text-[#0D2A4B]/70 dark:text-white/70">Day Streak</div>
-              <div className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">Keep it up</div>
+              <div className="text-sm text-[#0D2A4B]/70 dark:text-white/70">{t("dayStreak")}</div>
+              <div className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">{t("keepItUp")}</div>
             </CardContent>
           </Card>
 
@@ -142,8 +144,8 @@ export default function ProgressPage() {
                 <Calendar className="h-6 w-6 text-white" />
               </div>
               <div className="text-3xl font-bold text-[#0D2A4B] dark:text-white">{monthCheckins}</div>
-              <div className="text-sm text-[#0D2A4B]/70 dark:text-white/70">Check-ins</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">This month</div>
+              <div className="text-sm text-[#0D2A4B]/70 dark:text-white/70">{t("checkIns")}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t("thisMonth")}</div>
             </CardContent>
           </Card>
 
@@ -154,8 +156,8 @@ export default function ProgressPage() {
                 <BookOpen className="h-6 w-6 text-white" />
               </div>
               <div className="text-3xl font-bold text-[#0D2A4B] dark:text-white">{recentJournals}</div>
-              <div className="text-sm text-[#0D2A4B]/70 dark:text-white/70">Journal Entries</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Last 30 days</div>
+              <div className="text-sm text-[#0D2A4B]/70 dark:text-white/70">{t("journalEntries")}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t("last30Days")}</div>
             </CardContent>
           </Card>
 
@@ -169,10 +171,10 @@ export default function ProgressPage() {
                 {wellness}%
               </div>
               <div className="text-sm text-[#0D2A4B]/70 dark:text-white/70" title={wellnessTip}>
-                Wellness Score
+                {t("wellnessScore")}
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Mood + habit consistency
+                {t("moodHabitConsistency")}
               </div>
             </CardContent>
           </Card>
@@ -184,10 +186,10 @@ export default function ProgressPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl text-[#0D2A4B] dark:text-[#10B981]">
                 <BookOpen className="h-6 w-6 text-emerald-500" />
-                Recent Entries
+                {t("recentEntries")}
               </CardTitle>
               <CardDescription className="text-[#0D2A4B]/70 dark:text-white/70">
-                Your latest thoughts and reflections
+                {t("latestThoughts")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -213,20 +215,20 @@ export default function ProgressPage() {
                   <Target className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-[#0D2A4B] dark:text-white">
-                  You&apos;re Making Great Progress
+                  {t("makingProgress")}
                 </h3>
                 <p className="text-lg text-[#0D2A4B]/70 dark:text-white/70 max-w-2xl mx-auto">
-                  Every check-in&lsquo; every journal entry and every moment of self-reflection is a step forward in your mental health journey
+                  {t("progressText")}
                 </p>
                 <div className="flex justify-center gap-4 mt-6">
                   <div className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-full text-[#0D2A4B] dark:text-white">
-                    {streak}-day streak
+                    {streak}- {t("dayStreak")}
                   </div>
                   <div className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-full text-[#0D2A4B] dark:text-white">
-                    {wellness}% wellness score
+                    {wellness}% {t("wellnessScore")}
                   </div>
                   <div className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-full text-[#0D2A4B] dark:text-white">
-                    {monthCheckins} check-ins
+                    {monthCheckins} {t("checkIns")}
                   </div>
                 </div>
               </div>

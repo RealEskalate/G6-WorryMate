@@ -125,6 +125,22 @@
     "update": "Update",
     "clickToWrite": "Click here to start writing your thoughts..."
 
+  },
+  "ProgressPage": {
+    "title": "Your Mental Health Journey",
+    "subtitle": "Track your progress, celebrate your wins, and see how far you've come on your wellness journey",
+    "dayStreak": "Day Streak",
+    "keepItUp": "Keep it up",
+    "checkIns": "Check-ins",
+    "thisMonth": "This month",
+    "journalEntries": "Journal Entries",
+    "last30Days": "Last 30 days",
+    "wellnessScore": "Wellness Score",
+    "moodHabitConsistency": "Mood + habit consistency",
+    "recentEntries": "Recent Entries",
+    "latestThoughts": "Your latest thoughts and reflections",
+    "makingProgress": "You're Making Great Progress",
+    "progressText": "Every check-in, every journal entry, and every moment of self-reflection is a step forward in your mental health journey"
   }
 
 }

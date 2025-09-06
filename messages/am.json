@@ -117,5 +117,22 @@
     "delete": "ሰርዝ",
     "update": "አዘምን",
     "clickToWrite": "እዚህ ጠቅ ያድርጉ እና ሃሳቦችዎን ጀምር ይጻፉ..."
+  },
+  
+  "ProgressPage": {
+    "title": "የእኛ አእምሮ ጤና ጉዞ",
+    "subtitle": "እንደምትሄዱ እውቀትዎን እናዝጋለን፣ ስኬቶችዎን ያከብሩ፣ እና ከተጀመሩበት ቦታ እስከ ዛሬ ድረስ ይመልከቱ",
+    "dayStreak": "የቀን ስትሪክ",
+    "keepItUp": "ይቀጥሉ",
+    "checkIns": "ምዝገባዎች",
+    "thisMonth": "በዚህ ወር",
+    "journalEntries": "የመጽሐፍ ገጾች",
+    "last30Days": "ባለፈው 30 ቀናት",
+    "wellnessScore": "የጤና ውጤት",
+    "moodHabitConsistency": "ስሜት + የልምድ ትክክለኛነት",
+    "recentEntries": "ቅርብ ጊዜ ገጾች",
+    "latestThoughts": "የእርስዎ የመጨረሻ ሐሳቦች እና አስተያየቶች",
+    "makingProgress": "ትልቅ ልምድ እየደረሰህ ነው",
+    "progressText": "እያንዳንዱ ምዝገባ፣ እያንዳንዱ የመጽሐፍ ገጽ እና ራስዎን የሚያስተዋውቁ ጊዜ የእኛ አእምሮ ጤና ጉዞዎ ውስጥ እርምጃ ነው"
   }
 }
