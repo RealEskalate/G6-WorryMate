@@ -1,0 +1,21 @@
+
+.react-calendar__tile.checked-in:hover {
+  background-color: #16a34a; 
+}
+.react-calendar__tile.today {
+  border: 2px solid #22c55e; 
+  border-radius: 9999px;
+}
+
+.react-calendar__tile.checked-in {
+  background-color: #22c55e !important; 
+  color: white !important;
+  border-radius: 9999px;
+}
+.dark .react-calendar {
+  background-color: #092B47;
+  color: #e5e7eb; 
+  border: #16a34a 2px solid;
+  border-radius: 1rem;
+  padding: 1rem;
+}
