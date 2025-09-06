@@ -21,6 +21,8 @@ import 'features/reminder/services/notification_service.dart';
 import 'features/setting/settings.dart';
 import 'home_page/home_page.dart';
 import 'injection_container.dart';
+import 'onbording/first_page.dart';
+import 'onbording/get_started_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,9 +83,12 @@ class _MyAppState extends State<MyApp> {
                   : ThemeMode.light,
               supportedLocales: localization.supportedLocales,
               localizationsDelegates: localization.localizationsDelegates,
-              initialRoute: '/',
+              initialRoute: '/firstpage',
               routes: {
+                '/firstpage': (context) => const SplashScreen(), // splash/first page
+                '/onboarding_last': (context) => const OnboardingScreen(), // last onboarding page
                 // '/action_card': (context) => const ActionCardWidget(),
+
                 '/': (context) => const HomePage(),
                 '/chat': (_) => BlocProvider(
                   create: (_) => sl<ChatBloc>(),

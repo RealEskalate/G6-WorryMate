@@ -66,11 +66,13 @@ dependencies:
   speech_to_text: ^7.3.0
 
 dev_dependencies:
+
   flutter_test:
     sdk: flutter
   mockito:
   hive_generator:
   build_runner:
+
 
 
 
@@ -94,6 +96,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/images/worrymatefinallogo.png
+    - assets/images/worrymatelogo-removebg-preview.png
+    - assets/images/worrymatelogo.png
     - assets/images/Chat bot.png
     - assets/images/breathing.png
     - assets/images/journal.png

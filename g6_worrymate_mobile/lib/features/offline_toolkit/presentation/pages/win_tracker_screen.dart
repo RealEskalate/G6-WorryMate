@@ -421,6 +421,19 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                     itemCount: _wins.length,
                     itemBuilder: (context, i) {
                       final win = _wins[i];
+                      // Parse the stored date string back into a DateTime object
+                      final createdAt = win['createdAt'] != null
+                          ? DateTime.tryParse(win['createdAt']!)
+                          : null;
+
+                      // Format the date and time for display
+                      String formattedDateTime = 'No Date';
+                      if (createdAt != null) {
+                        // Example formatting: "Oct 26, 2023 at 3:30 PM"
+                        // You can customize this format as needed
+                        formattedDateTime = '${createdAt.toLocal().month}/${createdAt.toLocal().day}/${createdAt.toLocal().year} ${createdAt.toLocal().hour}:${createdAt.toLocal().minute.toString().padLeft(2, '0')}';
+                      }
+
                       return Dismissible(
                         key: ValueKey(win['id']), // Use unique ID for Dismissible key
                         direction: DismissDirection.endToStart,
@@ -440,6 +453,13 @@ class _WinTrackerScreenState extends State<WinTrackerScreen> {
                               style: GoogleFonts.poppins(
                                 color: getTextColor(),
                                 fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            subtitle: Text( // ADDED: Subtitle for date/time
+                              formattedDateTime,
+                              style: GoogleFonts.poppins(
+                                color: getSubtitleColor(),
+                                fontSize: 12,
                               ),
                             ),
                             trailing: IconButton( // Optional: explicit edit button
