@@ -31,9 +31,9 @@ var testLang = "en"
 
 func (suite *ChatUsecaseTestSuite) TestNormalChat_Positive() {
 	// Setup expected response on ai_service
-	suite.ai_serv.On("GenerateNormalChatMsg", testMsg).Return("hello", nil)
+	suite.ai_serv.On("GenerateNormalChatMsg", testMsg, "").Return("hello", nil)
 	// call and assert
-	ans, err := suite.ChtUsecase.NormalChatUsecase(testMsg)
+	ans, err := suite.ChtUsecase.NormalChatUsecase(testMsg, "")
 	suite.Assert().NoError(err, "no error expected when sending valid message to ai")
 	suite.Assert().Equal(ans, "hello", "same response as from ai is expected")
 	suite.ai_serv.AssertExpectations(suite.T())

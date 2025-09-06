@@ -191,9 +191,9 @@ func (_m *ChatUsecaseI) IntentMappingUsecase(message string) (string, error) {
 	return r0, r1
 }
 
-// NormalChatUsecase provides a mock function with given fields: message
-func (_m *ChatUsecaseI) NormalChatUsecase(message string) (string, error) {
-	ret := _m.Called(message)
+// NormalChatUsecase provides a mock function with given fields: message, context
+func (_m *ChatUsecaseI) NormalChatUsecase(message string, context string) (string, error) {
+	ret := _m.Called(message, context)
 
 	if len(ret) == 0 {
 		panic("no return value specified for NormalChatUsecase")
@@ -201,17 +201,17 @@ func (_m *ChatUsecaseI) NormalChatUsecase(message string) (string, error) {
 
 	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
-		return rf(message)
+	if rf, ok := ret.Get(0).(func(string, string) (string, error)); ok {
+		return rf(message, context)
 	}
-	if rf, ok := ret.Get(0).(func(string) string); ok {
-		r0 = rf(message)
+	if rf, ok := ret.Get(0).(func(string, string) string); ok {
+		r0 = rf(message, context)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(message)
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(message, context)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -254,6 +254,34 @@ func (_m *ChatUsecaseI) RiskCheckUsecase(message string) (int, []string, error) 
 	}
 
 	return r0, r1, r2
+}
+
+// SummarizeUsecase provides a mock function with given fields: content
+func (_m *ChatUsecaseI) SummarizeUsecase(content string) (string, error) {
+	ret := _m.Called(content)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SummarizeUsecase")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
+		return rf(content)
+	}
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(content)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(content)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // NewChatUsecaseI creates a new instance of ChatUsecaseI. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
