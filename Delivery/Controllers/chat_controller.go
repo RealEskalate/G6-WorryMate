@@ -18,6 +18,24 @@ func NewChatController(uc domain.ChatUsecaseI) *ChatController {
 	}
 }
 
+func (cc *ChatController) SummarizeContextController(c *gin.Context) {
+	var chat ChatDTO 
+
+	err := c.ShouldBindJSON(&chat)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error" : err.Error()})
+		return 
+	}
+
+	response, err := cc.ChatUc.SummarizeUsecase(chat.Extra_context)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
+		return 
+	}
+
+	c.JSON(http.StatusOK, gin.H{"summary" : response})
+}
+
 func (cc *ChatController) NormalChatController(c *gin.Context) {
 	var chat ChatDTO
 
@@ -26,7 +44,7 @@ func (cc *ChatController) NormalChatController(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error" : err.Error()})
 		return
 	}
-	response, err := cc.ChatUc.NormalChatUsecase(chat.Message)
+	response, err := cc.ChatUc.NormalChatUsecase(chat.Message, chat.Extra_context)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error" : err.Error()})
 		return

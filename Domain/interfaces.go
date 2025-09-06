@@ -10,7 +10,8 @@ type ChatUsecaseI interface {
 	GetActionBlockUsecase(topic_key, lang string) (*ActionBlock, error)
 	GetOffLinePackUseCase(lang string) ([]*ActionBlock, error)
 	GenerateCrisisCard(lang, region string, tags []string) (*string, error)
-	NormalChatUsecase(message string) (string, error)
+	NormalChatUsecase(message, context string) (string, error)
+	SummarizeUsecase(content string) (string, error)
 }
 type ChatRepositoryI interface {
 	GetActionBlock(topic_key, lang string) (*ActionBlock, bool)
@@ -22,5 +23,6 @@ type AIService interface {
 	GenerateTopicKey(content string) (string, error)
 	GenerateRiskCheck(content string) (int, []string, error)
 	GenerateCrisisCard(lang, region string, tags []string) (*string, error)
-	GenerateNormalChatMsg(msg string) (string, error)
+	GenerateNormalChatMsg(msg, content string) (string, error)
+	GenerateSummary(content string) (string, error)
 }
