@@ -25,7 +25,6 @@ const DailyCheck: React.FC = () => {
   const today = new Date();
   const todayStr = formatDateOnly(today);
   const [checkedIn, setCheckedIn] = useState<string[]>([]);
-  const [value, setValue] = useState<Date>(today);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
@@ -71,26 +70,24 @@ const DailyCheck: React.FC = () => {
       {error && <p className="text-red-500 text-center">{error}</p>}
       <div className="w-full overflow-x-auto">
         <Calendar
-          value={value}
-          onChange={(val: Date | Date[]) => {
-            if (val instanceof Date) {
-              setValue(val);
-            }
-          }}
-          tileClassName={tileClassName}
-          className="bg-white dark:bg-gray-800 rounded-lg p-2 sm:p-4 border-none w-full"
-          navigationLabel={({ label }: { label: string }) => (
-            <span className="text-base sm:text-lg font-semibold text-[#0D2A4B] dark:text-[#10B981]">
-              {label}
-            </span>
-          )}
-          prevLabel={<ChevronLeftIcon className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100" />}
-          nextLabel={<ChevronRightIcon className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100" />}
-          prev2Label={null}
-          next2Label={null}
-          showNeighboringMonth={false}
-          minDetail="month"
-        />
+  tileClassName={tileClassName}
+  className="bg-white dark:bg-gray-800 rounded-lg p-2 sm:p-4 border-none w-full"
+  navigationLabel={({ label }: { label: string }) => (
+    <span className="text-base sm:text-lg font-semibold text-[#0D2A4B] dark:text-[#10B981]">
+      {label}
+    </span>
+  )}
+  prevLabel={
+    <ChevronLeftIcon className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100" />
+  }
+  nextLabel={
+    <ChevronRightIcon className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100" />
+  }
+  prev2Label={null}
+  next2Label={null}
+  showNeighboringMonth={false}
+  minDetail="month"
+/>
       </div>
     </div>
   );

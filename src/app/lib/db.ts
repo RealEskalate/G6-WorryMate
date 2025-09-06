@@ -14,18 +14,28 @@ export interface DailyEmoji {
 export interface CheckIn{
   date:string;
 }
+export interface ChatMessage {
+  id?: number;
+  role?: string;
+  content: string;
+  timestamp: number; 
+}
+type LocalMessage = { role: 'user' | 'assistant', content: string }
+
 
 export class WorryMateDB extends Dexie {
   journals!: Table<JournalEntry, number>; 
   dailyemoji!:Table<DailyEmoji,string>;
   checkin!:Table<CheckIn,string>;
+  chat!: Table<ChatMessage, number>;
 
   constructor() {
     super("WorryMateDB");
-    this.version(3).stores({
+    this.version(4).stores({
       journals: "++id, title, content, date",
       dailyemoji:"date, emoji",
-      checkin:"date"
+      checkin:"date",
+      chat: "++id, timestamp"
     });
   }
 }

@@ -1,6 +1,11 @@
 import { routing } from "@/i18n/routing";
 export const dynamic = "force-dynamic";
 
+interface UpstreamResponse {
+  ai_response?: string;
+  [key: string]: unknown;
+}
+
 export async function POST(request: Request) {
   try {
     const url = new URL(request.url);
@@ -27,7 +32,9 @@ export async function POST(request: Request) {
         const refUrl = new URL(referer);
         const firstSeg = refUrl.pathname.split("/").filter(Boolean)[0];
         refererLocale = toLocale(firstSeg ?? undefined);
-      } catch {}
+      } catch {
+        // ignore invalid referer
+      }
     }
 
     const locale: Locale =
@@ -48,7 +55,10 @@ export async function POST(request: Request) {
 
     const contentType = upstream.headers.get("content-type") || "";
     const isJson = contentType.includes("application/json");
-    const upstreamBody = isJson ? await upstream.json() : await upstream.text();
+    const upstreamBody: UpstreamResponse | string = isJson
+      ? await upstream.json()
+      : await upstream.text();
+
     console.log("WorryMate response:", upstreamBody);
 
     if (!upstream.ok) {
@@ -66,11 +76,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // Extract AI response
-    const reply =
-      typeof upstreamBody === "object" && upstreamBody !== null
-        ? (upstreamBody as any).ai_response ?? "Sorry, I couldn't respond."
-        : String(upstreamBody);
+    // Extract AI response safely
+    let reply: string;
+    if (typeof upstreamBody === "string") {
+      reply = upstreamBody;
+    } else if ("ai_response" in upstreamBody && typeof upstreamBody.ai_response === "string") {
+      reply = upstreamBody.ai_response;
+    } else {
+      reply = "Sorry, I couldn't respond.";
+    }
 
     return new Response(JSON.stringify({ reply }), {
       status: 200,
@@ -81,9 +95,11 @@ export async function POST(request: Request) {
       JSON.stringify({
         error: "Failed to fetch normal chat",
         detail:
-          typeof e === "object" && e !== null && "message" in e
-            ? String((e as { message?: unknown }).message)
-            : String(e),
+          e instanceof Error
+            ? e.message
+            : typeof e === "string"
+            ? e
+            : JSON.stringify(e),
       }),
       { status: 500, headers: { "content-type": "application/json" } }
     );

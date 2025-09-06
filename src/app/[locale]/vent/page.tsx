@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl'
 import { LoaderOne } from '@/components/ui/loader'
 import { PageHeader } from '@/components/PageHeader'
 import { useParams } from 'next/navigation'
+import {db,ChatMessage} from '@/app/lib/db'
 
 
 
@@ -36,6 +37,7 @@ const Workspace = () => {
     const apiLang = locale === 'am' ? 'am' : 'en'
 
     const recognitionRef = useRef<SpeechRecognitionClass | null>(null);
+    
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -52,7 +54,8 @@ const Workspace = () => {
             for (let i = event.resultIndex; i < event.results.length; i++) {
                 transcript += event.results[i][0].transcript;
             }
-            setPrompt(prompt + ' ' + transcript);
+          setPrompt(prev => prev + ' ' + transcript);
+
         };
 
         rec.onend = () => {
@@ -81,23 +84,7 @@ const Workspace = () => {
         if (!hasStarted) setHasStarted(true)
         setShowRateLimit(false)
         setIsLoading(true)
-       if (!isWorryBuddyMode) {
-    try {
-        const response = await fetch('/api/normal', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json', 'x-locale': apiLang },
-            body: JSON.stringify({ message: trimmed,context:"" })
-        });
-        const data = await response.json();
-        setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
-    } catch (err) {
-        console.error(err);
-        setMessages(prev => [...prev, { role: 'assistant', content: 'Network error. Please try again.' }]);
-    } finally {
-        setIsLoading(false);
-    }
-    return;
-}
+   
 
 
         try {
@@ -147,6 +134,81 @@ const Workspace = () => {
                 }
                 return
             }
+            if (!isWorryBuddyMode) {
+  try {
+    async function getChatContext() {
+      const chats = await db.chat.orderBy('timestamp').toArray();
+      return chats.map(c => `${c.role}: ${c.content}`).join('\n');
+    }
+
+    // get last messages as context
+    const context = await getChatContext();
+
+    // call your Next.js proxy instead of Render directly
+    const chat_context = await fetch('/api/summarize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-locale': apiLang ?? 'en',
+      },
+      body: JSON.stringify({ context }),
+    });
+
+    if (!chat_context.ok) {
+      throw new Error('Failed to summarize chat context');
+    }
+
+    const chat_data = await chat_context.json();
+
+    // now call your normal AI backend with the summary
+    const response = await fetch('/api/normal', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-locale': apiLang ?? 'en',
+      },
+      body: JSON.stringify({
+        message: trimmed,
+        context: chat_data.summary,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get AI response');
+    }
+
+    const data = await response.json();
+
+    // helper to save messages, keep max 10
+    async function addChatMessage(message: Omit<ChatMessage, 'id'>) {
+      await db.chat.add({ ...message, timestamp: Date.now() });
+      const count = await db.chat.count();
+      if (count > 10) {
+        const old = await db.chat.orderBy('timestamp').first();
+        if (old) {
+          await db.chat.delete(old.id!);
+        }
+      }
+    }
+
+    
+    await addChatMessage({ role: 'user', content: trimmed });
+    await addChatMessage({ role: 'assistant', content: data.reply });
+
+    // update UI
+    setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+  } catch (err) {
+    console.error(err);
+    setMessages(prev => [
+      ...prev,
+      { role: 'assistant', content: 'Network error. Please try again.' },
+    ]);
+  } finally {
+    setIsLoading(false);
+  }
+  return;
+}
+
 
             // 2. map - intent
             const mapRes = await fetch('/api/map_intent', {
