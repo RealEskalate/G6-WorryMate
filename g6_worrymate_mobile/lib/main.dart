@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/localization/locales.dart';
 import 'core/theme/theme_manager.dart';
@@ -21,6 +22,7 @@ import 'features/reminder/services/notification_service.dart';
 import 'features/setting/settings.dart';
 import 'home_page/home_page.dart';
 import 'injection_container.dart';
+import 'onbording/first_install_page.dart';
 import 'onbording/first_page.dart';
 import 'onbording/get_started_page.dart';
 
@@ -28,18 +30,20 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterLocalization.instance.ensureInitialized();
 
-  // await Hive.initFlutter();
+  final prefs = await SharedPreferences.getInstance();
+  final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
 
   await init();
   await Hive.openBox('journalBox');
-
   await sl<NotificationService>().init();
 
-  runApp(const MyApp());
+  runApp(MyApp(isFirstLaunch: isFirstLaunch));
 }
 
+
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final bool isFirstLaunch;
+  const MyApp({super.key, required this.isFirstLaunch});
 
   @override
   State<StatefulWidget> createState() => _MyAppState();
@@ -83,8 +87,9 @@ class _MyAppState extends State<MyApp> {
                   : ThemeMode.light,
               supportedLocales: localization.supportedLocales,
               localizationsDelegates: localization.localizationsDelegates,
-              initialRoute: '/firstpage',
+              initialRoute: widget.isFirstLaunch ? '/first' : '/firstpage',
               routes: {
+                '/first': (context) => const OnboardingPage(), // splash/first page
                 '/firstpage': (context) => const SplashScreen(), // splash/first page
                 '/onboarding_last': (context) => const OnboardingScreen(), // last onboarding page
                 // '/action_card': (context) => const ActionCardWidget(),
