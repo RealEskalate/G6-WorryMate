@@ -2,9 +2,9 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ mobile_main]
+    branches: [ main]
   pull_request:
-    branches: [ mobile_main]
+    branches: [ main]
 
 jobs:
   build:
