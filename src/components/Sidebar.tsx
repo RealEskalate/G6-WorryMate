@@ -107,13 +107,30 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         </div>
       )}
       {/* Sidebar Toggle Button */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        <button
-          className="text-[#2a4461] dark:text-gray-300 px-3 py-2 rounded-lg flex items-center gap-2 transition-colors hover:bg-[#143d6d] dark:hover:bg-[#2fc593] hover:text-white"
-          onClick={typeof onToggle === "function" ? onToggle : undefined}
-          aria-label="Toggle Sidebar"
-        ></button>
-      </div>
+     {/* Sidebar Toggle Button */}
+<div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+  <button
+    className="text-[#2a4461] dark:text-gray-300 px-3 py-2 rounded-lg flex items-center gap-2 transition-colors hover:bg-[#143d6d] dark:hover:bg-[#2fc593] hover:text-white"
+    onClick={typeof onToggle === "function" ? onToggle : undefined}
+    aria-label="Toggle Sidebar"
+  >
+    {isCollapsed ? (
+  
+      <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <line x1="4" y1="6" x2="20" y2="6" />
+        <line x1="4" y1="12" x2="20" y2="12" />
+        <line x1="4" y1="18" x2="20" y2="18" />
+      </svg>
+    ) : (
+    
+      <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <line x1="6" y1="6" x2="18" y2="18" />
+        <line x1="6" y1="18" x2="18" y2="6" />
+      </svg>
+    )}
+  </button>
+</div>
+
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto">
@@ -150,69 +167,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           </Link>
         </nav>
 
-        {!isCollapsed && (
-          // <>
-          //     {/* Favorite Projects */}
-          <div className="px-2 py-2">
-            <button
-              onClick={() => toggleSection("favorites")}
-              className="w-full flex items-center justify-between px-3 py-2 text-[#2a4461] dark:text-gray-300 hover:bg-[#0D2A4B] dark:hover:bg-[#10B981] hover:text-white text-lg font-medium rounded-lg transition-colors"
-            >
-              <span>Action Items</span>
-              {expandedSections.favorites ? (
-                <ChevronDown className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-
-          //     {/* Favorite Chats */}
-          //     <div className="px-2 py-2">
-          //         <button
-          //             onClick={() => toggleSection('favoriteChats')}
-          //             className="w-full flex items-center justify-between px-3 py-2 text-blue hover:bg-[#0D2A4B] hover:text-white text-lg font-medium"
-          //         >
-          //             <span className='text-blue hover:text-white'>Favorite Chats</span>
-          //             {expandedSections.favoriteChats ? (
-          //                 <ChevronDown className="w-4 h-4" />
-          //             ) : (
-          //                 <ChevronRight className="w-4 h-4" />
-          //             )}
-          //         </button>
-          //     </div>
-
-          //     {/* Recents Section */}
-          //     <div className="px-2 py-2">
-          //         <button
-          //             onClick={() => toggleSection('recents')}
-          //             className="w-full flex items-center justify-between px-3 py-2 text-blue hover:bg-[#0D2A4B] hover:text-white text-lg font-medium"
-          //         >
-          //             <span className='text-blue'>Recents</span>
-          //             {expandedSections.recents ? (
-          //                 <ChevronDown className="w-4 h-4" />
-          //             ) : (
-          //                 <ChevronRight className="w-4 h-4" />
-          //             )}
-          //         </button>
-
-          //         {expandedSections.recents && (
-          //             <div className="mt-1 space-y-1">
-          //                 {recentProjects.map((project, index) => (
-          //                     <div key={index} className="flex items-center justify-between group">
-          //                         <button className="flex-1 text-left px-3 py-2 text-blue hover:bg-[#0D2A4B] hover:text-white hover: rounded-lg text-lg transition-colors truncate">
-          //                             {project}
-          //                         </button>
-          //                         <button className="opacity-0 group-hover:opacity-100 p-1 rounded transition-opacity">
-          //                             <MoreHorizontal className="w-3 h-3 text-[#2a4461]" />
-          //                         </button>
-          //                     </div>
-          //                 ))}
-          //             </div>
-          //         )}
-          //     </div>
-          // </>
-        )}
       </div>
 
       {/* New Feature Banner */}
