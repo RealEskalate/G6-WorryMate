@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import  {useTranslations} from 'next-intl'
+import { useTranslations } from 'next-intl';
 
 export interface FeatureCard {
   title: string;
@@ -28,35 +28,36 @@ export const InfiniteMovingCards = ({
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const scrollerRef = React.useRef<HTMLUListElement>(null);
-  const t=useTranslations('Features')
+  const t = useTranslations('Features');
   const [start, setStart] = useState(false);
 
   useEffect(() => {
     if (!containerRef.current || !scrollerRef.current) return;
 
-    
     const scrollerContent = Array.from(scrollerRef.current.children);
     scrollerContent.forEach((item) => {
       const cloned = item.cloneNode(true);
       scrollerRef.current?.appendChild(cloned);
     });
 
-    if (containerRef.current) {
-      containerRef.current.style.setProperty(
-        '--animation-direction',
-        direction === 'left' ? 'forwards' : 'reverse'
-      );
-      const duration =
-        speed === 'fast' ? '20s' : speed === 'normal' ? '40s' : '80s';
-      containerRef.current.style.setProperty('--animation-duration', duration);
-    }
+    // calculate scroll width dynamically
+    const scrollWidth = scrollerRef.current.scrollWidth / 2;
+    containerRef.current.style.setProperty('--scroll-width', `${scrollWidth}px`);
+
+    // set animation direction & speed
+    containerRef.current.style.setProperty(
+      '--animation-direction',
+      direction === 'left' ? 'forwards' : 'reverse'
+    );
+    const duration =
+      speed === 'fast' ? '20s' : speed === 'normal' ? '40s' : '80s';
+    containerRef.current.style.setProperty('--animation-duration', duration);
 
     setStart(true);
   }, [items, direction, speed]);
 
   const handleMouseEnter = () => {
     if (pauseOnHover && scrollerRef.current) {
-      console.log('Hover detected');
       scrollerRef.current.style.animationPlayState = 'paused';
     }
   };
@@ -71,7 +72,7 @@ export const InfiniteMovingCards = ({
     <div
       ref={containerRef}
       className={cn(
-        'scroller relative max-w-7xl overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]',
+        'scroller relative w-full max-w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_10%,white_90%,transparent)]',
         className
       )}
       onMouseEnter={handleMouseEnter}
@@ -87,16 +88,18 @@ export const InfiniteMovingCards = ({
         {items.map((item, idx) => (
           <li
             key={idx}
-            className="border-[#0D2A4B] border-2 dark:border-[#10B981] relative w-[300px] md:w-[400px] lg:w-[450px] flex-shrink-0 rounded-2xl overflow-hidden shadow-lg"
+            className="border-[#0D2A4B] border-2 dark:border-[#10B981] relative 
+                       w-full sm:w-[300px] md:w-[400px] lg:w-[450px] 
+                       flex-shrink-0 rounded-2xl overflow-hidden shadow-lg"
           >
-            
+            {/* Background image */}
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{ backgroundImage: `url(${item.image})` }}
             />
-         
+            {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
-      
+            {/* Content */}
             <div className="relative z-10 p-6 flex flex-col justify-end h-full text-[#F7F9FB]">
               <h3 className="text-lg md:text-xl font-bold">{t(item.title)}</h3>
               <p className="mt-2 text-sm md:text-base">{t(item.description)}</p>
@@ -117,7 +120,7 @@ export const InfiniteMovingCards = ({
             transform: translateX(0);
           }
           100% {
-            transform: translateX(-50%);
+            transform: translateX(calc(-1 * var(--scroll-width)));
           }
         }
 

@@ -25,7 +25,6 @@ const DailyCheck: React.FC = () => {
   const today = new Date();
   const todayStr = formatDateOnly(today);
   const [checkedIn, setCheckedIn] = useState<string[]>([]);
-
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
@@ -34,7 +33,6 @@ const DailyCheck: React.FC = () => {
     async function loadCheckIns() {
       try {
         setIsLoading(true);
-
         const checkIns = await db.checkin.toArray();
         const dates = Array.from(new Set(checkIns.map((c) => normalizeDate(c.date))));
         setCheckedIn(dates);
@@ -44,7 +42,6 @@ const DailyCheck: React.FC = () => {
           setCheckedIn((prev) => [...prev, todayStr]);
           console.log(`Auto-added today's check-in: ${todayStr}`);
         }
-
       } catch (err) {
         setError(`Error loading data: ${(err as Error).message}`);
         console.error('Error loading check-ins:', err);
@@ -56,39 +53,39 @@ const DailyCheck: React.FC = () => {
   }, []);
 
   const tileClassName = ({ date }: { date: Date }) => {
-    const dateStr = formatDateOnly(date); // always YYYY-MM-DD
+    const dateStr = formatDateOnly(date);
     return checkedIn.includes(dateStr) ? "checked-in" : null;
   };
 
   return (
-    <div className={`max-w-2xl mx-auto p-4 rounded-xl shadow-xl ${isDarkMode ? 'dark' : ''}`}>
-      <div className="flex justify-between items-center px-4 sm:px-6 py-2 mb-6">
-        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-green-400">
+    <div className="w-full mx-auto p-2 sm:p-4 rounded-lg shadow-md bg-white dark:bg-[#28445C] text-gray-900 dark:text-white overflow-x-hidden">
+      <div className="flex justify-between items-center px-2 sm:px-4 py-1 sm:py-2 mb-2 sm:mb-4">
+        <h2 className="text-base sm:text-xl font-semibold text-gray-900 dark:text-green-400">
           Daily Check-in
         </h2>
       </div>
-      {isLoading && <p className="text-gray-600 dark:text-gray-300 text-center">Loading check-in data...</p>}
-      {error && <p className="text-red-500 text-center">{error}</p>}
-      <div className="w-full overflow-x-auto">
+      {isLoading && <p className="text-gray-600 dark:text-gray-300 text-center text-sm">Loading check-in data...</p>}
+      {error && <p className="text-red-500 text-center text-sm">{error}</p>}
+      <div className="w-full overflow-x-hidden">
         <Calendar
-  tileClassName={tileClassName}
-  className="bg-white dark:bg-gray-800 rounded-lg p-2 sm:p-4 border-none w-full"
-  navigationLabel={({ label }: { label: string }) => (
-    <span className="text-base sm:text-lg font-semibold text-[#0D2A4B] dark:text-[#10B981]">
-      {label}
-    </span>
-  )}
-  prevLabel={
-    <ChevronLeftIcon className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100" />
-  }
-  nextLabel={
-    <ChevronRightIcon className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100" />
-  }
-  prev2Label={null}
-  next2Label={null}
-  showNeighboringMonth={false}
-  minDetail="month"
-/>
+          tileClassName={tileClassName}
+          className="w-full bg-white dark:bg-gray-800 rounded-lg p-1 sm:p-2 border-none"
+          navigationLabel={({ label }: { label: string }) => (
+            <span className="text-sm sm:text-base font-semibold text-[#0D2A4B] dark:text-[#10B981]">
+              {label}
+            </span>
+          )}
+          prevLabel={
+            <ChevronLeftIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100" />
+          }
+          nextLabel={
+            <ChevronRightIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100" />
+          }
+          prev2Label={null}
+          next2Label={null}
+          showNeighboringMonth={false}
+          minDetail="month"
+        />
       </div>
     </div>
   );

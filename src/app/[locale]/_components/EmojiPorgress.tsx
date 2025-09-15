@@ -41,9 +41,8 @@ const emojiLevel = (val: number) => {
 function EmojiProgress() {
   const [entries, setEntries] = useState<DailyEmoji[]>([]);
   const [weeks, setWeeks] = useState<{ label: string; start: Date; end: Date }[]>([]);
-  const [selectedWeek, setSelectedWeek] = useState<{ start: Date; end: Date, label: string } | null>(null);
+  const [selectedWeek, setSelectedWeek] = useState<{ start: Date; end: Date; label: string } | null>(null);
   const [weekData, setWeekData] = useState<{ date: string; mood: number | null; mood_label: string | null }[]>([]);
-  
   const t = useTranslations('EmojiProgress');
 
   const moodToWord = (emoji: string) => {
@@ -114,15 +113,14 @@ function EmojiProgress() {
   }, [selectedWeek, entries, t]);
 
   return (
-    <div className="p-4 bg-[#F7F9FB] dark:bg-[#092B47] dark:text-white rounded-[12px] w-full max-w-5xl mx-auto mt-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 mb-4 md:mb-6 px-2 md:px-6">
+    <div className="p-2 sm:p-4 bg-[#F7F9FB] dark:bg-[#092B47] dark:text-white rounded-lg w-full">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 mb-2 sm:mb-4 px-2">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-[#0D2A4B] dark:text-[#10B981]">{t('moodTracker')}</h1>
-          <p className="text-gray-600 dark:text-gray-300">{t('trackMood')}</p>
+          <h1 className="text-base sm:text-xl font-semibold text-[#0D2A4B] dark:text-[#10B981]">{t('moodTracker')}</h1>
+          <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">{t('trackMood')}</p>
         </div>
-
         <select
-          className="border p-2 rounded border-[#0D2A4B] dark:border-[#10B981] dark:text-[#10B981] bg-[#F7F9FB] dark:bg-[#092B47] text-[#0D2A4B]"
+          className="w-full sm:w-auto border p-1 sm:p-2 rounded border-[#0D2A4B] dark:border-[#10B981] dark:text-[#10B981] bg-[#F7F9FB] dark:bg-[#092B47] text-[#0D2A4B]"
           value={selectedWeek ? selectedWeek.label : ""}
           onChange={(e) => {
             const week = weeks.find(w => w.label === e.target.value);
@@ -135,46 +133,43 @@ function EmojiProgress() {
           ))}
         </select>
       </div>
+      {/* Responsive Chart */}
+      
+<div className="w-full h-64 sm:h-80 lg:h-96">
+  <ResponsiveContainer width="100%" height="100%">
+    <LineChart 
+      data={weekData} 
+      margin={{ top: 20, right: 20, left: 10, bottom: 40 }}
+    >
+      <CartesianGrid vertical={true} horizontal={false} stroke="#E5E7EB" />
+      <XAxis
+        dataKey="date"
+        stroke="currentColor"
+        interval="preserveStart"
+        angle={-35}
+        textAnchor="end"
+        height={60}
+      />
+      <YAxis
+        domain={[1, 5]}
+        ticks={[1, 2, 3, 4, 5]}
+        stroke="currentColor"
+        width={60}
+      />
+      <Tooltip />
+      <Line
+        type="monotone"
+        dataKey="mood"
+        stroke="#3B82F6"
+        strokeWidth={2}
+        dot={{ r: 4, fill: "#3B82F6" }}
+        activeDot={{ r: 6, stroke: "#6366F1" }}
+        connectNulls
+      />
+    </LineChart>
+  </ResponsiveContainer>
+</div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={weekData}>
-          <CartesianGrid vertical={true} horizontal={false} stroke="#E5E7EB" />
-          <XAxis dataKey="date" stroke="currentColor" />
-          <YAxis
-            domain={[1, 5]}
-            ticks={[1, 2, 3, 4, 5]}
-            tickFormatter={(val) => {
-              switch (val) {
-                case 1: return t('low');
-                case 2: return t('meh');
-                case 3: return t('okay');
-                case 4: return t('good');
-                case 5: return t('great');
-                default: return '';
-              }
-            }}
-            stroke="currentColor"
-          />
-          <Tooltip
-            contentStyle={{ backgroundColor: "var(--tw-prose-bg,#fff)", color: "black", borderRadius: "8px" }}
-            formatter={(val: number, _name, props) => {
-              const item = weekData[props.payload.index];
-              if (!item) return [moodToWord(emojiLevel(val)), t('mood')];
-              return [`${item.mood_label ?? t('noData')} (${val ?? "-"})`, t('mood')];
-            }}
-            labelFormatter={(label) => `${t('date')}: ${label}`}
-          />
-          <Line
-            type="monotone"
-            dataKey="mood"
-            stroke="#3B82F6"
-            strokeWidth={4}
-            dot={{ r: 6, fill: "#3B82F6", strokeWidth: 2, stroke: "white" }}
-            activeDot={{ r: 8, stroke: "#6366F1", strokeWidth: 2 }}
-            connectNulls
-          />
-        </LineChart>
-      </ResponsiveContainer>
     </div>
   );
 }

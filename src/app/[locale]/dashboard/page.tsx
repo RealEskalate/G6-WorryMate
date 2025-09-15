@@ -6,30 +6,29 @@ import RecentEntires from "../_components/RecentEntires";
 import Features from "../_components/Features";
 import { PageHeader } from "@/components/PageHeader";
 
-
 function Page() {
   return (
     <div className="flex flex-col bg-white dark:bg-[#092B47] min-h-screen">
       <PageHeader title="Dashboard" />
-      <div className="p-6 gap-8 overflow-y-auto">
-
-        <div className="flex flex-col md:flex-row gap-8">
-
-          <div className="w-full md:w-3/4 pt-10 bg-white dark:bg-[#28445C] shadow-md rounded-lg flex flex-col items-center gap-6">
+      <div className="p-2 sm:p-4 gap-4 sm:gap-6 max-w-full w-full">
+        <div className="flex flex-col md:flex-row gap-4 sm:gap-6 w-full">
+          {/* Left section */}
+          <div className="w-full md:w-2/3 bg-white dark:bg-[#28445C] shadow-md rounded-lg p-2 sm:p-4 flex flex-col gap-4">
             <HowFeel />
             <EmojiProgress />
           </div>
 
-          <div className="hidden md:flex w-1/3 bg-white dark:bg-[#28445C] shadow-md rounded-lg p-6 flex-col gap-6">
-            <DailyCheck />
-            <RecentEntires />
+          {/* Right section */}
+          <div className="w-full md:w-1/3 flex flex-col gap-4">
+            <div className="bg-white dark:bg-[#28445C] shadow-md rounded-lg p-2 sm:p-4">
+              <DailyCheck />
+            </div>
+            <div className="bg-white dark:bg-[#28445C] shadow-md rounded-lg p-2 sm:p-4">
+              <RecentEntires />
+            </div>
           </div>
         </div>
 
-
-        <div className="w-full flex justify-center  rounded-lg mt-5 items-center bg-[#F7F9FB] dark:bg-[#28445C] p-4">
-          <Features />
-        </div>
       </div>
     </div>
   );

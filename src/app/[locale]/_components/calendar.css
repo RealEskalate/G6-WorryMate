@@ -19,3 +19,21 @@
   border-radius: 1rem;
   padding: 1rem;
 }
+.checked-in {
+  background-color: #10B981 !important; 
+  border-radius: 50%;
+}
+.react-calendar {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+@media (max-width: 640px) {
+  .react-calendar {
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  .react-calendar__tile {
+    width: 14% !important; 
+    padding: 2px !important;
+  }
+}
