@@ -35,9 +35,9 @@ func InitAIClient() *AI {
 	// MODIFIED: Read a comma-separated list of keys
 	apiKeysStr := os.Getenv("GEMINI_API_KEYS")
 	if apiKeysStr == "" {
-		log.Fatal("GEMINI_API_KEYS environment variable not set or empty!")
+		log.Fatal("GEMINI_API_KEYS environment variable not set, empty!")
 	}
-	
+
 	apiKeys := strings.Split(apiKeysStr, ",")
 	var clients []*genai.Client
 
@@ -82,9 +82,9 @@ func InitAIClient() *AI {
 
 	// MODIFIED: Initialize the new AI struct
 	return &AI{
-		model_name: model_name,
-		config:     config,
-		clients:    clients,
+		model_name:   model_name,
+		config:       config,
+		clients:      clients,
 		currentIndex: 0,
 	}
 }
@@ -116,8 +116,8 @@ func (ai *AI) GenerateSummary(content string) (string, error) {
 	- Use this Content : %s`, content))
 	client := ai.getClient()
 	result, err := client.Models.GenerateContent(
-		ctx, 
-		ai.model_name, 
+		ctx,
+		ai.model_name,
 		userPrompt,
 		ai.config,
 	)
@@ -125,14 +125,14 @@ func (ai *AI) GenerateSummary(content string) (string, error) {
 	if err != nil {
 		// Try to find valid api keys in clients
 		count := 0
-		for (count < len(ai.clients)) {
+		for count < len(ai.clients) {
 			ans, err := ai.GenerateSummary(content)
-			if (err == nil) {
+			if err == nil {
 				return ans, nil
 			}
 			count += 1
 		}
-		
+
 		var apiErr genai.APIError
 		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
 		if errors.As(err, &apiErr) {
@@ -152,10 +152,10 @@ func (ai *AI) GenerateNormalChatMsg(msg, content string) (string, error) {
 	userPrompt := genai.Text(fmt.Sprintf(`
 	- You are to return a single string containint your natural response to this text/question : %s.
 	- The return format is normal string and not json format. 
-	- Use this to understand what the conversation was about and as context : %s`, msg ,content))
+	- Use this to understand what the conversation was about and as context : %s`, msg, content))
 	client := ai.getClient()
 	result, err := client.Models.GenerateContent(
-		ctx, 
+		ctx,
 		ai.model_name,
 		userPrompt,
 		ai.config,
@@ -164,14 +164,14 @@ func (ai *AI) GenerateNormalChatMsg(msg, content string) (string, error) {
 	if err != nil {
 		// Try to find valid api keys in clients
 		count := 0
-		for (count < len(ai.clients)) {
-			ans, err := ai.GenerateNormalChatMsg(msg, content)
-			if (err == nil) {
+		for count < len(ai.clients) {
+			ans, err := ai.GenerateNormalChatMsg(msg)
+			if err == nil {
 				return ans, nil
 			}
 			count += 1
 		}
-		
+
 		var apiErr genai.APIError
 		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
 		if errors.As(err, &apiErr) {
@@ -194,7 +194,7 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	for _, s := range actionBlock.Block.MicroSteps {
 		stepsList += fmt.Sprintf("- %s\n", s)
 	}
-  
+
 	toolsList := ""
 	for _, t := range actionBlock.Block.ToolLinks {
 		toolsList += fmt.Sprintf("- title : %s, url: %s\n", t.Title, t.URL)
@@ -244,14 +244,14 @@ func (ai *AI) GenerateActionCard(actionBlock *domain.ActionBlock) (*string, erro
 	if err != nil {
 		// Try to find valid api keys in clients
 		count := 0
-		for (count < len(ai.clients)) {
+		for count < len(ai.clients) {
 			ans, err := ai.GenerateActionCard(actionBlock)
-			if (err == nil) {
+			if err == nil {
 				return ans, err
 			}
 			count += 1
 		}
-		
+
 		var apiErr genai.APIError
 		// log.Printf("err concrete type = %T, value = %#v\n", err, err)
 		if errors.As(err, &apiErr) {
@@ -311,9 +311,9 @@ IMPORTANT: Your entire response should be exactly one line in the specified form
 	if err != nil {
 		// Try to find valid api keys in clients
 		count := 0
-		for (count < len(ai.clients)) {
+		for count < len(ai.clients) {
 			ans, err := ai.GenerateTopicKey(content)
-			if (err == nil) {
+			if err == nil {
 				return ans, err
 			}
 			count += 1
@@ -402,13 +402,12 @@ IMPORTANT: Be consistent. Same content should always produce the same risk level
 		ai.config,
 	)
 
-
 	if err != nil {
 		// Try to find valid api keys in clients
 		count := 0
-		for (count < len(ai.clients)) {
+		for count < len(ai.clients) {
 			num, ans, err := ai.GenerateRiskCheck(content)
-			if (err == nil) {
+			if err == nil {
 				return num, ans, err
 			}
 			count += 1
@@ -578,9 +577,9 @@ JSON Structure Example:
 	if err != nil {
 		// Try to find valid api keys in clients
 		count := 0
-		for (count < len(ai.clients)) {
+		for count < len(ai.clients) {
 			ans, err := ai.GenerateCrisisCard(lang, region, tags)
-			if (err == nil) {
+			if err == nil {
 				return ans, err
 			}
 			count += 1
