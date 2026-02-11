@@ -36,7 +36,7 @@ Future<void> main() async {
   final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
 
   await init();
-  await Hive.openBox('journalBox');
+  await Hive.openBox('journallBox');
   await sl<NotificationService>().init();
 
   runApp(MyApp(isFirstLaunch: isFirstLaunch));
