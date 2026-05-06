@@ -1,0 +1,146 @@
+{
+  "Settings": {
+    "title": "Settings",
+    "header": "Language and Accessibility",
+    "language": "Language",
+    "english": "English",
+    "amharic": "Amharic",
+    "privacy": "Privacy and Security",
+    "saveChatHistory": "Save Chat History",
+    "saveChatDescription": "You can save your chats and see them later on.",
+    "enableChat": "Enable chat saving",
+    "deleteChat": "Delete Chat History",
+    "about": "About WorryMate",
+    "appInfo": "Application Information",
+    "appVersion": "Version and build details",
+    "versionTag": "Version 1.0 Demo",
+    "betaTag": "Beta Release"
+  },
+  "Workspace": {
+    "welcomePrefix": "Hey",
+    "welcomeMate": "Mate, what's worrying you?",
+    "sampleQuestions": [
+      "I'm really stressed about my exams",
+      "I lost my job and I'm worried about money",
+      "My family and I keep fighting"
+    ],
+    "listening": "Listening...",
+    "speakNow": "Speak now",
+    "close": "Close",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "disclaimer": "General wellbeing advice, not medical advice.",
+    "placeholder": "Tell me what's worrying you so I can help.."
+  },
+  "Sidebar": {
+    "ventingChat": "Venting Chat",
+    "toolkit": "Offline ToolKit",
+    "settings": "Settings",
+    "brand": "WorryMate"
+  },
+  "HomePage": {
+    "title": "Worry Mate"
+  },
+  "Header": {
+    "home": "Home",
+    "settings": "Settings",
+    "about": "About"
+  },
+
+
+
+  "start":{
+
+  },
+  "EmojiSelection":{
+    "selectMood":"Select Your Mood",
+    "low":"Low",
+    "meh":"High",
+    "okay":"Okay",
+    "good":"Good",
+    "great":"Great"
+  },
+  
+  "HowFeel": {
+    "morning": "Good Morning 🌅",
+    "afternoon": "Good Afternoon 🌞",
+    "evening": "Good Evening 🌇",
+    "night": "Burning the midnight oil? 🌃",
+    "howDoYouFeel": "How do you feel",
+    "markMood": "Please, mark your mood today",
+    "markNow": "Mark now",
+    "hide": "Hide",
+    "chatbotIllustration": "Chatbot Illustration"
+  },
+  "EmojiProgress": {
+    "moodTracker": "Mood Tracker",
+    "trackMood": "Track your mood over time",
+    "selectWeek": "Select a week",
+    "low": "Low",
+    "meh": "Meh",
+    "okay": "Okay",
+    "good": "Good",
+    "great": "Great",
+    "mood": "Mood",
+    "noData": "No data",
+    "date": "Date"
+  },
+  "RecentEntries": {
+    "recentEntries": "Recent Entries",
+    "newEntry": "New Entry",
+    "noEntriesYet": "No entries yet.",
+    "viewEntry": "View journal entry"
+  },
+  "Features":{
+    "features":"Features",
+    "AI Chat": "AI Chat",
+    "Get personalized guidance and answers from our intelligent assistant.": "Get personalized guidance and answers from our intelligent assistant.",
+    "Chat Now": "Chat Now",
+
+    "Write Journal": "Write Journal",
+    "Reflect on your thoughts and emotions with daily journaling.": "Reflect on your thoughts and emotions with daily journaling.",
+    "Start Writing": "Start Writing",
+
+    "Wellness Kits": "Wellness Kits",
+    "Explore curated resources to support your mental and emotional well-being.": "Explore curated resources to support your mental and emotional well-being.",
+    "Explore Kits": "Explore Kits",
+
+    "Progress Tracker": "Progress Tracker",
+    "Visualize your growth and milestones over time.": "Visualize your growth and milestones over time.",
+    "Track Progress": "Track Progress"
+  },
+  "JournalEditor": {
+    "myJournal": "My Journal",
+    "entryTitle": "Entry Title",
+    "saveEntry": "Save Entry",
+    "recentEntries": "Recent Entries",
+    "noEntries": "No entries yet. Start writing!",
+    "viewEntry": "View journal entry",
+    "placeholder": "Write your thoughts here...",
+    "startWriting": "Start Writing",    
+    "loadingJournal": "Loading journal...",
+    "untitledJournal": "Untitled Journal",
+    "enterTitle": "Enter a title...",
+    "delete": "Delete",
+    "update": "Update",
+    "clickToWrite": "Click here to start writing your thoughts..."
+
+  },
+  "ProgressPage": {
+    "title": "Your Mental Health Journey",
+    "subtitle": "Track your progress, celebrate your wins, and see how far you've come on your wellness journey",
+    "dayStreak": "Day Streak",
+    "keepItUp": "Keep it up",
+    "checkIns": "Check-ins",
+    "thisMonth": "This month",
+    "journalEntries": "Journal Entries",
+    "last30Days": "Last 30 days",
+    "wellnessScore": "Wellness Score",
+    "moodHabitConsistency": "Mood + habit consistency",
+    "recentEntries": "Recent Entries",
+    "latestThoughts": "Your latest thoughts and reflections",
+    "makingProgress": "You're Making Great Progress",
+    "progressText": "Every check-in, every journal entry, and every moment of self-reflection is a step forward in your mental health journey"
+  }
+
+}
