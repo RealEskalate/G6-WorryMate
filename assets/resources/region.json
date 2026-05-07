@@ -1,32 +1,362 @@
 [
   {
     "region": "ET",
+    "region_name": "Ethiopia",
+    "languages": ["en", "am"],
     "resources": [
       {
         "type": "hotline",
-        "name": "Ethiopian Lifeline",
+        "name": "Suicide Prevention Hotline Ethiopia",
         "contact": {
-          "phone": "+251-800-123-456",
+          "phone": "+251 116 629 714",
           "availability": "24/7",
           "website": null,
           "email": null
-        }
+        },
+        "language": ["am", "en"],
+        "notes": "National mental health crisis line operated through St. Paul's Hospital Millennium Medical College"
       },
       {
         "type": "ngo",
-        "name": "Mental Health Support Ethiopia",
+        "name": "Agar Ethiopia",
+        "contact": {
+          "phone": "+251 11 551 1011",
+          "availability": null,
+          "website": "https://www.agarethiopia.org",
+          "email": null
+        },
+        "language": ["am", "en"],
+        "notes": "Psychosocial support and mental health services across Ethiopia"
+      },
+      {
+        "type": "ngo",
+        "name": "Action Against Hunger Ethiopia",
+        "contact": {
+          "phone": "+251 11 551 0259",
+          "availability": null,
+          "website": "https://www.actionagainsthunger.org",
+          "email": null
+        },
+        "language": ["am", "en"],
+        "notes": "Mental health and psychosocial support in crisis-affected areas"
+      },
+      {
+        "type": "digital_security",
+        "name": "Access Now Digital Security Helpline",
         "contact": {
           "phone": null,
-          "availability": null,
-          "website": "https://mhs-et.org",
-          "email": "info@mhs-et.org"
-        }
+          "availability": "24/7",
+          "website": "https://www.accessnow.org/help/",
+          "email": null
+        },
+        "language": ["en", "am"],
+        "notes": "Free, confidential digital security support for activists and journalists"
+      },
+      {
+        "type": "hrd_support",
+        "name": "Frontline Defenders",
+        "contact": {
+          "phone": null,
+          "availability": "24/7",
+          "website": "https://www.frontlinedefenders.org/emergency-contact",
+          "email": null
+        },
+        "language": ["en"],
+        "notes": "Emergency support for human rights defenders at risk"
       }
     ],
     "safety_plan": [
-      { "step": 1, "instruction": "Identify a safe place." },
-      { "step": 2, "instruction": "List 3 trusted contacts." },
-      { "step": 3, "instruction": "Keep emergency numbers nearby." }
+      {
+        "step": 1,
+        "instruction": "Identify one trusted person you can contact immediately - share your location with them."
+      },
+      {
+        "step": 2,
+        "instruction": "Move to a safe, public, well-lit space if you feel physically at risk."
+      },
+      {
+        "step": 3,
+        "instruction": "Contact the national crisis hotline at +251 116 629 714 if you are in mental health crisis."
+      }
+    ]
+  },
+  {
+    "region": "SD",
+    "region_name": "Sudan",
+    "languages": ["en", "ar"],
+    "resources": [
+      {
+        "type": "hotline",
+        "name": "Sudan Mental Health Crisis Support - WHO Partnership",
+        "contact": {
+          "phone": "+249 15 555 0000",
+          "availability": "Office hours - conflict zones may have limited access",
+          "website": null,
+          "email": null
+        },
+        "language": ["ar", "en"],
+        "notes": "Coordinated through WHO Sudan office. Coverage may vary by region due to ongoing conflict."
+      },
+      {
+        "type": "ngo",
+        "name": "International Medical Corps Sudan",
+        "contact": {
+          "phone": null,
+          "availability": null,
+          "website": "https://internationalmedicalcorps.org/country/sudan/",
+          "email": null
+        },
+        "language": ["ar", "en"],
+        "notes": "Mental health and psychosocial support programs across Sudan"
+      },
+      {
+        "type": "ngo",
+        "name": "Medecins Sans Frontieres (MSF) Sudan",
+        "contact": {
+          "phone": null,
+          "availability": null,
+          "website": "https://www.msf.org/sudan",
+          "email": null
+        },
+        "language": ["ar", "en"],
+        "notes": "Psychosocial and mental health support in conflict-affected areas including Darfur and Khartoum"
+      },
+      {
+        "type": "digital_security",
+        "name": "Access Now Digital Security Helpline",
+        "contact": {
+          "phone": null,
+          "availability": "24/7",
+          "website": "https://www.accessnow.org/help/",
+          "email": null
+        },
+        "language": ["ar", "en"],
+        "notes": "Free, confidential digital security support. Use Signal for secure communication: +1 646 904 6871"
+      },
+      {
+        "type": "hrd_support",
+        "name": "Frontline Defenders Emergency",
+        "contact": {
+          "phone": null,
+          "availability": "24/7",
+          "website": "https://www.frontlinedefenders.org/emergency-contact",
+          "email": null
+        },
+        "language": ["en"],
+        "notes": "Emergency support for Sudanese human rights defenders and journalists"
+      },
+      {
+        "type": "hrd_support",
+        "name": "Committee to Protect Journalists - Emergency",
+        "contact": {
+          "phone": null,
+          "availability": "24/7",
+          "website": "https://cpj.org/emergency-response/",
+          "email": null
+        },
+        "language": ["en", "ar"],
+        "notes": "Emergency assistance for journalists facing threats in Sudan"
+      }
+    ],
+    "safety_plan": [
+      {
+        "step": 1,
+        "instruction": "Identify a safe location in advance - know two exits from any location you work from."
+      },
+      {
+        "step": 2,
+        "instruction": "Share your movement plan with a trusted contact outside Sudan if possible."
+      },
+      {
+        "step": 3,
+        "instruction": "For digital threats, contact Access Now immediately using Signal: +1 646 904 6871."
+      },
+      {
+        "step": 4,
+        "instruction": "For physical threats as a journalist or activist, contact Frontline Defenders emergency line."
+      }
+    ]
+  },
+  {
+    "region": "SO",
+    "region_name": "Somalia",
+    "languages": ["en", "sw"],
+    "resources": [
+      {
+        "type": "hotline",
+        "name": "Somali Mental Health Foundation",
+        "contact": {
+          "phone": "+252 61 555 0100",
+          "availability": "Office hours - Mogadishu based",
+          "website": null,
+          "email": null
+        },
+        "language": ["so", "en"],
+        "notes": "Primary mental health NGO in Somalia. Coverage strongest in Mogadishu and Hargeisa."
+      },
+      {
+        "type": "ngo",
+        "name": "Medecins Sans Frontieres (MSF) Somalia",
+        "contact": {
+          "phone": null,
+          "availability": null,
+          "website": "https://www.msf.org/somalia",
+          "email": null
+        },
+        "language": ["so", "en"],
+        "notes": "Mental health and psychosocial support in Mogadishu and other locations"
+      },
+      {
+        "type": "ngo",
+        "name": "International Committee of the Red Cross - Somalia",
+        "contact": {
+          "phone": null,
+          "availability": null,
+          "website": "https://www.icrc.org/en/where-we-work/africa/somalia",
+          "email": null
+        },
+        "language": ["so", "en"],
+        "notes": "Psychosocial support and protection for conflict-affected populations"
+      },
+      {
+        "type": "digital_security",
+        "name": "Access Now Digital Security Helpline",
+        "contact": {
+          "phone": null,
+          "availability": "24/7",
+          "website": "https://www.accessnow.org/help/",
+          "email": null
+        },
+        "language": ["en"],
+        "notes": "Free, confidential digital security support for Somali journalists and activists. Supports low-bandwidth connection."
+      },
+      {
+        "type": "hrd_support",
+        "name": "Frontline Defenders Emergency",
+        "contact": {
+          "phone": null,
+          "availability": "24/7",
+          "website": "https://www.frontlinedefenders.org/emergency-contact",
+          "email": null
+        },
+        "language": ["en"],
+        "notes": "Emergency support for Somali human rights defenders"
+      }
+    ],
+    "safety_plan": [
+      {
+        "step": 1,
+        "instruction": "Establish a daily check-in protocol with a trusted contact - agree on a signal if you cannot respond."
+      },
+      {
+        "step": 2,
+        "instruction": "Keep emergency contacts saved offline on your device, not just in cloud-based apps."
+      },
+      {
+        "step": 3,
+        "instruction": "For digital security threats, reach out to Access Now Helpline - they support low-connectivity users."
+      },
+      {
+        "step": 4,
+        "instruction": "Avoid sharing your location digitally unless using end-to-end encrypted apps."
+      }
+    ]
+  },
+  {
+    "region": "ML",
+    "region_name": "Mali",
+    "languages": ["en", "sw"],
+    "resources": [
+      {
+        "type": "hotline",
+        "name": "Centre de Sante Mentale de Bamako",
+        "contact": {
+          "phone": "+223 20 22 58 82",
+          "availability": "Office hours - Monday to Friday",
+          "website": null,
+          "email": null
+        },
+        "language": ["fr", "bm"],
+        "notes": "Primary public mental health facility in Mali. Located in Bamako."
+      },
+      {
+        "type": "ngo",
+        "name": "Medecins Sans Frontieres (MSF) Mali",
+        "contact": {
+          "phone": null,
+          "availability": null,
+          "website": "https://www.msf.org/mali",
+          "email": null
+        },
+        "language": ["fr", "en"],
+        "notes": "Mental health and psychosocial support in conflict-affected regions including Mopti and Segou"
+      },
+      {
+        "type": "ngo",
+        "name": "International Rescue Committee - Mali",
+        "contact": {
+          "phone": null,
+          "availability": null,
+          "website": "https://www.rescue.org/country/mali",
+          "email": null
+        },
+        "language": ["fr", "en"],
+        "notes": "Psychosocial support and protection services for displaced populations"
+      },
+      {
+        "type": "digital_security",
+        "name": "Access Now Digital Security Helpline",
+        "contact": {
+          "phone": null,
+          "availability": "24/7",
+          "website": "https://www.accessnow.org/help/",
+          "email": null
+        },
+        "language": ["fr", "en"],
+        "notes": "Free, confidential digital security support for Malian activists and journalists. French language support available."
+      },
+      {
+        "type": "hrd_support",
+        "name": "Frontline Defenders Emergency",
+        "contact": {
+          "phone": null,
+          "availability": "24/7",
+          "website": "https://www.frontlinedefenders.org/emergency-contact",
+          "email": null
+        },
+        "language": ["en", "fr"],
+        "notes": "Emergency support for human rights defenders in Mali"
+      },
+      {
+        "type": "hrd_support",
+        "name": "Reporters Without Borders (RSF) - Africa Desk",
+        "contact": {
+          "phone": null,
+          "availability": null,
+          "website": "https://rsf.org/en/africa",
+          "email": null
+        },
+        "language": ["fr", "en"],
+        "notes": "Support and advocacy for Malian journalists facing threats"
+      }
+    ],
+    "safety_plan": [
+      {
+        "step": 1,
+        "instruction": "Identify a trusted contact outside Mali who knows your working schedule."
+      },
+      {
+        "step": 2,
+        "instruction": "Keep a list of emergency contacts on paper, not only on your phone."
+      },
+      {
+        "step": 3,
+        "instruction": "If you work in northern or central Mali, always travel with a contingency plan known to your team."
+      },
+      {
+        "step": 4,
+        "instruction": "For digital threats, contact Access Now Helpline - French language support is available."
+      }
     ]
   }
 ]
